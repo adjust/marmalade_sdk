@@ -1,0 +1,28 @@
+globals
+
+include:
+
+/**
+ * @defgroup adjustSDK adjust SDK Extension API Reference
+ *
+ * This extension allows an application to integrate the adjust SDK.
+ * Read more about adjust.io at http://adjust.io
+ *
+ * @{
+ */
+
+#include <s3eTypes.h>
+
+functions:
+
+s3eResult AppDidLaunch(const char* appToken, const char* environment, const char* sdkPrefix, const char* logLevel, bool eventBuffering) S3E_RESULT_ERROR
+
+s3eResult TrackEvent(const char* eventToken, int params) S3E_RESULT_ERROR
+
+s3eResult TrackRevenue(double cents, const char* eventToken) S3E_RESULT_ERROR
+
+s3eResult setEnabled(bool enabled) S3E_RESULT_ERROR
+
+s3eResult isEnabled() S3E_RESULT_ERROR
+append:
+/** @} */
