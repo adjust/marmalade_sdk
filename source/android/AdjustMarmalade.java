@@ -20,7 +20,7 @@ import java.util.Map;
 
 class AdjustMarmalade
 {
-    public int AppDidLaunch(String appToken, String environment, String sdkPrefix, String logLevel, boolean eventBuffering)
+    public void AppDidLaunch(String appToken, String environment, String sdkPrefix, String logLevel, boolean eventBuffering)
     {
         LoaderActivity activity = LoaderAPI.getActivity();
         Adjust.appDidLaunch(activity,
@@ -46,32 +46,21 @@ class AdjustMarmalade
                 }
             }
         });
-
-        return 0;
     }
-    public int TrackEvent(String eventToken, Map<String, String> parameters)
+    public void TrackEvent(String eventToken, Map<String, String> parameters)
     {
-        AdjustFactory.getLogger().debug("parameters: {0}", parameters);
         Adjust.trackEvent(eventToken, parameters);
-        return 0;
     }
-    public int TrackRevenue(double cents, String eventToken)
+    public void TrackRevenue(double cents, String eventToken, Map<String, String> parameters)
     {
-        if(eventToken != null && !eventToken.isEmpty()) {
-            Adjust.trackRevenue(cents, eventToken);
-        } else {
-            Adjust.trackRevenue(cents);
-        }
-
-        return 0;
+        Adjust.trackRevenue(cents, eventToken, parameters);     
     }
-    public int setEnabled(boolean enabled)
+    public void setEnabled(boolean enabled)
     {
         Adjust.setEnabled(enabled);
-        return 0;
     }
-    public int isEnabled()
+    public boolean isEnabled()
     {
-        return 0;
+        return Adjust.isEnabled();
     }
 }

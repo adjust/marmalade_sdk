@@ -19,10 +19,10 @@ s3eResult AppDidLaunch(const char* appToken, const char* environment, const char
 
 s3eResult TrackEvent(const char* eventToken, const void* param_ptr) S3E_RESULT_ERROR
 
-s3eResult TrackRevenue(double cents, const char* eventToken) S3E_RESULT_ERROR
+s3eResult TrackRevenue(double cents, const char* eventToken, const void* param_ptr) S3E_RESULT_ERROR
 
-s3eResult setEnabled(bool enabled) S3E_RESULT_ERROR
+s3eResult SetEnabled(bool enabled) S3E_RESULT_ERROR
 
-s3eResult isEnabled() S3E_RESULT_ERROR
+s3eResult IsEnabled(bool& isEnabled_out) S3E_RESULT_ERROR
 append:
 /** @} */

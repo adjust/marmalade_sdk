@@ -58,11 +58,11 @@ s3eResult AppDidLaunch_platform(const char* appToken, const char* environment, c
 
 s3eResult TrackEvent_platform(const char* eventToken, const void* param_ptr);
 
-s3eResult TrackRevenue_platform(double cents, const char* eventToken);
+s3eResult TrackRevenue_platform(double cents, const char* eventToken, const void* param_ptr);
 
-s3eResult setEnabled_platform(bool enabled);
+s3eResult SetEnabled_platform(bool enabled);
 
-s3eResult isEnabled_platform();
+s3eResult IsEnabled_platform(bool& isEnabled_out);
 
 jobject create_global_java_dict(param_type* params);
 #endif /* !ADJUSTMARMALADE_INTERNAL_H */
