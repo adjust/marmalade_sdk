@@ -14,6 +14,9 @@ import com.ideaworks3d.marmalade.LoaderActivity;
 import com.ideaworks3d.marmalade.SuspendResumeListener;
 import com.ideaworks3d.marmalade.SuspendResumeEvent;
 import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustFactory;
+import com.adjust.sdk.Logger;
+import java.util.Map;
 
 class AdjustMarmalade
 {
@@ -46,14 +49,10 @@ class AdjustMarmalade
 
         return 0;
     }
-    public int TrackEvent(String eventToken, int params)
+    public int TrackEvent(String eventToken, Map<String, String> parameters)
     {
-        if (params == null)
-            LoaderAPI.trace("params null");
-        else
-            LoaderAPI.trace("params class name: " + params.getClass().getName());
-
-        Adjust.trackEvent(eventToken);
+        AdjustFactory.getLogger().debug("parameters: {0}", parameters);
+        Adjust.trackEvent(eventToken, parameters);
         return 0;
     }
     public int TrackRevenue(double cents, String eventToken)

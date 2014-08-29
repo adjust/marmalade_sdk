@@ -17,7 +17,7 @@ functions:
 
 s3eResult AppDidLaunch(const char* appToken, const char* environment, const char* sdkPrefix, const char* logLevel, bool eventBuffering) S3E_RESULT_ERROR
 
-s3eResult TrackEvent(const char* eventToken, int params) S3E_RESULT_ERROR
+s3eResult TrackEvent(const char* eventToken, const void* param_ptr) S3E_RESULT_ERROR
 
 s3eResult TrackRevenue(double cents, const char* eventToken) S3E_RESULT_ERROR
 
