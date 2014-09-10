@@ -2,6 +2,26 @@ globals
 
 include:
 
+#include <vector>
+typedef std::vector<std::pair<const char*, const char*> > param_type;
+
+#include <string>
+
+struct response_data {
+	std::string activityKind;
+	bool success;
+	bool willRetry;
+	std::string error;
+	std::string trackerToken;
+	std::string trackerName;
+	std::string network;
+	std::string campaign;
+	std::string adgroup;
+	std::string creative;
+};
+
+typedef void (*response_data_delegate)(response_data*);
+
 /**
  * @defgroup adjustSDK adjust SDK Extension API Reference
  *
@@ -17,12 +37,14 @@ functions:
 
 s3eResult AppDidLaunch(const char* appToken, const char* environment, const char* sdkPrefix, const char* logLevel, bool eventBuffering) S3E_RESULT_ERROR
 
-s3eResult TrackEvent(const char* eventToken, const void* param_ptr) S3E_RESULT_ERROR
+s3eResult TrackEvent(const char* eventToken, const param_type* params) S3E_RESULT_ERROR
 
-s3eResult TrackRevenue(double cents, const char* eventToken, const void* param_ptr) S3E_RESULT_ERROR
+s3eResult TrackRevenue(double cents, const char* eventToken, const param_type* params) S3E_RESULT_ERROR
 
 s3eResult SetEnabled(bool enabled) S3E_RESULT_ERROR
 
 s3eResult IsEnabled(bool& isEnabled_out) S3E_RESULT_ERROR
+
+s3eResult SetResponseDelegate(response_data_delegate delegateFn) S3E_RESULT_ERROR
 append:
 /** @} */

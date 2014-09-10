@@ -1,0 +1,3 @@
+[submodule "source/generic/rapidjson"]
+	path = source/generic/rapidjson
+	url = git@github.com:damucz/rapidjson.git

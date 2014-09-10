@@ -16,9 +16,12 @@ import com.ideaworks3d.marmalade.SuspendResumeEvent;
 import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.Logger;
+import com.adjust.sdk.OnFinishedListener;
+import com.adjust.sdk.ResponseData;
 import java.util.Map;
+import org.json.JSONObject;
 
-class AdjustMarmalade
+class AdjustMarmalade implements OnFinishedListener
 {
     public void AppDidLaunch(String appToken, String environment, String sdkPrefix, String logLevel, boolean eventBuffering)
     {
@@ -63,4 +66,19 @@ class AdjustMarmalade
     {
         return Adjust.isEnabled();
     }
+    public void SetResponseDelegate()
+    {
+        Adjust.setOnFinishedListener(this);
+    }
+
+    @Override
+    public void onFinishedTracking(ResponseData responseData) {
+        Map<String, String> responseDataDic = responseData.toDic();
+        JSONObject responseDataJson = new JSONObject(responseDataDic);
+        String responseDataString = responseDataJson.toString();
+
+        responseDataCallback(responseDataString);
+    }
+
+    public native void responseDataCallback(String responseDataString);
 }

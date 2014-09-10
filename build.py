@@ -13,7 +13,8 @@ parsed_args = None
 def main():
     parser = argparse.ArgumentParser(description="Adjust SDK build script for marmalade")
     parser.add_argument("--clean", "-c", action="store_true", help="Clean previously builds")
-    parser.add_argument("--compile_android", "-a", action="store_true", help="Compile android build")
+    parser.add_argument("--compile_android", "-ca", action="store_true", help="Compile android build")
+    parser.add_argument("--build_android", "-ba", action="store_true", help="Build android build")
     parser.add_argument("--keep_source", "-k", action="store_true", help="Keep generated sources")
 
     global parsed_args
@@ -23,10 +24,12 @@ def main():
         # log function with file injected
         global Log
         Log = LogInput(fileLog)
-        clean()
+        if not parsed_args.compile_android:
+            clean()
         if not parsed_args.clean:
-            build_android()
             if not parsed_args.compile_android:
+                build_android()
+            if not parsed_args.build_android:
                 compile_android()
     
 def LogInput(writeObject):
@@ -57,8 +60,9 @@ def build_android():
             edk_build.returncode, err))
 
     copy_android()
-
+    
     edit_android_mkb()
+    edit_android_java_mkb()
     edit_android_mkf()
     move_android_source()
 
@@ -91,6 +95,12 @@ def move_android_source():
         shutil.copy("source/android/AdjustMarmalade.java", "adjust/source/android")
         shutil.copy("source/android/AdjustMarmalade_platform.cpp", "adjust/source/android")
         shutil.copy("source/h/AdjustMarmalade_internal.h", "adjust/source/h")
+        shutil.copytree("source/generic/rapidjson", "adjust/rapidjson")
+        #shutil.copytree("source/generic/json-parser", "adjust/json-parser")
+        #shutil.copytree("source/generic/cJSON-for-marmalade", "adjust/cJSON")
+        #shutil.copy("source/generic/cJSON-for-marmalade/cJSON.c", "adjust/source/generic/cJSON.c")
+        #shutil.copy("source/generic/cJSON-for-marmalade/cJSON.h", "adjust/source/generic/cJSON.h")
+
     Log("copied java source")
 
 def copy_android():
@@ -99,6 +109,12 @@ def copy_android():
     Log("copied jar libs")
 
 def edit_android_mkb():
+    mkb_filename = "adjust/AdjustMarmalade_android.mkb"
+
+    with open(mkb_filename, "a") as f:
+        f.write("subproject rapidjson")
+
+def edit_android_java_mkb():
     mkb_file_lines = []
     mkb_filename = "adjust/AdjustMarmalade_android_java.mkb"
 
