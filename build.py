@@ -13,9 +13,12 @@ parsed_args = None
 def main():
     parser = argparse.ArgumentParser(description="Adjust SDK build script for marmalade")
     parser.add_argument("--clean", "-c", action="store_true", help="Clean previously builds")
-    parser.add_argument("--compile_android", "-ca", action="store_true", help="Compile android build")
-    parser.add_argument("--build_android", "-ba", action="store_true", help="Build android build")
     parser.add_argument("--keep_source", "-k", action="store_true", help="Keep generated sources")
+    parser.add_argument("--build_android", "-ba", action="store_true", help="Build android build")
+    parser.add_argument("--compile_android", "-ca", action="store_true", help="Compile android build")
+    parser.add_argument("--build_iphone", "-bi", action="store_true", help="Build iphone build")
+    parser.add_argument("--compile_iphone", "-ci", action="store_true", help="Compile iphone build")
+
 
     global parsed_args
     parsed_args = parser.parse_args()
@@ -24,13 +27,19 @@ def main():
         # log function with file injected
         global Log
         Log = LogInput(fileLog)
-        if not parsed_args.compile_android:
+        if not (parsed_args.compile_android or parsed_args.compile_iphone):
             clean()
         if not parsed_args.clean:
-            if not parsed_args.compile_android:
-                build_android()
-            if not parsed_args.build_android:
-                compile_android()
+            if not (parsed_args.build_iphone or parsed_args.compile_iphone):
+                if not parsed_args.compile_android:
+                    build_android()
+                if not parsed_args.build_android:
+                    compile_android()
+            if not (parsed_args.compile_android or parsed_args.build_android):
+                if not parsed_args.compile_iphone:
+                    build_iphone()
+                if not parsed_args.build_iphone:
+                    compile_iphone()
     
 def LogInput(writeObject):
     def Log(message, *args):
@@ -54,9 +63,9 @@ def build_android():
             stdout=PIPE, stderr=PIPE)
     out, err = edk_build.communicate()
 
-    Log("edk-build out: {0}".format(out))
+    Log("edk-build android out: {0}".format(out))
     if (edk_build.returncode not in [0]):
-        print("edk-build code: {0}, err: {1}".format(
+        print("edk-build android code: {0}, err: {1}".format(
             edk_build.returncode, err))
 
     copy_android()
@@ -65,6 +74,18 @@ def build_android():
     edit_android_java_mkb()
     edit_android_mkf()
     move_android_source()
+
+def build_iphone():
+    edk_build = Popen(["edk-build", "adjust/AdjustMarmalade.s4e", "--platform=iphone"],
+            stdout=PIPE, stderr=PIPE)
+    out, err = edk_build.communicate()
+
+    Log("edk-build iphone out: {0}".format(out))
+    if (edk_build.returncode not in [0]):
+        print("edk-build iphone code: {0}, err: {1}".format(
+            edk_build.returncode, err))
+
+    move_iphone_source()
 
 def compile_android():
     mkb_android_java = Popen(["mkb", "adjust/AdjustMarmalade_android_java.mkb"],
@@ -85,23 +106,37 @@ def compile_android():
         print("mkb android code: {0}, err: {1}".format(
             mkb_android.returncode, err))
 
+def compile_iphone():
+    mkb_iphone = Popen(["mkb", "adjust/AdjustMarmalade_iphone.mkb", "--buildenv=xcode"],
+    #mkb_iphone = Popen(["mkb", "adjust/AdjustMarmalade_iphone.mkb", "--buildenv=scons"],
+            stdout=PIPE, stderr=PIPE)
+    out, err = mkb_iphone.communicate()
+
+    Log("mkb iphone out: {0}".format(out))
+    if (mkb_iphone.returncode not in [0]):
+        print("mkb iphone code: {0}, err: {1}".format(
+            mkb_iphone.returncode, err))
 
 def move_android_source():
     if parsed_args.keep_source:
         shutil.copy("adjust/source/android/AdjustMarmalade.java", "source/android/AdjustMarmalade.bak.java")
         shutil.copy("adjust/source/android/AdjustMarmalade_platform.cpp", "source/android/AdjustMarmalade_platform.bak.cpp")
-        shutil.copy("adjust/source/h/AdjustMarmalade_internal.h", "source/h/AdjustMarmalade_internal.bak.h")
+        #shutil.copy("adjust/source/h/AdjustMarmalade_internal.h", "source/h/AdjustMarmalade_internal.bak.h")
     else:
         shutil.copy("source/android/AdjustMarmalade.java", "adjust/source/android")
         shutil.copy("source/android/AdjustMarmalade_platform.cpp", "adjust/source/android")
-        shutil.copy("source/h/AdjustMarmalade_internal.h", "adjust/source/h")
-        shutil.copytree("source/generic/rapidjson", "adjust/rapidjson")
-        #shutil.copytree("source/generic/json-parser", "adjust/json-parser")
-        #shutil.copytree("source/generic/cJSON-for-marmalade", "adjust/cJSON")
-        #shutil.copy("source/generic/cJSON-for-marmalade/cJSON.c", "adjust/source/generic/cJSON.c")
-        #shutil.copy("source/generic/cJSON-for-marmalade/cJSON.h", "adjust/source/generic/cJSON.h")
+        #shutil.copy("source/h/AdjustMarmalade_internal.h", "adjust/source/h")
+        shutil.copytree("source/rapidjson", "adjust/rapidjson")
 
-    Log("copied java source")
+    Log("copied android source")
+
+def move_iphone_source():
+    if parsed_args.keep_source:
+        shutil.copy("adjust/source/iphone/AdjustMarmalade_platform.mm", "source/iphone/AdjustMarmalade_platform.bak.mm")
+    else:
+        shutil.copy("source/iphone/AdjustMarmalade_platform.mm", "adjust/source/iphone")
+
+    Log("copied iphone source")
 
 def copy_android():
     os.makedirs("adjust/incoming")

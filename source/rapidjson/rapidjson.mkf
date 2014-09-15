@@ -1,0 +1,26 @@
+
+includepaths
+{
+	"include"
+}
+
+files
+{
+	("include/rapidjson")
+	document.h
+	filestream.h
+	prettywriter.h
+	rapidjson.h
+	reader.h
+	stringbuffer.h
+	writer.h
+	
+}
+
+options 
+{ 
+	#arm-cpu=6
+	#arm-fpu=vfp
+	optimise-speed
+	enable-exceptions
+}

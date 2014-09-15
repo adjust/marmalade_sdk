@@ -12,12 +12,13 @@
 #include "s3eEdk_android.h"
 #include <jni.h>
 #include "IwDebug.h"
-//#include <exception>
+
 #include <iostream>
 #include <sstream>
-//using namespace rapidjson;
-//#include "jsoncpp/json/json.h"
-//#include "cJSON-for-marmalade/cJSON.h"
+
+#include "s3eEdk_android.h"
+#include <jni.h>
+#include "rapidjson/document.h"
 
 #define S3E_DEVICE_ADJUST                   S3E_EXT_ADJUSTMARMALADE_HASH
 
@@ -35,57 +36,98 @@ static jmethodID g_setEnabled;
 static jmethodID g_isEnabled;
 static jmethodID g_SetResponseDelegate;
 
-//response_data_delegate adjust_delegate;
-
-//extern void trace_response_data(response_data* response);
-
-void trace_response_data_internal(response_data* response) 
+std::string get_json_member(rapidjson::Document &jsonDoc, const char* member_name)
 {
-    if (response == NULL) {
-        IwTrace(ADJUSTMARMALADE,("response null"));
-        return;
+    if (jsonDoc.HasMember(member_name)) {
+        return std::string(jsonDoc[member_name].GetString());
+    } else {
+        return std::string();
     }
+}
 
-    IwTrace(ADJUSTMARMALADE,("response not null"));
+response_data* get_response_data(const char* jsonCString)
+{
+    response_data* rd;
+    rapidjson::Document jsonDoc;
+
+    if(jsonDoc.Parse<0>(jsonCString).HasParseError()) {
+        IwTrace(ADJUSTMARMALADE,("error parsing response data json"));
+        return NULL;
+    }
+    IwTrace(ADJUSTMARMALADE,("parsing response data json"));
+
+    rd = new response_data();
     
-    if (!response->activityKind.empty()) {
-        IwTrace(ADJUSTMARMALADE,("activityKind"));
-        IwTrace(ADJUSTMARMALADE,(response->activityKind.c_str()));
-    }
-    IwTrace(ADJUSTMARMALADE,("success"));
-    IwTrace(ADJUSTMARMALADE,(response->success ? "true" : "false"));
+    rd->activityKind    = get_json_member(jsonDoc, "activityKind");
+    rd->error           = get_json_member(jsonDoc, "error");
+    rd->success         = get_json_member(jsonDoc, "success").compare("true") == 0;
+    rd->willRetry       = get_json_member(jsonDoc, "willRetry").compare("true") == 0;
+    rd->trackerToken    = get_json_member(jsonDoc, "trackerToken");
+    rd->trackerName     = get_json_member(jsonDoc, "trackerName");
+    rd->network         = get_json_member(jsonDoc, "network");
+    rd->campaign        = get_json_member(jsonDoc, "campaign");
+    rd->adgroup         = get_json_member(jsonDoc, "adgroup");
+    rd->creative        = get_json_member(jsonDoc, "creative");
+    return rd;
+}
 
-    IwTrace(ADJUSTMARMALADE,("willRetry"));
-    IwTrace(ADJUSTMARMALADE,(response->willRetry ? "true" : "false"));
+void responseData_callback(JNIEnv* env, jobject obj, jstring responseDataString) 
+{
+    //if (adjust_delegate == NULL) {
+    //    return;
+    //}
+    IwTrace(ADJUSTMARMALADE,("responseData_callback"));
+    const char* responseDataCString = env->GetStringUTFChars(responseDataString, NULL);
 
-    if (!response->error.empty()) {
-        IwTrace(ADJUSTMARMALADE,("error"));
-        IwTrace(ADJUSTMARMALADE,(response->error.c_str()));
+    IwTrace(ADJUSTMARMALADE,("GetStringUTFChars(responseDataString, NULL)"));
+    IwTrace(ADJUSTMARMALADE,(responseDataCString));
+
+    response_data* rd = get_response_data(responseDataCString);
+    IwTrace(ADJUSTMARMALADE,("before adjust_delegate"));
+
+    s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
+                            S3E_ADJUST_CALLBACK_ADJUST_RESPONSE_DATA,
+                            rd,
+                            sizeof(*rd));
+
+    //adjust_delegate(rd);
+    //trace_response_data(rd);
+    IwTrace(ADJUSTMARMALADE,("after adjust_delegate"));
+    delete rd;
+}
+
+jobject create_global_java_dict(const param_type *params)
+{
+    if (params == NULL) {
+        return NULL;
     }
-    if (!response->trackerToken.empty()) {
-        IwTrace(ADJUSTMARMALADE,("trackerToken"));
-        IwTrace(ADJUSTMARMALADE,(response->trackerToken.c_str()));
+
+    // get JNI env
+    JNIEnv* env = s3eEdkJNIGetEnv();
+
+    // Get the HashMap class
+    jclass dict_cls = s3eEdkAndroidFindClass("java/util/HashMap");
+
+    // Get its initial size constructor
+    jmethodID dict_cons = env->GetMethodID(dict_cls, "<init>", "(I)V");
+
+    // Construct the java class with the default size
+    jobject dict_obj = env->NewObject(dict_cls, dict_cons, params->size());
+
+    // Get the put method
+    jmethodID put_method = env->GetMethodID(dict_cls, "put", 
+        "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+
+    for (param_type::const_iterator pos = params->begin();pos != params->end(); ++pos) {
+        jstring key = env->NewStringUTF(pos->first);
+        jstring value = env->NewStringUTF(pos->second);
+        IwTrace(ADJUSTMARMALADE,("CallObjectMethod(dict_obj, put_method, key, value"));
+
+        env->CallObjectMethod(dict_obj, put_method, key, value);
     }
-    if (!response->trackerName.empty()) {
-        IwTrace(ADJUSTMARMALADE,("trackerName"));
-        IwTrace(ADJUSTMARMALADE,(response->trackerName.c_str()));
-    } 
-    if (!response->network.empty()) {
-        IwTrace(ADJUSTMARMALADE,("network"));
-        IwTrace(ADJUSTMARMALADE,(response->network.c_str()));
-    }
-    if (!response->campaign.empty()) {
-        IwTrace(ADJUSTMARMALADE,("campaign"));
-        IwTrace(ADJUSTMARMALADE,(response->campaign.c_str()));
-    }
-    if (!response->adgroup.empty()) {
-        IwTrace(ADJUSTMARMALADE,("adgroup"));
-        IwTrace(ADJUSTMARMALADE,(response->adgroup.c_str()));
-    }
-    if (!response->creative.empty()) {
-        IwTrace(ADJUSTMARMALADE,("creative"));
-        IwTrace(ADJUSTMARMALADE,(response->creative.c_str()));
-    }
+    
+    jobject dict_jglobal = env->NewGlobalRef(dict_obj);
+    return dict_jglobal;
 }
 
 s3eResult AdjustMarmaladeInit_platform()
@@ -250,98 +292,4 @@ s3eResult SetResponseDelegate_platform(response_data_delegate delegateFn)
     IwTrace(ADJUSTMARMALADE,("adjust_delegate set"));
 
     return (s3eResult)0;
-}
-
-jobject create_global_java_dict(const param_type *params)
-{
-    if (params == NULL) {
-        return NULL;
-    }
-
-    // get JNI env
-    JNIEnv* env = s3eEdkJNIGetEnv();
-
-    // Get the HashMap class
-    jclass dict_cls = s3eEdkAndroidFindClass("java/util/HashMap");
-
-    // Get its initial size constructor
-    jmethodID dict_cons = env->GetMethodID(dict_cls, "<init>", "(I)V");
-
-    // Construct the java class with the default size
-    jobject dict_obj = env->NewObject(dict_cls, dict_cons, params->size());
-
-    // Get the put method
-    jmethodID put_method = env->GetMethodID(dict_cls, "put", 
-        "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
-
-    for (param_type::const_iterator pos = params->begin();pos != params->end(); ++pos) {
-        jstring key = env->NewStringUTF(pos->first);
-        jstring value = env->NewStringUTF(pos->second);
-        IwTrace(ADJUSTMARMALADE,("CallObjectMethod(dict_obj, put_method, key, value"));
-
-        env->CallObjectMethod(dict_obj, put_method, key, value);
-    }
-    
-    jobject dict_jglobal = env->NewGlobalRef(dict_obj);
-    return dict_jglobal;
-}
-
-void responseData_callback(JNIEnv* env, jobject obj, jstring responseDataString) 
-{
-    //if (adjust_delegate == NULL) {
-    //    return;
-    //}
-    IwTrace(ADJUSTMARMALADE,("responseData_callback"));
-    const char* responseDataCString = env->GetStringUTFChars(responseDataString, NULL);
-
-    IwTrace(ADJUSTMARMALADE,("GetStringUTFChars(responseDataString, NULL)"));
-    IwTrace(ADJUSTMARMALADE,(responseDataCString));
-
-    response_data* rd = get_response_data(responseDataCString);
-    IwTrace(ADJUSTMARMALADE,("before adjust_delegate"));
-
-    s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
-                            S3E_ADJUST_CALLBACK_ADJUST_RESPONSE_DATA,
-                            rd,
-                            sizeof(*rd));
-
-    //adjust_delegate(rd);
-    //trace_response_data(rd);
-    IwTrace(ADJUSTMARMALADE,("after adjust_delegate"));
-    delete rd;
-}
-
-response_data* get_response_data(const char* jsonCString)
-{
-    response_data* rd;
-    rapidjson::Document jsonDoc;
-
-    if(jsonDoc.Parse<0>(jsonCString).HasParseError()) {
-        IwTrace(ADJUSTMARMALADE,("error parsing response data json"));
-        return NULL;
-    }
-    IwTrace(ADJUSTMARMALADE,("parsing response data json"));
-
-    rd = new response_data();
-    
-    rd->activityKind    = get_json_member(jsonDoc, "activityKind");
-    rd->error           = get_json_member(jsonDoc, "error");
-    rd->success         = get_json_member(jsonDoc, "success").compare("true") == 0;
-    rd->willRetry       = get_json_member(jsonDoc, "willRetry").compare("true") == 0;
-    rd->trackerToken    = get_json_member(jsonDoc, "trackerToken");
-    rd->trackerName     = get_json_member(jsonDoc, "trackerName");
-    rd->network         = get_json_member(jsonDoc, "network");
-    rd->campaign        = get_json_member(jsonDoc, "campaign");
-    rd->adgroup         = get_json_member(jsonDoc, "adgroup");
-    rd->creative        = get_json_member(jsonDoc, "creative");
-    return rd;
-}
-
-std::string get_json_member(rapidjson::Document &jsonDoc, const char* member_name)
-{
-    if (jsonDoc.HasMember(member_name)) {
-        return std::string(jsonDoc[member_name].GetString());
-    } else {
-        return std::string();
-    }
 }
