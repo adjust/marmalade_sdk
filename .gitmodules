@@ -1,3 +1,6 @@
 [submodule "source/generic/rapidjson"]
 	path = source/generic/rapidjson
 	url = git@github.com:damucz/rapidjson.git
+[submodule "source/iphone/ios_sdk"]
+	path = source/iphone/ios_sdk
+	url = git@github.com:adjust/ios_sdk.git

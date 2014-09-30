@@ -39,7 +39,11 @@ s3eResult AppDidLaunch(const char* appToken, const char* environment, const char
 
 s3eResult TrackEvent(const char* eventToken, const param_type* params) S3E_RESULT_ERROR
 
+s3eResult TrackEventIphone(const char* eventToken, const char** params_array, int param_size) S3E_RESULT_ERROR
+
 s3eResult TrackRevenue(double cents, const char* eventToken, const param_type* params) S3E_RESULT_ERROR
+
+s3eResult TrackRevenueIphone(double cents, const char* eventToken, const char** params_array, int param_size) S3E_RESULT_ERROR
 
 s3eResult SetEnabled(bool enabled) S3E_RESULT_ERROR
 

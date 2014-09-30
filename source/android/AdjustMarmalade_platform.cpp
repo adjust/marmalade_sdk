@@ -54,7 +54,6 @@ response_data* get_response_data(const char* jsonCString)
         IwTrace(ADJUSTMARMALADE,("error parsing response data json"));
         return NULL;
     }
-    IwTrace(ADJUSTMARMALADE,("parsing response data json"));
 
     rd = new response_data();
     
@@ -73,26 +72,14 @@ response_data* get_response_data(const char* jsonCString)
 
 void responseData_callback(JNIEnv* env, jobject obj, jstring responseDataString) 
 {
-    //if (adjust_delegate == NULL) {
-    //    return;
-    //}
-    IwTrace(ADJUSTMARMALADE,("responseData_callback"));
     const char* responseDataCString = env->GetStringUTFChars(responseDataString, NULL);
 
-    IwTrace(ADJUSTMARMALADE,("GetStringUTFChars(responseDataString, NULL)"));
-    IwTrace(ADJUSTMARMALADE,(responseDataCString));
-
     response_data* rd = get_response_data(responseDataCString);
-    IwTrace(ADJUSTMARMALADE,("before adjust_delegate"));
 
     s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
                             S3E_ADJUST_CALLBACK_ADJUST_RESPONSE_DATA,
                             rd,
                             sizeof(*rd));
-
-    //adjust_delegate(rd);
-    //trace_response_data(rd);
-    IwTrace(ADJUSTMARMALADE,("after adjust_delegate"));
     delete rd;
 }
 
@@ -121,7 +108,6 @@ jobject create_global_java_dict(const param_type *params)
     for (param_type::const_iterator pos = params->begin();pos != params->end(); ++pos) {
         jstring key = env->NewStringUTF(pos->first);
         jstring value = env->NewStringUTF(pos->second);
-        IwTrace(ADJUSTMARMALADE,("CallObjectMethod(dict_obj, put_method, key, value"));
 
         env->CallObjectMethod(dict_obj, put_method, key, value);
     }
@@ -185,7 +171,6 @@ s3eResult AdjustMarmaladeInit_platform()
     if (env->RegisterNatives(cls, methods,sizeof(methods)/sizeof(methods[0])))
         goto fail;
 
-
     IwTrace(ADJUSTMARMALADE, ("ADJUSTMARMALADE init success"));
     g_Obj = env->NewGlobalRef(obj);
     env->DeleteLocalRef(obj);
@@ -242,6 +227,11 @@ s3eResult TrackEvent_platform(const char* eventToken, const param_type* params)
     return (s3eResult)0;
 }
 
+s3eResult TrackEventIphone_platform(const char* eventToken, const char** params_array, int param_size)
+{
+    return (s3eResult)1;
+}
+
 s3eResult TrackRevenue_platform(double cents, const char* eventToken, const param_type* params)
 {
     // get JNI env
@@ -256,6 +246,11 @@ s3eResult TrackRevenue_platform(double cents, const char* eventToken, const para
     env->DeleteGlobalRef(dict_jglobal);
 
     return (s3eResult)0;
+}
+
+s3eResult TrackRevenueIphone_platform(double cents, const char* eventToken, const char** params_array, int param_size)
+{
+    return (s3eResult)1;    
 }
 
 s3eResult SetEnabled_platform(bool enabled)
@@ -289,7 +284,6 @@ s3eResult SetResponseDelegate_platform(response_data_delegate delegateFn)
     env->CallVoidMethod(g_Obj, g_SetResponseDelegate);
     //adjust_delegate = delegateFn;
     //adjust_delegate = trace_response_data_internal;
-    IwTrace(ADJUSTMARMALADE,("adjust_delegate set"));
 
     return (s3eResult)0;
 }
