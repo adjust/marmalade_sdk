@@ -135,8 +135,15 @@ def move_android_source():
         shutil.copy("adjust/source/android/AdjustMarmalade_platform.cpp", "source/android/AdjustMarmalade_platform.bak.cpp")
 
         shutil.copy("adjust/AdjustMarmalade.mkf","source/AdjustMarmalade.bak.mkf")
+
+        shutil.copy("adjust/source/generic/AdjustMarmalade.cpp","source/generic/AdjustMarmalade.bak.cpp")
+        shutil.copy("adjust/source/h/AdjustMarmalade_internal.h","source/h/AdjustMarmalade_internal.bak.h")
+
     else:
         shutil.copy("source/AdjustMarmalade.mkf", "adjust")
+
+        shutil.copy("source/generic/AdjustMarmalade.cpp","adjust/source/generic/AdjustMarmalade.cpp")
+        shutil.copy("source/h/AdjustMarmalade_internal.h","adjust/source/h/AdjustMarmalade_internal.h")
 
         shutil.copy("source/android/AdjustMarmalade.java", "adjust/source/android")
         shutil.copy("source/android/AdjustMarmalade_platform.cpp", "adjust/source/android")
@@ -153,9 +160,15 @@ def move_iphone_source():
         shutil.copy("adjust/AdjustMarmalade_build.mkf", "source/AdjustMarmalade_build.bak.mkf")
 
         shutil.copy("adjust/interface/AdjustMarmalade_interface.cpp", "source/interface/AdjustMarmalade_interface.bak.cpp")
+
+        shutil.copy("adjust/source/generic/AdjustMarmalade.cpp","source/generic/AdjustMarmalade.bak.cpp")
+        shutil.copy("adjust/source/h/AdjustMarmalade_internal.h","source/h/AdjustMarmalade_internal.bak.h")
     else:
         shutil.copy("source/AdjustMarmalade.mkf", "adjust")
         shutil.copy("source/AdjustMarmalade_build.mkf", "adjust")
+
+        shutil.copy("source/generic/AdjustMarmalade.cpp","adjust/source/generic/AdjustMarmalade.cpp")
+        shutil.copy("source/h/AdjustMarmalade_internal.h","adjust/source/h/AdjustMarmalade_internal.h")
 
         shutil.copy("source/iphone/AdjustMarmalade_platform.mm", "adjust/source/iphone")
         shutil.copy("source/iphone/AdjustMarmalade_platform.h", "adjust/source/iphone")

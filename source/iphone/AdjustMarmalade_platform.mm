@@ -13,37 +13,6 @@
 #import "AIAdjustFactory.h"
 #include "s3eEdk.h"
 
-#include <stdio.h>
-#include <string.h>
-
-#define S3E_DEVICE_ADJUST                   S3E_EXT_ADJUSTMARMALADE_HASH
-
-typedef enum s3eAdjustCallback
-{
-    S3E_ADJUST_CALLBACK_ADJUST_RESPONSE_DATA,
-    S3E_ADJUST_CALLBACK_MAX
-} s3eAdjustCallback;
-
-static void response_data_cb_cleanup(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData) {
-
-	response_data * rd = (response_data *) completeData;
-	if (rd == NULL) {
-		return;
-	}
-
-	free(rd->activityKind);
-	free(rd->error);
-	free(rd->trackerToken);
-	free(rd->trackerName);
-	free(rd->network);
-	free(rd->campaign);
-	free(rd->adgroup);
-	free(rd->creative);
-
-	delete rd;
-}
-
-
 @implementation AdjustMarmalade_platform
 
 static id<AdjustDelegate> adjustMarmaladeInstance = nil;
@@ -54,16 +23,13 @@ static id<AdjustDelegate> adjustMarmaladeInstance = nil;
 }
 
 - (char *) convertString:(NSString *)string {
-	
 	if (string == nil) {
 		return NULL;
 	}
 
-	char * target;
 	const char * source = [string UTF8String];
-	target = (char *) malloc(sizeof(char) * strlen(source));
-	strcpy(target, source);
-	return target;
+    char * target = CopyString(source);
+    return target;
 }
 
 - (response_data*) getResponseData:(AIResponseData *) adjustResponseData {
@@ -93,7 +59,7 @@ static id<AdjustDelegate> adjustMarmaladeInstance = nil;
                         sizeof(*rd),
                         NULL,
                         S3E_FALSE,
-                        &response_data_cb_cleanup,
+                        &CleanupResponseData_cb,
                         (void*)rd);
 }
 
