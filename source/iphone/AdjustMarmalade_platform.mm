@@ -13,6 +13,9 @@
 #import "AIAdjustFactory.h"
 #include "s3eEdk.h"
 
+#include <stdio.h>
+#include <string.h>
+
 #define S3E_DEVICE_ADJUST                   S3E_EXT_ADJUSTMARMALADE_HASH
 
 typedef enum s3eAdjustCallback
@@ -20,6 +23,26 @@ typedef enum s3eAdjustCallback
     S3E_ADJUST_CALLBACK_ADJUST_RESPONSE_DATA,
     S3E_ADJUST_CALLBACK_MAX
 } s3eAdjustCallback;
+
+static void response_data_cb_cleanup(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData) {
+
+	response_data * rd = (response_data *) completeData;
+	if (rd == NULL) {
+		return;
+	}
+
+	free(rd->activityKind);
+	free(rd->error);
+	free(rd->trackerToken);
+	free(rd->trackerName);
+	free(rd->network);
+	free(rd->campaign);
+	free(rd->adgroup);
+	free(rd->creative);
+
+	delete rd;
+}
+
 
 @implementation AdjustMarmalade_platform
 
@@ -30,19 +53,32 @@ static id<AdjustDelegate> adjustMarmaladeInstance = nil;
     return self;
 }
 
+- (char *) convertString:(NSString *)string {
+	
+	if (string == nil) {
+		return NULL;
+	}
+
+	char * target;
+	const char * source = [string UTF8String];
+	target = (char *) malloc(sizeof(char) * strlen(source));
+	strcpy(target, source);
+	return target;
+}
+
 - (response_data*) getResponseData:(AIResponseData *) adjustResponseData {
 	response_data* rd = new response_data();
 
-	rd->activityKind    = [adjustResponseData.activityKindString UTF8String];
-    rd->error           = [adjustResponseData.error UTF8String];
     rd->success         = (bool) adjustResponseData.success;
     rd->willRetry       = (bool) adjustResponseData.willRetry;
-    rd->trackerToken    = [adjustResponseData.trackerToken UTF8String];
-    rd->trackerName     = [adjustResponseData.trackerName UTF8String];
-    rd->network         = [adjustResponseData.network UTF8String];
-    rd->campaign        = [adjustResponseData.campaign UTF8String];
-    rd->adgroup         = [adjustResponseData.adgroup UTF8String];
-    rd->creative        = [adjustResponseData.creative UTF8String];
+	rd->activityKind    = [self convertString:adjustResponseData.activityKindString];
+    rd->error           = [self convertString:adjustResponseData.error ];
+    rd->trackerToken    = [self convertString:adjustResponseData.trackerToken];
+    rd->trackerName     = [self convertString:adjustResponseData.trackerName];
+    rd->network         = [self convertString:adjustResponseData.network];
+    rd->campaign        = [self convertString:adjustResponseData.campaign];
+    rd->adgroup         = [self convertString:adjustResponseData.adgroup];
+    rd->creative        = [self convertString:adjustResponseData.creative];
 
     return rd;
 }
@@ -54,34 +90,14 @@ static id<AdjustDelegate> adjustMarmaladeInstance = nil;
     s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
                         S3E_ADJUST_CALLBACK_ADJUST_RESPONSE_DATA,
                         rd,
-                        sizeof(*rd));
-    delete rd;
+                        sizeof(*rd),
+                        NULL,
+                        S3E_FALSE,
+                        &response_data_cb_cleanup,
+                        (void*)rd);
 }
 
 @end
-
-
-NSDictionary* ConvertJsonParameters (const char* cJsonParameters)
-{
-    if (cJsonParameters == nil) {
-        return nil;
-    }
-    NSString *sJsonParameters = [NSString stringWithUTF8String: cJsonParameters];
-
-    NSDictionary * parameters = nil;
-    NSError *error = nil;
-
-    if (sJsonParameters != nil) {
-        NSData *jsonData = [sJsonParameters dataUsingEncoding:NSUTF8StringEncoding];
-        parameters = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
-    }
-    if (error != nil) {
-        NSString *errorMessage = [NSString stringWithFormat:@"Failed to parse json parameters: %@, (%@)", sJsonParameters.aiTrim, [error localizedDescription]];
-        [AIAdjustFactory.logger error:errorMessage];
-    }
-
-    return parameters;
-}
 
 s3eResult AdjustMarmaladeInit_platform()
 {

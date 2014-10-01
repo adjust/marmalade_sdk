@@ -84,6 +84,25 @@ response_data* get_response_data(const char* jsonCString)
     return rd;
 }
 
+static void response_data_cb_cleanup(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData) 
+{
+    response_data * rd = (response_data *) completeData;
+    if (rd == NULL) {
+        return;
+    }
+
+    free(rd->activityKind);
+    free(rd->error);
+    free(rd->trackerToken);
+    free(rd->trackerName);
+    free(rd->network);
+    free(rd->campaign);
+    free(rd->adgroup);
+    free(rd->creative);
+
+    delete rd;
+}
+
 void responseData_callback(JNIEnv* env, jobject obj, jstring responseDataString) 
 {
     const char* responseDataCString = env->GetStringUTFChars(responseDataString, NULL);
@@ -93,8 +112,11 @@ void responseData_callback(JNIEnv* env, jobject obj, jstring responseDataString)
     s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
                             S3E_ADJUST_CALLBACK_ADJUST_RESPONSE_DATA,
                             rd,
-                            sizeof(*rd));
-    //delete rd;
+                            sizeof(*rd),
+                            NULL,
+                            S3E_FALSE,
+                            &response_data_cb_cleanup,
+                            (void*)rd);
 }
 
 jobject create_global_java_dict(const param_type *params)

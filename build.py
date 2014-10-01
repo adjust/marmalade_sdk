@@ -37,17 +37,17 @@ def main():
         if not (parsed_args.compile_android or parsed_args.compile_iphone):
             clean()
         if not parsed_args.clean:
+            if not (parsed_args.compile_android or parsed_args.build_android or parsed_args.build_compile_android):
+                if not parsed_args.compile_iphone:
+                    build_iphone()
+                if not parsed_args.build_iphone:
+                    compile_iphone()
             if not (parsed_args.build_iphone or parsed_args.compile_iphone or parsed_args.build_compile_iphone):
                 if not parsed_args.compile_android:
                     build_android()
                 if not parsed_args.build_android:
                     compile_android()
                     post_compile()
-            if not (parsed_args.compile_android or parsed_args.build_android or parsed_args.build_compile_android):
-                if not parsed_args.compile_iphone:
-                    build_iphone()
-                if not parsed_args.build_iphone:
-                    compile_iphone()
     
 def LogInput(writeObject):
     def Log(message, *args):
