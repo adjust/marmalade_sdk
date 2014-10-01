@@ -18,10 +18,11 @@ def main():
     parser.add_argument("--keep_source", "-k", action="store_true", help="Keep generated sources")
     parser.add_argument("--build_android", "-ba", action="store_true", help="Build android build")
     parser.add_argument("--compile_android", "-ca", action="store_true", help="Compile android build")
+    parser.add_argument("--build_compile_android", "-bca", action="store_true", help="Build and compile android build")
     parser.add_argument("--build_iphone", "-bi", action="store_true", help="Build iphone build")
     parser.add_argument("--compile_iphone", "-ci", action="store_true", help="Compile iphone build")
     parser.add_argument("--build_compile_iphone", "-bci", action="store_true", help="Build and compile iphone build")
-    parser.add_argument("--post_iphone", "-pi", action="store_true", help="Post processing iphone build")
+    parser.add_argument("--post_compile", "-pc", action="store_true", help="Post processing build")
 
     global parsed_args
     parsed_args = parser.parse_args()
@@ -30,8 +31,8 @@ def main():
         # log function with file injected
         global Log
         Log = LogInput(fileLog)
-        if parsed_args.post_iphone:
-            post_iphone()
+        if parsed_args.post_compile:
+            post_compile()
             return
         if not (parsed_args.compile_android or parsed_args.compile_iphone):
             clean()
@@ -41,12 +42,12 @@ def main():
                     build_android()
                 if not parsed_args.build_android:
                     compile_android()
-            if not (parsed_args.compile_android or parsed_args.build_android):
+                    post_compile()
+            if not (parsed_args.compile_android or parsed_args.build_android or parsed_args.build_compile_android):
                 if not parsed_args.compile_iphone:
                     build_iphone()
                 if not parsed_args.build_iphone:
                     compile_iphone()
-
     
 def LogInput(writeObject):
     def Log(message, *args):
@@ -194,7 +195,7 @@ def move_iphone_source():
         shutil.copy("source/iphone/ios_sdk/Adjust/AIAdditions/UIDevice+AIAdditions.h", "adjust/source/iphone/Adjust/AIAdditions/UIDevice+AIAdditions.h")
     Log("copied iphone source")
 
-def post_iphone():
+def post_compile():
     shutil.copy("source/interface/AdjustMarmalade_interface.cpp", "adjust/interface/AdjustMarmalade_interface.cpp")
 
 def copy_android():

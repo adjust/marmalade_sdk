@@ -19,6 +19,8 @@
 #include "s3eEdk_android.h"
 #include <jni.h>
 #include "rapidjson/document.h"
+#include <stdio.h>
+#include <string.h>
 
 #define S3E_DEVICE_ADJUST                   S3E_EXT_ADJUSTMARMALADE_HASH
 
@@ -36,12 +38,14 @@ static jmethodID g_setEnabled;
 static jmethodID g_isEnabled;
 static jmethodID g_SetResponseDelegate;
 
-std::string get_json_member(rapidjson::Document &jsonDoc, const char* member_name)
+void get_json_member(rapidjson::Document &jsonDoc, const char* member_name, char *& target)
 {
     if (jsonDoc.HasMember(member_name)) {
-        return std::string(jsonDoc[member_name].GetString());
+        const char * source = jsonDoc[member_name].GetString();
+        target = (char *) malloc(sizeof(char) * strlen(source));
+        strcpy(target, source);
     } else {
-        return std::string();
+        target = NULL;
     }
 }
 
@@ -57,16 +61,26 @@ response_data* get_response_data(const char* jsonCString)
 
     rd = new response_data();
     
-    rd->activityKind    = get_json_member(jsonDoc, "activityKind");
-    rd->error           = get_json_member(jsonDoc, "error");
-    rd->success         = get_json_member(jsonDoc, "success").compare("true") == 0;
-    rd->willRetry       = get_json_member(jsonDoc, "willRetry").compare("true") == 0;
-    rd->trackerToken    = get_json_member(jsonDoc, "trackerToken");
-    rd->trackerName     = get_json_member(jsonDoc, "trackerName");
-    rd->network         = get_json_member(jsonDoc, "network");
-    rd->campaign        = get_json_member(jsonDoc, "campaign");
-    rd->adgroup         = get_json_member(jsonDoc, "adgroup");
-    rd->creative        = get_json_member(jsonDoc, "creative");
+    get_json_member(jsonDoc, "activityKind", rd->activityKind);
+    char * success;
+    get_json_member(jsonDoc, "success", success);
+    if (success != NULL) {
+        rd->success = (success == "true"? true : false);
+        free(success);
+    }
+    char * willRetry;
+    get_json_member(jsonDoc, "willRetry", willRetry);
+    if (willRetry != NULL) {
+        rd->willRetry = (willRetry == "true"? true : false);
+        free(willRetry);
+    }
+    get_json_member(jsonDoc, "error", rd->error);
+    get_json_member(jsonDoc, "trackerToken", rd->trackerToken);
+    get_json_member(jsonDoc, "trackerName", rd->trackerName);
+    get_json_member(jsonDoc, "network", rd->network);
+    get_json_member(jsonDoc, "campaign", rd->campaign);
+    get_json_member(jsonDoc, "adgroup", rd->adgroup);
+    get_json_member(jsonDoc, "creative", rd->creative);
     return rd;
 }
 
@@ -80,7 +94,7 @@ void responseData_callback(JNIEnv* env, jobject obj, jstring responseDataString)
                             S3E_ADJUST_CALLBACK_ADJUST_RESPONSE_DATA,
                             rd,
                             sizeof(*rd));
-    delete rd;
+    //delete rd;
 }
 
 jobject create_global_java_dict(const param_type *params)
@@ -282,8 +296,6 @@ s3eResult SetResponseDelegate_platform(response_data_delegate delegateFn)
     EDK_CALLBACK_REG(ADJUST, ADJUST_RESPONSE_DATA, (s3eCallback)delegateFn, NULL, false);
 
     env->CallVoidMethod(g_Obj, g_SetResponseDelegate);
-    //adjust_delegate = delegateFn;
-    //adjust_delegate = trace_response_data_internal;
 
     return (s3eResult)0;
 }

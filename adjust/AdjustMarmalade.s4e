@@ -5,17 +5,49 @@ include:
 #include <vector>
 typedef std::vector<std::pair<const char*, const char*> > param_type;
 
+#include <stdlib.h>
 struct response_data {
-	const char* activityKind;
+	
+	response_data()
+	{
+		activityKind = NULL;
+		error = NULL;
+		trackerToken = NULL;
+		trackerName = NULL;
+		network = NULL;
+		campaign = NULL;
+		adgroup = NULL;
+		creative = NULL;
+	}
+
+	~response_data() 
+	{
+		clean_string(activityKind);
+		clean_string(error);
+		clean_string(trackerToken);
+		clean_string(trackerName);
+		clean_string(network);
+		clean_string(campaign);
+		clean_string(adgroup);
+		clean_string(creative);
+	}
+
+	void clean_string(char * cString) {
+		if (cString != NULL) {
+			free(cString);
+		}
+	}
+
+	char* activityKind;
 	bool success;
 	bool willRetry;
-	const char* error;
-	const char* trackerToken;
-	const char* trackerName;
-	const char* network;
-	const char* campaign;
-	const char* adgroup;
-	const char* creative;
+	char* error;
+	char* trackerToken;
+	char* trackerName;
+	char* network;
+	char* campaign;
+	char* adgroup;
+	char* creative;
 };
 
 typedef void (*response_data_delegate)(response_data*);
