@@ -5,19 +5,17 @@ include:
 #include <vector>
 typedef std::vector<std::pair<const char*, const char*> > param_type;
 
-#include <string>
-
 struct response_data {
-	std::string activityKind;
+	const char* activityKind;
 	bool success;
 	bool willRetry;
-	std::string error;
-	std::string trackerToken;
-	std::string trackerName;
-	std::string network;
-	std::string campaign;
-	std::string adgroup;
-	std::string creative;
+	const char* error;
+	const char* trackerToken;
+	const char* trackerName;
+	const char* network;
+	const char* campaign;
+	const char* adgroup;
+	const char* creative;
 };
 
 typedef void (*response_data_delegate)(response_data*);

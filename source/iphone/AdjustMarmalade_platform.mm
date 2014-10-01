@@ -11,15 +11,18 @@
 #import "AdjustMarmalade_platform.h"
 #import "NSString+AIAdditions.h"
 #import "AIAdjustFactory.h"
+#include "s3eEdk.h"
 
-//#include "writer.h"
-//#include "stringbuffer.h"
+#define S3E_DEVICE_ADJUST                   S3E_EXT_ADJUSTMARMALADE_HASH
 
+typedef enum s3eAdjustCallback
+{
+    S3E_ADJUST_CALLBACK_ADJUST_RESPONSE_DATA,
+    S3E_ADJUST_CALLBACK_MAX
+} s3eAdjustCallback;
 
-/*
 @implementation AdjustMarmalade_platform
 
-static char *adjustSceneName = nil;
 static id<AdjustDelegate> adjustMarmaladeInstance = nil;
 
 - (id) init {
@@ -27,19 +30,36 @@ static id<AdjustDelegate> adjustMarmaladeInstance = nil;
     return self;
 }
 
-- (void)adjustFinishedTrackingWithResponse:(AIResponseData *)responseData {
-    NSDictionary *dicResponseData = [responseData dictionary];
-    NSData *dResponseData = [NSJSONSerialization dataWithJSONObject:dicResponseData options:0 error:nil];
-    NSString *sResponseData = [[NSString alloc] initWithBytes:[dResponseData bytes]
-                                                       length:[dResponseData length]
-                                                     encoding:NSUTF8StringEncoding];
-    const char * cResponseData= [sResponseData UTF8String];
+- (response_data*) getResponseData:(AIResponseData *) adjustResponseData {
+	response_data* rd = new response_data();
 
-    //UnitySendMessage(adjustSceneName, "getNativeMessage", cResponseData);
+	rd->activityKind    = [adjustResponseData.activityKindString UTF8String];
+    rd->error           = [adjustResponseData.error UTF8String];
+    rd->success         = (bool) adjustResponseData.success;
+    rd->willRetry       = (bool) adjustResponseData.willRetry;
+    rd->trackerToken    = [adjustResponseData.trackerToken UTF8String];
+    rd->trackerName     = [adjustResponseData.trackerName UTF8String];
+    rd->network         = [adjustResponseData.network UTF8String];
+    rd->campaign        = [adjustResponseData.campaign UTF8String];
+    rd->adgroup         = [adjustResponseData.adgroup UTF8String];
+    rd->creative        = [adjustResponseData.creative UTF8String];
+
+    return rd;
+}
+
+- (void)adjustFinishedTrackingWithResponse:(AIResponseData *)responseData {
+
+	response_data* rd = [self getResponseData:responseData];
+
+    s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
+                        S3E_ADJUST_CALLBACK_ADJUST_RESPONSE_DATA,
+                        rd,
+                        sizeof(*rd));
+    delete rd;
 }
 
 @end
-*/
+
 
 NSDictionary* ConvertJsonParameters (const char* cJsonParameters)
 {
@@ -183,5 +203,10 @@ s3eResult IsEnabled_platform(bool& isEnabled_out)
 
 s3eResult SetResponseDelegate_platform(response_data_delegate delegateFn)
 {
-    return S3E_RESULT_ERROR;
+    EDK_CALLBACK_REG(ADJUST, ADJUST_RESPONSE_DATA, (s3eCallback)delegateFn, NULL, false);
+
+	adjustMarmaladeInstance = [[AdjustMarmalade_platform alloc] init];
+    [Adjust setDelegate:adjustMarmaladeInstance];
+    
+    return (s3eResult)0;
 }
