@@ -136,6 +136,8 @@ def move_android_source():
 
         shutil.copy("adjust/AdjustMarmalade.mkf","source/AdjustMarmalade.bak.mkf")
 
+        shutil.copy("adjust/interface/AdjustMarmalade_interface.cpp", "source/interface/AdjustMarmalade_interface.bak.cpp")
+
         shutil.copy("adjust/source/generic/AdjustMarmalade.cpp","source/generic/AdjustMarmalade.bak.cpp")
         shutil.copy("adjust/source/h/AdjustMarmalade_internal.h","source/h/AdjustMarmalade_internal.bak.h")
 

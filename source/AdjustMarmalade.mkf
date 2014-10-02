@@ -24,6 +24,12 @@ files
     AdjustMarmalade.defines.txt
 }
 
+#assets
+#{
+#    (data)
+#    AdjustConfig.properties
+#}
+
 defines
 {
     IW_TRACE_CHANNEL_ADJUSTMARMALADE_VERBOSE=2

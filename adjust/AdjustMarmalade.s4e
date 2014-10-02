@@ -3,10 +3,10 @@ globals
 include:
 
 #include <vector>
-typedef std::vector<std::pair<const char*, const char*> > param_type;
+typedef std::vector<std::pair<const char*, const char*> > adjust_param_type;
 
 #include <stdlib.h>
-struct response_data {
+struct adjust_response_data {
 	char* activityKind;
 	bool success;
 	bool willRetry;
@@ -19,7 +19,7 @@ struct response_data {
 	char* creative;
 };
 
-typedef void (*response_data_delegate)(response_data*);
+typedef void (*adjust_response_data_delegate)(adjust_response_data*);
 
 /**
  * @defgroup adjustSDK adjust SDK Extension API Reference
@@ -34,20 +34,20 @@ typedef void (*response_data_delegate)(response_data*);
 
 functions:
 
-s3eResult AppDidLaunch(const char* appToken, const char* environment, const char* sdkPrefix, const char* logLevel, bool eventBuffering) S3E_RESULT_ERROR
+s3eResult adjust_AppDidLaunch(const char* appToken, const char* environment, const char* logLevel, bool eventBuffering) S3E_RESULT_ERROR
 
-s3eResult TrackEvent(const char* eventToken, const param_type* params) S3E_RESULT_ERROR
+s3eResult adjust_TrackEvent(const char* eventToken, const adjust_param_type* params) S3E_RESULT_ERROR
 
-s3eResult TrackEventIphone(const char* eventToken, const char** params_array, int param_size) S3E_RESULT_ERROR
+s3eResult adjust_TrackEventIphone(const char* eventToken, const char** params_array, int param_size) S3E_RESULT_ERROR
 
-s3eResult TrackRevenue(double cents, const char* eventToken, const param_type* params) S3E_RESULT_ERROR
+s3eResult adjust_TrackRevenue(double cents, const char* eventToken, const adjust_param_type* params) S3E_RESULT_ERROR
 
-s3eResult TrackRevenueIphone(double cents, const char* eventToken, const char** params_array, int param_size) S3E_RESULT_ERROR
+s3eResult adjust_TrackRevenueIphone(double cents, const char* eventToken, const char** params_array, int param_size) S3E_RESULT_ERROR
 
-s3eResult SetEnabled(bool enabled) S3E_RESULT_ERROR
+s3eResult adjust_SetEnabled(bool enabled) S3E_RESULT_ERROR
 
-s3eResult IsEnabled(bool& isEnabled_out) S3E_RESULT_ERROR
+s3eResult adjust_IsEnabled(bool& isEnabled_out) S3E_RESULT_ERROR
 
-s3eResult SetResponseDelegate(response_data_delegate delegateFn) S3E_RESULT_ERROR
+s3eResult adjust_SetResponseDelegate(adjust_response_data_delegate delegateFn) S3E_RESULT_ERROR
 append:
 /** @} */

@@ -20,6 +20,11 @@
 #include "AdjustMarmalade_autodefs.h"
 
 #include <stdio.h>
+#include "s3e.h"
+#include "s3eEdk.h"
+#include "IwDebug.h"
+#include <string.h>
+
 
 #define S3E_DEVICE_ADJUST                   S3E_EXT_ADJUSTMARMALADE_HASH
 
@@ -58,23 +63,23 @@ void AdjustMarmaladeTerminate();
  * Platform-specific termination, implemented on each platform
  */
 void AdjustMarmaladeTerminate_platform();
-s3eResult AppDidLaunch_platform(const char* appToken, const char* environment, const char* sdkPrefix, const char* logLevel, bool eventBuffering);
+s3eResult adjust_AppDidLaunch_platform(const char* appToken, const char* environment, const char* sdkPrefix, const char* logLevel, bool eventBuffering);
 
-s3eResult TrackEvent_platform(const char* eventToken, const param_type* params);
+s3eResult adjust_TrackEvent_platform(const char* eventToken, const adjust_param_type* params);
 
-s3eResult TrackEventIphone_platform(const char* eventToken, const char** params_array, int param_size);
+s3eResult adjust_TrackEventIphone_platform(const char* eventToken, const char** params_array, int param_size);
 
-s3eResult TrackRevenue_platform(double cents, const char* eventToken, const param_type* params);
+s3eResult adjust_TrackRevenue_platform(double cents, const char* eventToken, const adjust_param_type* params);
 
-s3eResult TrackRevenueIphone_platform(double cents, const char* eventToken, const char** params_array, int param_size);
+s3eResult adjust_TrackRevenueIphone_platform(double cents, const char* eventToken, const char** params_array, int param_size);
 
-s3eResult SetEnabled_platform(bool enabled);
+s3eResult adjust_SetEnabled_platform(bool enabled);
 
-s3eResult IsEnabled_platform(bool& isEnabled_out);
+s3eResult adjust_IsEnabled_platform(bool& isEnabled_out);
 
-s3eResult SetResponseDelegate_platform(response_data_delegate delegateFn);
+s3eResult adjust_SetResponseDelegate_platform(adjust_response_data_delegate delegateFn);
 
-void CleanupResponseData_cb(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData);
+void adjust_CleanupResponseDataCallback(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData);
 
-char* CopyString(const char* source);
+char* adjust_CopyString(const char* source);
 #endif /* !ADJUSTMARMALADE_INTERNAL_H */

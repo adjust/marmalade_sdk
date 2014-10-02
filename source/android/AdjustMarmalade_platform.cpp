@@ -8,17 +8,14 @@
  */
 #include "AdjustMarmalade_internal.h"
 
-#include "s3eEdk.h"
 #include "s3eEdk_android.h"
 #include <jni.h>
-#include "IwDebug.h"
 
 #include <iostream>
 #include <sstream>
 
-#include "s3eEdk_android.h"
-#include <jni.h>
 #include "rapidjson/document.h"
+
 
 static jobject g_Obj;
 static jmethodID g_AppDidLaunch;
@@ -34,13 +31,13 @@ char* get_json_member(rapidjson::Document &jsonDoc, const char* member_name)
         return NULL;
     }
     const char * source = jsonDoc[member_name].GetString();
-    char * target = CopyString(source);
+    char * target = adjust_CopyString(source);
     return target;
 }
 
-response_data* get_response_data(const char* jsonCString)
+adjust_response_data* get_response_data(const char* jsonCString)
 {
-    response_data* rd;
+    adjust_response_data* rd;
     rapidjson::Document jsonDoc;
 
     if(jsonDoc.Parse<0>(jsonCString).HasParseError()) {
@@ -48,7 +45,7 @@ response_data* get_response_data(const char* jsonCString)
         return NULL;
     }
 
-    rd = new response_data();
+    rd = new adjust_response_data();
     
     char * success;
     success = get_json_member(jsonDoc,  "success");
@@ -78,7 +75,7 @@ void responseData_callback(JNIEnv* env, jobject obj, jstring responseDataString)
 {
     const char* responseDataCString = env->GetStringUTFChars(responseDataString, NULL);
 
-    response_data* rd = get_response_data(responseDataCString);
+    adjust_response_data* rd = get_response_data(responseDataCString);
 
     s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
                             S3E_ADJUST_CALLBACK_ADJUST_RESPONSE_DATA,
@@ -86,11 +83,11 @@ void responseData_callback(JNIEnv* env, jobject obj, jstring responseDataString)
                             sizeof(*rd),
                             NULL,
                             S3E_FALSE,
-                            &CleanupResponseData_cb,
+                            &adjust_CleanupResponseDataCallback,
                             (void*)rd);
 }
 
-jobject create_global_java_dict(const param_type *params)
+jobject create_global_java_dict(const adjust_param_type *params)
 {
     if (params == NULL) {
         return NULL;
@@ -112,7 +109,7 @@ jobject create_global_java_dict(const param_type *params)
     jmethodID put_method = env->GetMethodID(dict_cls, "put", 
         "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
 
-    for (param_type::const_iterator pos = params->begin();pos != params->end(); ++pos) {
+    for (adjust_param_type::const_iterator pos = params->begin();pos != params->end(); ++pos) {
         jstring key = env->NewStringUTF(pos->first);
         jstring value = env->NewStringUTF(pos->second);
 
@@ -203,8 +200,8 @@ void AdjustMarmaladeTerminate_platform()
     // Add any platform-specific termination code here
 }
 
-s3eResult AppDidLaunch_platform(const char* appToken, const char* environment, const char* sdkPrefix, const char* logLevel, bool eventBuffering)
-{
+s3eResult adjust_AppDidLaunch_platform(const char* appToken, const char* environment, const char* sdkPrefix, const char* logLevel, bool eventBuffering)
+{  
     // get JNI env
     JNIEnv* env = s3eEdkJNIGetEnv();
     // convert cstring's to jstring's
@@ -214,11 +211,11 @@ s3eResult AppDidLaunch_platform(const char* appToken, const char* environment, c
     jstring logLevel_jstr = env->NewStringUTF(logLevel);
     // call java track app did launch
     env->CallVoidMethod(g_Obj, g_AppDidLaunch, appToken_jstr, environment_jstr, sdkPrefix_jstr, logLevel_jstr, eventBuffering);
-    
+
     return (s3eResult)0;
 }
 
-s3eResult TrackEvent_platform(const char* eventToken, const param_type* params)
+s3eResult adjust_TrackEvent_platform(const char* eventToken, const adjust_param_type* params)
 {    
     // get JNI env
     JNIEnv* env = s3eEdkJNIGetEnv();
@@ -234,12 +231,12 @@ s3eResult TrackEvent_platform(const char* eventToken, const param_type* params)
     return (s3eResult)0;
 }
 
-s3eResult TrackEventIphone_platform(const char* eventToken, const char** params_array, int param_size)
+s3eResult adjust_TrackEventIphone_platform(const char* eventToken, const char** params_array, int param_size)
 {
     return (s3eResult)1;
 }
 
-s3eResult TrackRevenue_platform(double cents, const char* eventToken, const param_type* params)
+s3eResult adjust_TrackRevenue_platform(double cents, const char* eventToken, const adjust_param_type* params)
 {
     // get JNI env
     JNIEnv* env = s3eEdkJNIGetEnv();
@@ -255,12 +252,12 @@ s3eResult TrackRevenue_platform(double cents, const char* eventToken, const para
     return (s3eResult)0;
 }
 
-s3eResult TrackRevenueIphone_platform(double cents, const char* eventToken, const char** params_array, int param_size)
+s3eResult adjust_TrackRevenueIphone_platform(double cents, const char* eventToken, const char** params_array, int param_size)
 {
     return (s3eResult)1;    
 }
 
-s3eResult SetEnabled_platform(bool enabled)
+s3eResult adjust_SetEnabled_platform(bool enabled)
 {
     // get JNI env
     JNIEnv* env = s3eEdkJNIGetEnv();
@@ -270,7 +267,7 @@ s3eResult SetEnabled_platform(bool enabled)
     return (s3eResult)0;
 }
 
-s3eResult IsEnabled_platform(bool& isEnabled_out)
+s3eResult adjust_IsEnabled_platform(bool& isEnabled_out)
 {
     // get JNI env
     JNIEnv* env = s3eEdkJNIGetEnv();
@@ -282,7 +279,7 @@ s3eResult IsEnabled_platform(bool& isEnabled_out)
     return (s3eResult)0;
 }
 
-s3eResult SetResponseDelegate_platform(response_data_delegate delegateFn)
+s3eResult adjust_SetResponseDelegate_platform(adjust_response_data_delegate delegateFn)
 {
     JNIEnv* env = s3eEdkJNIGetEnv();
 

@@ -22,28 +22,28 @@
 /**
  * Definitions for functions types passed to/from s3eExt interface
  */
-typedef  s3eResult(*AppDidLaunch_t)(const char* appToken, const char* environment, const char* sdkPrefix, const char* logLevel, bool eventBuffering);
-typedef  s3eResult(*TrackEvent_t)(const char* eventToken, const param_type* params);
-typedef  s3eResult(*TrackEventIphone_t)(const char* eventToken, const char** params_array, int param_size);
-typedef  s3eResult(*TrackRevenue_t)(double cents, const char* eventToken, const param_type* params);
-typedef  s3eResult(*TrackRevenueIphone_t)(double cents, const char* eventToken, const char** params_array, int param_size);
-typedef  s3eResult(*SetEnabled_t)(bool enabled);
-typedef  s3eResult(*IsEnabled_t)(bool& isEnabled_out);
-typedef  s3eResult(*SetResponseDelegate_t)(response_data_delegate delegateFn);
+typedef  s3eResult(*adjust_AppDidLaunch_t)(const char* appToken, const char* environment, const char* logLevel, bool eventBuffering);
+typedef  s3eResult(*adjust_TrackEvent_t)(const char* eventToken, const adjust_param_type* params);
+typedef  s3eResult(*adjust_TrackEventIphone_t)(const char* eventToken, const char** params_array, int param_size);
+typedef  s3eResult(*adjust_TrackRevenue_t)(double cents, const char* eventToken, const adjust_param_type* params);
+typedef  s3eResult(*adjust_TrackRevenueIphone_t)(double cents, const char* eventToken, const char** params_array, int param_size);
+typedef  s3eResult(*adjust_SetEnabled_t)(bool enabled);
+typedef  s3eResult(*adjust_IsEnabled_t)(bool& isEnabled_out);
+typedef  s3eResult(*adjust_SetResponseDelegate_t)(adjust_response_data_delegate delegateFn);
 
 /**
  * struct that gets filled in by AdjustMarmaladeRegister
  */
 typedef struct AdjustMarmaladeFuncs
 {
-    AppDidLaunch_t m_AppDidLaunch;
-    TrackEvent_t m_TrackEvent;
-    TrackEventIphone_t m_TrackEventIphone;
-    TrackRevenue_t m_TrackRevenue;
-    TrackRevenueIphone_t m_TrackRevenueIphone;
-    SetEnabled_t m_SetEnabled;
-    IsEnabled_t m_IsEnabled;
-    SetResponseDelegate_t m_SetResponseDelegate;
+    adjust_AppDidLaunch_t m_adjust_AppDidLaunch;
+    adjust_TrackEvent_t m_adjust_TrackEvent;
+    adjust_TrackEventIphone_t m_adjust_TrackEventIphone;
+    adjust_TrackRevenue_t m_adjust_TrackRevenue;
+    adjust_TrackRevenueIphone_t m_adjust_TrackRevenueIphone;
+    adjust_SetEnabled_t m_adjust_SetEnabled;
+    adjust_IsEnabled_t m_adjust_IsEnabled;
+    adjust_SetResponseDelegate_t m_adjust_SetResponseDelegate;
 } AdjustMarmaladeFuncs;
 
 static AdjustMarmaladeFuncs g_Ext;
@@ -89,9 +89,9 @@ s3eBool AdjustMarmaladeAvailable()
     return g_GotExt ? S3E_TRUE : S3E_FALSE;
 }
 
-s3eResult AppDidLaunch(const char* appToken, const char* environment, const char* sdkPrefix, const char* logLevel, bool eventBuffering)
+s3eResult adjust_AppDidLaunch(const char* appToken, const char* environment, const char* logLevel, bool eventBuffering)
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[0] func: AppDidLaunch"));
+    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[0] func: adjust_AppDidLaunch"));
 
     if (!_extLoad())
         return S3E_RESULT_ERROR;
@@ -100,7 +100,7 @@ s3eResult AppDidLaunch(const char* appToken, const char* environment, const char
     s3eDeviceLoaderCallStart(S3E_TRUE, NULL);
 #endif
 
-    s3eResult ret = g_Ext.m_AppDidLaunch(appToken, environment, sdkPrefix, logLevel, eventBuffering);
+    s3eResult ret = g_Ext.m_adjust_AppDidLaunch(appToken, environment, logLevel, eventBuffering);
 
 #ifdef LOADER_CALL_LOCK
     s3eDeviceLoaderCallDone(S3E_TRUE, NULL);
@@ -109,9 +109,9 @@ s3eResult AppDidLaunch(const char* appToken, const char* environment, const char
     return ret;
 }
 
-s3eResult TrackEvent(const char* eventToken, const param_type* params)
+s3eResult adjust_TrackEvent(const char* eventToken, const adjust_param_type* params)
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[1] func: TrackEvent"));
+    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[1] func: adjust_TrackEvent"));
 
     if (!_extLoad())
         return S3E_RESULT_ERROR;
@@ -120,26 +120,25 @@ s3eResult TrackEvent(const char* eventToken, const param_type* params)
     s3eDeviceLoaderCallStart(S3E_TRUE, NULL);
 #endif
 
-    s3eResult ret = g_Ext.m_TrackEvent(eventToken, params);
+    s3eResult ret = g_Ext.m_adjust_TrackEvent(eventToken, params);
 
     if (ret == 1) {
         if (params == NULL) {
-            ret = g_Ext.m_TrackEventIphone(eventToken, NULL, 0);
+            ret = g_Ext.m_adjust_TrackEventIphone(eventToken, NULL, 0);
         } else {
-            param_type::size_type param_size = params->size();;
+            adjust_param_type::size_type param_size = params->size();;
             const char *params_array[param_size * 2];
-            for(param_type::size_type i = 0; i < param_size; i++) {
+            for(adjust_param_type::size_type i = 0; i < param_size; i++) {
                 const char * key = ((*params)[i]).first;
                 params_array[i*2 + 0] = key;
 
                 const char * value = ((*params)[i]).second;
                 params_array[i*2 + 1] = value;
             }
-            ret = g_Ext.m_TrackEventIphone(eventToken, params_array, param_size);
+            ret = g_Ext.m_adjust_TrackEventIphone(eventToken, params_array, param_size);
         }
     }
 
-
 #ifdef LOADER_CALL_LOCK
     s3eDeviceLoaderCallDone(S3E_TRUE, NULL);
 #endif
@@ -147,9 +146,9 @@ s3eResult TrackEvent(const char* eventToken, const param_type* params)
     return ret;
 }
 
-s3eResult TrackEventIphone(const char* eventToken, const char** params_array, int param_size)
+s3eResult adjust_TrackEventIphone(const char* eventToken, const char** params_array, int param_size)
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[2] func: TrackEventIphone"));
+    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[2] func: adjust_TrackEventIphone"));
 
     if (!_extLoad())
         return S3E_RESULT_ERROR;
@@ -158,7 +157,7 @@ s3eResult TrackEventIphone(const char* eventToken, const char** params_array, in
     s3eDeviceLoaderCallStart(S3E_TRUE, NULL);
 #endif
 
-    s3eResult ret = g_Ext.m_TrackEventIphone(eventToken, params_array, param_size);
+    s3eResult ret = g_Ext.m_adjust_TrackEventIphone(eventToken, params_array, param_size);
 
 #ifdef LOADER_CALL_LOCK
     s3eDeviceLoaderCallDone(S3E_TRUE, NULL);
@@ -167,9 +166,9 @@ s3eResult TrackEventIphone(const char* eventToken, const char** params_array, in
     return ret;
 }
 
-s3eResult TrackRevenue(double cents, const char* eventToken, const param_type* params)
+s3eResult adjust_TrackRevenue(double cents, const char* eventToken, const adjust_param_type* params)
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[3] func: TrackRevenue"));
+    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[3] func: adjust_TrackRevenue"));
 
     if (!_extLoad())
         return S3E_RESULT_ERROR;
@@ -178,26 +177,25 @@ s3eResult TrackRevenue(double cents, const char* eventToken, const param_type* p
     s3eDeviceLoaderCallStart(S3E_TRUE, NULL);
 #endif
 
-    s3eResult ret = g_Ext.m_TrackRevenue(cents, eventToken, params);
+    s3eResult ret = g_Ext.m_adjust_TrackRevenue(cents, eventToken, params);
 
     if (ret == 1) {
         if (params == NULL) {
-            ret = g_Ext.m_TrackRevenueIphone(cents, eventToken, NULL, 0);
+            ret = g_Ext.m_adjust_TrackRevenueIphone(cents, eventToken, NULL, 0);
         } else {
-            param_type::size_type param_size = params->size();;
+            adjust_param_type::size_type param_size = params->size();;
             const char *params_array[param_size * 2];
-            for(param_type::size_type i = 0; i < param_size; i++) {
+            for(adjust_param_type::size_type i = 0; i < param_size; i++) {
                 const char * key = ((*params)[i]).first;
                 params_array[i*2 + 0] = key;
 
                 const char * value = ((*params)[i]).second;
                 params_array[i*2 + 1] = value;
             }
-            ret = g_Ext.m_TrackRevenueIphone(cents, eventToken, params_array, param_size);
+            ret = g_Ext.m_adjust_TrackRevenueIphone(cents, eventToken, params_array, param_size);
         }
     }
 
-
 #ifdef LOADER_CALL_LOCK
     s3eDeviceLoaderCallDone(S3E_TRUE, NULL);
 #endif
@@ -205,9 +203,9 @@ s3eResult TrackRevenue(double cents, const char* eventToken, const param_type* p
     return ret;
 }
 
-s3eResult TrackRevenueIphone(double cents, const char* eventToken, const char** params_array, int param_size)
+s3eResult adjust_TrackRevenueIphone(double cents, const char* eventToken, const char** params_array, int param_size)
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[4] func: TrackRevenueIphone"));
+    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[4] func: adjust_TrackRevenueIphone"));
 
     if (!_extLoad())
         return S3E_RESULT_ERROR;
@@ -216,7 +214,7 @@ s3eResult TrackRevenueIphone(double cents, const char* eventToken, const char** 
     s3eDeviceLoaderCallStart(S3E_TRUE, NULL);
 #endif
 
-    s3eResult ret = g_Ext.m_TrackRevenueIphone(cents, eventToken, params_array, param_size);
+    s3eResult ret = g_Ext.m_adjust_TrackRevenueIphone(cents, eventToken, params_array, param_size);
 
 #ifdef LOADER_CALL_LOCK
     s3eDeviceLoaderCallDone(S3E_TRUE, NULL);
@@ -225,9 +223,9 @@ s3eResult TrackRevenueIphone(double cents, const char* eventToken, const char** 
     return ret;
 }
 
-s3eResult SetEnabled(bool enabled)
+s3eResult adjust_SetEnabled(bool enabled)
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[5] func: SetEnabled"));
+    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[5] func: adjust_SetEnabled"));
 
     if (!_extLoad())
         return S3E_RESULT_ERROR;
@@ -236,7 +234,7 @@ s3eResult SetEnabled(bool enabled)
     s3eDeviceLoaderCallStart(S3E_TRUE, NULL);
 #endif
 
-    s3eResult ret = g_Ext.m_SetEnabled(enabled);
+    s3eResult ret = g_Ext.m_adjust_SetEnabled(enabled);
 
 #ifdef LOADER_CALL_LOCK
     s3eDeviceLoaderCallDone(S3E_TRUE, NULL);
@@ -245,9 +243,9 @@ s3eResult SetEnabled(bool enabled)
     return ret;
 }
 
-s3eResult IsEnabled(bool& isEnabled_out)
+s3eResult adjust_IsEnabled(bool& isEnabled_out)
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[6] func: IsEnabled"));
+    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[6] func: adjust_IsEnabled"));
 
     if (!_extLoad())
         return S3E_RESULT_ERROR;
@@ -256,7 +254,7 @@ s3eResult IsEnabled(bool& isEnabled_out)
     s3eDeviceLoaderCallStart(S3E_TRUE, NULL);
 #endif
 
-    s3eResult ret = g_Ext.m_IsEnabled(isEnabled_out);
+    s3eResult ret = g_Ext.m_adjust_IsEnabled(isEnabled_out);
 
 #ifdef LOADER_CALL_LOCK
     s3eDeviceLoaderCallDone(S3E_TRUE, NULL);
@@ -265,9 +263,9 @@ s3eResult IsEnabled(bool& isEnabled_out)
     return ret;
 }
 
-s3eResult SetResponseDelegate(response_data_delegate delegateFn)
+s3eResult adjust_SetResponseDelegate(adjust_response_data_delegate delegateFn)
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[7] func: SetResponseDelegate"));
+    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[7] func: adjust_SetResponseDelegate"));
 
     if (!_extLoad())
         return S3E_RESULT_ERROR;
@@ -276,7 +274,7 @@ s3eResult SetResponseDelegate(response_data_delegate delegateFn)
     s3eDeviceLoaderCallStart(S3E_TRUE, NULL);
 #endif
 
-    s3eResult ret = g_Ext.m_SetResponseDelegate(delegateFn);
+    s3eResult ret = g_Ext.m_adjust_SetResponseDelegate(delegateFn);
 
 #ifdef LOADER_CALL_LOCK
     s3eDeviceLoaderCallDone(S3E_TRUE, NULL);

@@ -11,7 +11,6 @@
 #import "AdjustMarmalade_platform.h"
 #import "NSString+AIAdditions.h"
 #import "AIAdjustFactory.h"
-#include "s3eEdk.h"
 
 @implementation AdjustMarmalade_platform
 
@@ -28,12 +27,12 @@ static id<AdjustDelegate> adjustMarmaladeInstance = nil;
 	}
 
 	const char * source = [string UTF8String];
-    char * target = CopyString(source);
+    char * target = adjust_CopyString(source);
     return target;
 }
 
-- (response_data*) getResponseData:(AIResponseData *) adjustResponseData {
-	response_data* rd = new response_data();
+- (adjust_response_data*) getResponseData:(AIResponseData *) adjustResponseData {
+	adjust_response_data* rd = new adjust_response_data();
 
     rd->success         = (bool) adjustResponseData.success;
     rd->willRetry       = (bool) adjustResponseData.willRetry;
@@ -51,7 +50,7 @@ static id<AdjustDelegate> adjustMarmaladeInstance = nil;
 
 - (void)adjustFinishedTrackingWithResponse:(AIResponseData *)responseData {
 
-	response_data* rd = [self getResponseData:responseData];
+	adjust_response_data* rd = [self getResponseData:responseData];
 
     s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
                         S3E_ADJUST_CALLBACK_ADJUST_RESPONSE_DATA,
@@ -59,7 +58,7 @@ static id<AdjustDelegate> adjustMarmaladeInstance = nil;
                         sizeof(*rd),
                         NULL,
                         S3E_FALSE,
-                        &CleanupResponseData_cb,
+                        &adjust_CleanupResponseDataCallback,
                         (void*)rd);
 }
 
@@ -76,7 +75,7 @@ void AdjustMarmaladeTerminate_platform()
     // Add any platform-specific termination code here
 }
 
-s3eResult AppDidLaunch_platform(const char* appToken, const char* environment, const char* sdkPrefix, const char* logLevel, bool eventBuffering)
+s3eResult adjust_AppDidLaunch_platform(const char* appToken, const char* environment, const char* sdkPrefix, const char* logLevel, bool eventBuffering)
 {
 	NSString* sAppToken = [NSString stringWithUTF8String: appToken];
 	NSString* sEnvironment = [NSString stringWithUTF8String: environment];
@@ -86,22 +85,15 @@ s3eResult AppDidLaunch_platform(const char* appToken, const char* environment, c
 	AILogLevel eLogLevel = (AILogLevel)AILogLevelVerbose;
 	BOOL bEventBuffering = (BOOL) eventBuffering;
 
-	NSLog(@"%@, %@, %d, %d", sAppToken, sEnvironment, eLogLevel, bEventBuffering);
-
-	[Adjust appDidLaunch:sAppToken];
-	[Adjust setEnvironment:sEnvironment];
-	[Adjust setLogLevel:eLogLevel];
-	[Adjust setSdkPrefix:sSdkPrefix];
-
     return (s3eResult)0;
 }
 
-s3eResult TrackEvent_platform(const char* eventToken, const param_type* params)
+s3eResult adjust_TrackEvent_platform(const char* eventToken, const adjust_param_type* params)
 {
     return (s3eResult)1;
 }
 
-s3eResult TrackEventIphone_platform(const char* eventToken, const char** params_array, int param_size)
+s3eResult adjust_TrackEventIphone_platform(const char* eventToken, const char** params_array, int param_size)
 {
 	NSString *sEventToken = [NSString stringWithUTF8String: eventToken];
 
@@ -127,12 +119,12 @@ s3eResult TrackEventIphone_platform(const char* eventToken, const char** params_
     return (s3eResult)0;
 }
 
-s3eResult TrackRevenue_platform(double cents, const char* eventToken, const param_type* params)
+s3eResult adjust_TrackRevenue_platform(double cents, const char* eventToken, const adjust_param_type* params)
 {
     return (s3eResult)1;
 }
 
-s3eResult TrackRevenueIphone_platform(double cents, const char* eventToken, const char** params_array, int param_size)
+s3eResult adjust_TrackRevenueIphone_platform(double cents, const char* eventToken, const char** params_array, int param_size)
 {
 	// without event token and params
     if (eventToken == NULL) {
@@ -167,7 +159,7 @@ s3eResult TrackRevenueIphone_platform(double cents, const char* eventToken, cons
     return (s3eResult)0;
 }
 
-s3eResult SetEnabled_platform(bool enabled)
+s3eResult adjust_SetEnabled_platform(bool enabled)
 {
     BOOL bEnabled = (BOOL) enabled;
     [Adjust setEnabled:bEnabled];
@@ -175,7 +167,7 @@ s3eResult SetEnabled_platform(bool enabled)
     return (s3eResult)0;
 }
 
-s3eResult IsEnabled_platform(bool& isEnabled_out)
+s3eResult adjust_IsEnabled_platform(bool& isEnabled_out)
 {
     BOOL isEnabled = [Adjust isEnabled];
     isEnabled_out = (bool) isEnabled;
@@ -183,7 +175,7 @@ s3eResult IsEnabled_platform(bool& isEnabled_out)
     return (s3eResult)0;
 }
 
-s3eResult SetResponseDelegate_platform(response_data_delegate delegateFn)
+s3eResult adjust_SetResponseDelegate_platform(adjust_response_data_delegate delegateFn)
 {
     EDK_CALLBACK_REG(ADJUST, ADJUST_RESPONSE_DATA, (s3eCallback)delegateFn, NULL, false);
 
