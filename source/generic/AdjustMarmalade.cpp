@@ -56,7 +56,7 @@ char* adjust_CopyString(const char* source)
 
 s3eResult adjust_AppDidLaunch(const char* appToken, const char* environment, const char* logLevel, bool eventBuffering)
 {
-	const char* sdkPrefix = "marmaladev3.4.0";
+	const char* sdkPrefix = "marmalade3.4.0";
 	return adjust_AppDidLaunch_platform(appToken, environment, sdkPrefix, logLevel, eventBuffering);
 }
 
