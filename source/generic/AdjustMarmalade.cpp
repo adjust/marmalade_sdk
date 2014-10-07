@@ -30,14 +30,14 @@ void adjust_CleanupResponseDataCallback(uint32 extID, int32 notification, void *
 		return;
 	}
 
-	s3eFreeBase(rd->activityKind);
-	s3eFreeBase(rd->error);
-	s3eFreeBase(rd->trackerToken);
-	s3eFreeBase(rd->trackerName);
-	s3eFreeBase(rd->network);
-	s3eFreeBase(rd->campaign);
-	s3eFreeBase(rd->adgroup);
-	s3eFreeBase(rd->creative);
+	free(rd->activityKind);
+	free(rd->error);
+	free(rd->trackerToken);
+	free(rd->trackerName);
+	free(rd->network);
+	free(rd->campaign);
+	free(rd->adgroup);
+	free(rd->creative);
 
 	delete rd;
 }
@@ -48,7 +48,7 @@ char* adjust_CopyString(const char* source)
 		return NULL;
 	}
 
-	char * target = (char *) s3eMallocBase(sizeof(char) * strlen(source));
+	char * target = (char *) malloc(sizeof(char) * strlen(source));
 	strcpy(target, source);
 
 	return target;

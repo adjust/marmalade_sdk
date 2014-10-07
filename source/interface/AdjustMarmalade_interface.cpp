@@ -109,6 +109,17 @@ s3eResult adjust_AppDidLaunch(const char* appToken, const char* environment, con
     return ret;
 }
 
+void ConvertToCArray(const adjust_param_type* params, adjust_param_type::size_type param_size, const char **params_array) 
+{
+    for(adjust_param_type::size_type i = 0; i < param_size; i++) {
+        const char * key = ((*params)[i]).first;
+        params_array[i*2 + 0] = key;
+
+        const char * value = ((*params)[i]).second;
+        params_array[i*2 + 1] = value;
+    }
+}
+
 s3eResult adjust_TrackEvent(const char* eventToken, const adjust_param_type* params)
 {
     IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[1] func: adjust_TrackEvent"));
@@ -126,15 +137,9 @@ s3eResult adjust_TrackEvent(const char* eventToken, const adjust_param_type* par
         if (params == NULL) {
             ret = g_Ext.m_adjust_TrackEventIphone(eventToken, NULL, 0);
         } else {
-            adjust_param_type::size_type param_size = params->size();;
+            adjust_param_type::size_type param_size = params->size();
             const char *params_array[param_size * 2];
-            for(adjust_param_type::size_type i = 0; i < param_size; i++) {
-                const char * key = ((*params)[i]).first;
-                params_array[i*2 + 0] = key;
-
-                const char * value = ((*params)[i]).second;
-                params_array[i*2 + 1] = value;
-            }
+            ConvertToCArray(params, param_size, params_array);
             ret = g_Ext.m_adjust_TrackEventIphone(eventToken, params_array, param_size);
         }
     }
@@ -183,15 +188,9 @@ s3eResult adjust_TrackRevenue(double cents, const char* eventToken, const adjust
         if (params == NULL) {
             ret = g_Ext.m_adjust_TrackRevenueIphone(cents, eventToken, NULL, 0);
         } else {
-            adjust_param_type::size_type param_size = params->size();;
+            adjust_param_type::size_type param_size = params->size();
             const char *params_array[param_size * 2];
-            for(adjust_param_type::size_type i = 0; i < param_size; i++) {
-                const char * key = ((*params)[i]).first;
-                params_array[i*2 + 0] = key;
-
-                const char * value = ((*params)[i]).second;
-                params_array[i*2 + 1] = value;
-            }
+            ConvertToCArray(params, param_size, params_array);
             ret = g_Ext.m_adjust_TrackRevenueIphone(cents, eventToken, params_array, param_size);
         }
     }

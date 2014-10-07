@@ -25,7 +25,7 @@ static jmethodID g_setEnabled;
 static jmethodID g_isEnabled;
 static jmethodID g_SetResponseDelegate;
 
-char* get_json_member(rapidjson::Document &jsonDoc, const char* member_name)
+char* get_json_string(rapidjson::Document &jsonDoc, const char* member_name)
 {
     if (!jsonDoc.HasMember(member_name)) {
         return NULL;
@@ -33,6 +33,19 @@ char* get_json_member(rapidjson::Document &jsonDoc, const char* member_name)
     const char * source = jsonDoc[member_name].GetString();
     char * target = adjust_CopyString(source);
     return target;
+}
+
+bool get_json_bool(rapidjson::Document &jsonDoc, const char* member_name) 
+{
+    char* boolString = get_json_string(jsonDoc, member_name);
+    bool jsonBool;
+
+    if (boolString == "true") {
+        jsonBool = true;
+    }
+    free(boolString);
+
+    return jsonBool;
 }
 
 adjust_response_data* get_response_data(const char* jsonCString)
@@ -47,27 +60,16 @@ adjust_response_data* get_response_data(const char* jsonCString)
 
     rd = new adjust_response_data();
     
-    char * success;
-    success = get_json_member(jsonDoc,  "success");
-    if (success != NULL) {
-        rd->success = (success == "true"? true : false);
-        free(success);
-    }
-    char * willRetry;
-    willRetry = get_json_member(jsonDoc,  "willRetry");
-    if (willRetry != NULL) {
-        rd->willRetry = (willRetry == "true"? true : false);
-        free(willRetry);
-    }
-
-    rd->activityKind    = get_json_member(jsonDoc, "activityKind");
-    rd->error           = get_json_member(jsonDoc, "error");
-    rd->trackerToken    = get_json_member(jsonDoc, "trackerToken");
-    rd->trackerName     = get_json_member(jsonDoc, "trackerName");
-    rd->network         = get_json_member(jsonDoc, "network");
-    rd->campaign        = get_json_member(jsonDoc, "campaign");
-    rd->adgroup         = get_json_member(jsonDoc, "adgroup");
-    rd->creative        = get_json_member(jsonDoc, "creative");
+    rd->success         = get_json_bool(jsonDoc,  "success");
+    rd->willRetry       = get_json_bool(jsonDoc,  "willRetry");
+    rd->activityKind    = get_json_string(jsonDoc, "activityKind");
+    rd->error           = get_json_string(jsonDoc, "error");
+    rd->trackerToken    = get_json_string(jsonDoc, "trackerToken");
+    rd->trackerName     = get_json_string(jsonDoc, "trackerName");
+    rd->network         = get_json_string(jsonDoc, "network");
+    rd->campaign        = get_json_string(jsonDoc, "campaign");
+    rd->adgroup         = get_json_string(jsonDoc, "adgroup");
+    rd->creative        = get_json_string(jsonDoc, "creative");
     return rd;
 }
 
@@ -129,7 +131,7 @@ s3eResult AdjustMarmaladeInit_platform()
     const JNINativeMethod methods[] =
     {
         {"responseDataCallback","(Ljava/lang/String;)V",(void*)&responseData_callback}
-    };;
+    };
 
     // Get the extension class
     jclass cls = s3eEdkAndroidFindClass("AdjustMarmalade");

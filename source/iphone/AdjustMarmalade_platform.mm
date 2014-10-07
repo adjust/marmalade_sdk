@@ -62,6 +62,25 @@ static id<AdjustDelegate> adjustMarmaladeInstance = nil;
                         (void*)rd);
 }
 
++ (NSDictionary*) ConvertToNSDictionary:(const char**) params_array param_size:(int) param_size {
+    if (param_size == 0) {
+        return nil;
+    }
+    NSMutableDictionary *params_mutable_nsdictionary = [[NSMutableDictionary alloc] initWithCapacity:param_size];
+
+    for (int i = 0; i < param_size; i++) {
+        const char* keyCstring = params_array[i*2 + 0];
+        const char* valueCstring = params_array[i*2 + 1];
+        NSString* key = [NSString stringWithUTF8String: keyCstring];
+        NSString* value = [NSString stringWithUTF8String: valueCstring];
+        
+        [params_mutable_nsdictionary setObject:value forKey:key];
+    }
+
+    NSDictionary * params_nsdictionary = (NSDictionary *) params_mutable_nsdictionary;
+    return params_nsdictionary;
+}
+
 @end
 
 s3eResult AdjustMarmaladeInit_platform()
@@ -85,6 +104,11 @@ s3eResult adjust_AppDidLaunch_platform(const char* appToken, const char* environ
 	AILogLevel eLogLevel = (AILogLevel)AILogLevelVerbose;
 	BOOL bEventBuffering = (BOOL) eventBuffering;
 
+    [Adjust appDidLaunch:sAppToken];
+    [Adjust setEnvironment:sEnvironment];
+    [Adjust setLogLevel:eLogLevel];
+    [Adjust setSdkPrefix:sSdkPrefix];
+
     return (s3eResult)0;
 }
 
@@ -100,19 +124,9 @@ s3eResult adjust_TrackEventIphone_platform(const char* eventToken, const char** 
 	if (param_size == 0) {
 		[Adjust trackEvent:sEventToken];
 		return (s3eResult)0;
-	} 
-	NSMutableDictionary *params_mutable_nsdictionary = [[NSMutableDictionary alloc] initWithCapacity:param_size];
-
-	for (int i = 0; i < param_size; i++) {
-		const char* keyCstring = params_array[i*2 + 0];
-		const char* valueCstring = params_array[i*2 + 1];
-		NSString* key = [NSString stringWithUTF8String: keyCstring];
-		NSString* value = [NSString stringWithUTF8String: valueCstring];
-		
-		[params_mutable_nsdictionary setObject:value forKey:key];
 	}
 
-	NSDictionary * params_nsdictionary = (NSDictionary *) params_mutable_nsdictionary;
+	NSDictionary * params_nsdictionary = [AdjustMarmalade_platform ConvertToNSDictionary:params_array param_size:param_size];
 
     [Adjust trackEvent:sEventToken withParameters:params_nsdictionary];
 
@@ -141,18 +155,7 @@ s3eResult adjust_TrackRevenueIphone_platform(double cents, const char* eventToke
 	}
 
 	// with both event token and params
-	NSMutableDictionary *params_mutable_nsdictionary = [[NSMutableDictionary alloc] initWithCapacity:param_size];
-
-	for (int i = 0; i < param_size; i++) {
-		const char* keyCstring = params_array[i*2 + 0];
-		const char* valueCstring = params_array[i*2 + 1];
-		NSString* key = [NSString stringWithUTF8String: keyCstring];
-		NSString* value = [NSString stringWithUTF8String: valueCstring];
-		
-		[params_mutable_nsdictionary setObject:value forKey:key];
-	}
-
-	NSDictionary * params_nsdictionary = (NSDictionary *) params_mutable_nsdictionary;
+    NSDictionary * params_nsdictionary = [AdjustMarmalade_platform ConvertToNSDictionary:params_array param_size:param_size];
 
     [Adjust trackRevenue:cents forEvent:sEventToken withParameters:params_nsdictionary];
 
