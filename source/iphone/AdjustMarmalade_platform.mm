@@ -23,21 +23,21 @@ static id<AdjustDelegate> adjustMarmaladeInstance = nil;
 }
 
 - (char *) convertString:(NSString *)string {
-	if (string == nil) {
-		return NULL;
-	}
+    if (string == nil) {
+        return NULL;
+    }
 
-	const char * source = [string UTF8String];
+    const char * source = [string UTF8String];
     char * target = adjust_CopyString(source);
     return target;
 }
 
 - (adjust_response_data*) getResponseData:(AIResponseData *) adjustResponseData {
-	adjust_response_data* rd = new adjust_response_data();
+    adjust_response_data* rd = new adjust_response_data();
 
     rd->success         = (bool) adjustResponseData.success;
     rd->willRetry       = (bool) adjustResponseData.willRetry;
-	rd->activityKind    = [self convertString:adjustResponseData.activityKindString];
+    rd->activityKind    = [self convertString:adjustResponseData.activityKindString];
     rd->error           = [self convertString:adjustResponseData.error ];
     rd->trackerToken    = [self convertString:adjustResponseData.trackerToken];
     rd->trackerName     = [self convertString:adjustResponseData.trackerName];
@@ -51,7 +51,7 @@ static id<AdjustDelegate> adjustMarmaladeInstance = nil;
 
 - (void)adjustFinishedTrackingWithResponse:(AIResponseData *)responseData {
 
-	adjust_response_data* rd = [self getResponseData:responseData];
+    adjust_response_data* rd = [self getResponseData:responseData];
 
     s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
                         S3E_ADJUST_CALLBACK_ADJUST_RESPONSE_DATA,
@@ -97,11 +97,11 @@ void AdjustMarmaladeTerminate_platform()
 
 s3eResult adjust_AppDidLaunch_platform(const char* appToken, const char* environment, const char* sdkPrefix, const char* logLevel, bool eventBuffering)
 {
-	NSString* sAppToken = [NSString stringWithUTF8String: appToken];
-	NSString* sEnvironment = [NSString stringWithUTF8String: environment];
-	NSString* sSdkPrefix = [NSString stringWithUTF8String: sdkPrefix];
-    AILogLevel eLogLevel = [AILogger LogLevelFromString:[NSString stringWithUTF8String: logLevel]];
-	BOOL bEventBuffering = (BOOL) eventBuffering;
+    NSString* sAppToken = [NSString stringWithUTF8String:appToken];
+    NSString* sEnvironment = [NSString stringWithUTF8String:environment];
+    NSString* sSdkPrefix = [NSString stringWithUTF8String:sdkPrefix];
+    AILogLevel eLogLevel = [AILogger LogLevelFromString:[NSString stringWithUTF8String:logLevel]];
+    BOOL bEventBuffering = (BOOL) eventBuffering;
 
     [Adjust appDidLaunch:sAppToken];
     [Adjust setEnvironment:sEnvironment];
@@ -118,14 +118,14 @@ s3eResult adjust_TrackEvent_platform(const char* eventToken, const adjust_param_
 
 s3eResult adjust_TrackEventIphone_platform(const char* eventToken, const char** params_array, int param_size)
 {
-	NSString *sEventToken = [NSString stringWithUTF8String: eventToken];
+    NSString *sEventToken = [NSString stringWithUTF8String: eventToken];
 
-	if (param_size == 0) {
-		[Adjust trackEvent:sEventToken];
-		return (s3eResult)0;
-	}
+    if (param_size == 0) {
+        [Adjust trackEvent:sEventToken];
+        return (s3eResult)0;
+    }
 
-	NSDictionary * params_nsdictionary = [AdjustMarmalade_platform ConvertToNSDictionary:params_array param_size:param_size];
+    NSDictionary * params_nsdictionary = [AdjustMarmalade_platform ConvertToNSDictionary:params_array param_size:param_size];
 
     [Adjust trackEvent:sEventToken withParameters:params_nsdictionary];
 
@@ -139,10 +139,10 @@ s3eResult adjust_TrackRevenue_platform(double cents, const char* eventToken, con
 
 s3eResult adjust_TrackRevenueIphone_platform(double cents, const char* eventToken, const char** params_array, int param_size)
 {
-	// without event token and params
+    // without event token and params
     if (eventToken == NULL) {
         [Adjust trackRevenue:cents];
-    	return (s3eResult)0;
+        return (s3eResult)0;
     }
 
     NSString *sEventToken = [NSString stringWithUTF8String: eventToken];
@@ -150,10 +150,10 @@ s3eResult adjust_TrackRevenueIphone_platform(double cents, const char* eventToke
     // with event token, but without params
     if (params_array == NULL) {
         [Adjust trackRevenue:cents forEvent:sEventToken];
-    	return (s3eResult)0;
-	}
+        return (s3eResult)0;
+    }
 
-	// with both event token and params
+    // with both event token and params
     NSDictionary * params_nsdictionary = [AdjustMarmalade_platform ConvertToNSDictionary:params_array param_size:param_size];
 
     [Adjust trackRevenue:cents forEvent:sEventToken withParameters:params_nsdictionary];
@@ -181,7 +181,7 @@ s3eResult adjust_SetResponseDelegate_platform(adjust_response_data_delegate dele
 {
     EDK_CALLBACK_REG(ADJUST, ADJUST_RESPONSE_DATA, (s3eCallback)delegateFn, NULL, false);
 
-	adjustMarmaladeInstance = [[AdjustMarmalade_platform alloc] init];
+    adjustMarmaladeInstance = [[AdjustMarmalade_platform alloc] init];
     [Adjust setDelegate:adjustMarmaladeInstance];
     
     return (s3eResult)0;
