@@ -11,6 +11,7 @@
 #import "AdjustMarmalade_platform.h"
 #import "NSString+AIAdditions.h"
 #import "AIAdjustFactory.h"
+#import "AILogger.h"
 
 @implementation AdjustMarmalade_platform
 
@@ -99,9 +100,7 @@ s3eResult adjust_AppDidLaunch_platform(const char* appToken, const char* environ
 	NSString* sAppToken = [NSString stringWithUTF8String: appToken];
 	NSString* sEnvironment = [NSString stringWithUTF8String: environment];
 	NSString* sSdkPrefix = [NSString stringWithUTF8String: sdkPrefix];
-	//AILogLevel eLogLevel = (AILogLevel)logLevel;
-	// TODO parse log level
-	AILogLevel eLogLevel = (AILogLevel)AILogLevelVerbose;
+    AILogLevel eLogLevel = [AILogger LogLevelFromString:[NSString stringWithUTF8String: logLevel]];
 	BOOL bEventBuffering = (BOOL) eventBuffering;
 
     [Adjust appDidLaunch:sAppToken];
