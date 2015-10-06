@@ -164,10 +164,3 @@ pip-log.txt
 
 # bak files
 *.bak*
-
-#############
-## rapidjson
-#############
-source/rapidjson/doc
-source/rapidjson/example
-source/rapidjson/README.md
