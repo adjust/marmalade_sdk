@@ -181,7 +181,7 @@ def move_android_source():
         shutil.copy("source/android/AdjustMarmalade.java", "adjust/source/android")
         shutil.copy("source/android/AdjustMarmalade_platform.cpp", "adjust/source/android")
 
-        shutil.copytree("source/rapidjson/source", "adjust/rapidjson/source")
+        shutil.copytree("source/rapidjson/include", "adjust/rapidjson/include")
         shutil.copy("source/rapidjson/rapidjson.mkf", "adjust/rapidjson/rapidjson.mkf")
         copytree("source/sdk/Android", "adjust/sdk/Android");
 
@@ -208,7 +208,7 @@ def move_iphone_source():
         shutil.copy("source/iphone/AdjustMarmalade_platform.h", "adjust/source/iphone")
         shutil.copy("source/iphone/AdjustMarmalade_platform.mm", "adjust/source/iphone")
 
-        shutil.copytree("source/rapidjson/source", "adjust/rapidjson/source")
+        shutil.copytree("source/rapidjson/include", "adjust/rapidjson/include")
         shutil.copy("source/rapidjson/rapidjson.mkf", "adjust/rapidjson/rapidjson.mkf")
         copytree("source/sdk/iOS", "adjust/sdk/iOS");
 
