@@ -1,0 +1,24 @@
+#!/usr/bin/env mkb
+
+subproject ../adjust/AdjustMarmalade
+
+files
+{
+    HelloAdjust.cpp
+}
+
+subprojects
+{
+    iwutil
+    iwnui
+    s3eGooglePlayServices
+}
+
+deployment
+{
+    iphone-bundle-url-name = com.ideaworks3d.HelloAdjust
+    iphone-bundle-url-schemes = adjustExample
+    android-extra-strings='(gps_app_id,com.ideaworks3d.HelloAdjust)'
+    android-external-jars=jar/HelloAdjust.jar
+    android-custom-activity="com.adjust.HelloAdjust.HelloAdjust"
+}
