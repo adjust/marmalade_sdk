@@ -5,7 +5,7 @@
 [submodule "ext/Android/sdk"]
 	path = ext/Android/sdk
 	url = git@github.com:adjust/android_sdk.git
-	branch = master
+	branch = marmalade
 [submodule "source/rapidjson"]
 	path = source/rapidjson
 	url = git@github.com:damucz/rapidjson.git
