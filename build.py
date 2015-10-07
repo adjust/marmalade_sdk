@@ -28,7 +28,7 @@ def main():
     parsed_args = parser.parse_args()
     
     with open('adjust/AdjustBuildLog.txt','w') as fileLog:
-        # Log function with file injected
+        # Log function with file injected.
         global Log
         Log = LogInput(fileLog)
         if parsed_args.post_compile:
@@ -67,16 +67,13 @@ def clean():
         break
 
 def build_android():
-    edk_build = Popen(["edk-build", "adjust/AdjustMarmalade.s4e", "--platform=android"],
-            stdout=PIPE, stderr=PIPE)
+    edk_build = Popen(["edk-build", "adjust/AdjustMarmalade.s4e", "--platform=android"], stdout=PIPE, stderr=PIPE)
     out, err = edk_build.communicate()
 
     Log("edk-build android out: {0}".format(out))
     if (edk_build.returncode not in [0]):
         print("edk-build android code: {0}, err: {1}".format(
             edk_build.returncode, err))
-
-    #copy_android()
     
     edit_android_mkb()
     edit_android_java_mkb()
@@ -86,8 +83,7 @@ def build_android():
     #edit_mkf("android")
 
 def build_iphone():
-    edk_build = Popen(["edk-build", "adjust/AdjustMarmalade.s4e", "--platform=iphone"],
-            stdout=PIPE, stderr=PIPE)
+    edk_build = Popen(["edk-build", "adjust/AdjustMarmalade.s4e", "--platform=iphone"], stdout=PIPE, stderr=PIPE)
     out, err = edk_build.communicate()
 
     Log("edk-build iphone out: {0}".format(out))
@@ -102,8 +98,7 @@ def build_iphone():
     #edit_build_iphone_mkf()
 
 def compile_android():
-    mkb_android_java = Popen(["mkb", "adjust/AdjustMarmalade_android_java.mkb"],
-            stdout=PIPE, stderr=PIPE)
+    mkb_android_java = Popen(["mkb", "adjust/AdjustMarmalade_android_java.mkb"], stdout=PIPE, stderr=PIPE)
     out, err = mkb_android_java.communicate()
 
     Log("mkb android java out: {0}".format(out))
@@ -111,8 +106,7 @@ def compile_android():
         print("mkb android java code: {0}, err: {1}".format(
             mkb_android_java.returncode, err))
 
-    mkb_android = Popen(["mkb", "adjust/AdjustMarmalade_android.mkb"],
-            stdout=PIPE, stderr=PIPE)
+    mkb_android = Popen(["mkb", "adjust/AdjustMarmalade_android.mkb"], stdout=PIPE, stderr=PIPE)
     out, err = mkb_android.communicate()
 
     Log("mkb android out: {0}".format(out))
@@ -217,11 +211,6 @@ def move_iphone_source():
 def post_compile():
     shutil.copy("source/interface/AdjustMarmalade_interface.cpp", "adjust/interface/AdjustMarmalade_interface.cpp")
 
-def copy_android():
-    os.makedirs("adjust/incoming")
-    shutil.copy("android_libs/adjust.jar", "adjust/incoming/")
-    Log("Copied jar libs")
-
 def edit_android_mkb():
     mkb_filename = "adjust/AdjustMarmalade_android.mkb"
 
@@ -287,22 +276,22 @@ def edit_xcode_project(xcode_project_path):
     framework_path = xcode_sdk_path + "/System/Library/Frameworks/"
     Log("Framework path: {0}", framework_path)
 
-    # load iOS pbxproj project file
+    # Load iOS pbxproj project file.
     ios_XcodeProject = XcodeProject.Load(xcode_project_path)
     
-    # add adSupport framework
-    ios_XcodeProject.add_file_if_doesnt_exist(framework_path + "AdSupport.framework", tree="SDKROOT", create_build_files=True,weak=True)
+    # Add adSupport framework.
+    ios_XcodeProject.add_file_if_doesnt_exist(framework_path + "AdSupport.framework", tree="SDKROOT", create_build_files=True, weak=True)
     Log("Added adSupport framework")
 
-    # add iAd framework
-    ios_XcodeProject.add_file_if_doesnt_exist(framework_path + "iAd.framework", tree="SDKROOT", create_build_files=True,weak=True)
+    # Add iAd framework.
+    ios_XcodeProject.add_file_if_doesnt_exist(framework_path + "iAd.framework", tree="SDKROOT", create_build_files=True, weak=True)
     Log("Added iAd framework")
 
-    # add Adjust framework
+    # Add Adjust framework.
     adjust_framework_path = os.path.dirname(os.path.abspath(__file__)) + "/adjust/sdk/ios/"
-    ios_XcodeProject.add_file_if_doesnt_exist(adjust_framework_path + "Adjust.framework", tree="SDKROOT", create_build_files=True,weak=True)
+    ios_XcodeProject.add_file_if_doesnt_exist(adjust_framework_path + "Adjust.framework", tree="SDKROOT", create_build_files=True, weak=True)
 
-    # save changes
+    # Save changes.
     ios_XcodeProject.saveFormat3_2()
 
 if __name__ == "__main__":
