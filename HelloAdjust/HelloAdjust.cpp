@@ -20,8 +20,12 @@ static void trace_attribution_data(adjust_attribution_data* response)
 void initializeSDK() 
 {
     // Initialize adjust SDK
-    adjust_config* config = new adjust_config("{YourAppToken}", "sandbox");
-    config->set_log_level("verbose");
+    const char* app_token = "YourAppToken";
+    const char* environment = "sandbox";
+    const char* log_level = "verbose";
+
+    adjust_config* config = new adjust_config(app_token, environment);
+    config->set_log_level(log_level);
 
     adjust_SetAttributionCallback(trace_attribution_data);
 
