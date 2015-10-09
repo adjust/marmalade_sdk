@@ -3,6 +3,11 @@
 This is the Marmalade SDK of adjust™. You can read more about adjust™ at
 adjust.com.
 
+## Example app
+
+There is an example app inside the [`HelloAdjust` directory][example-app]. 
+You can try an example app to see how the adjust SDK can be integrated.
+
 ## Basic Installation
 
 These are the minimal steps required to integrate the adjust SDK into your
@@ -41,7 +46,7 @@ int main()
 
     adjust_Start(config);
 
-  // ...
+    // ...
 }
 ```
 
@@ -92,8 +97,8 @@ to uniquely identify devices. To allow the  adjust SDK to use the Google Adverti
 you must integrate the [Google Play Services][google_play_services].
 
 In order to add Google Play Services to your Marmalade app, you should edit your app's
-`mkb` file and add `s3eGooglePlayServices` in `subprojects` list. In addition to this,
-you should add following line to `deployment` list of your `mkb` file:
+`.mkb` file and add `s3eGooglePlayServices` in `subprojects` list. In addition to this,
+you should add following line to `deployment` list of your `.mkb` file:
 
 ```
 android-extra-strings='(gps_app_id,your.app.package)'
@@ -310,7 +315,7 @@ without need to set anything in your app source code.
 #### iOS
 
 In order to set scheme name for your iOS app, you should add the following lines to `deployment`
-list of your app's `mkb` file:
+list of your app's `.mkb` file:
 
 ```
 iphone-bundle-url-name = your.app.package
@@ -414,6 +419,7 @@ the SDK is in online mode whenever it is started, even if the app was terminated
 
 [adjust.com]: http://adjust.com
 [dashboard]: http://adjust.com
+[example-app]: https://github.com/adjust/marmalade_sdk/tree/master/HelloAdjust
 [releases]: https://github.com/adjust/marmalade_sdk/releases
 [android-permissions]: https://github.com/adjust/android_sdk#5-add-permissions
 [brodcast-android]: https://github.com/adjust/android_sdk#6-add-broadcast-receiver
