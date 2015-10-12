@@ -6,7 +6,7 @@ adjust.com.
 ## Example app
 
 There is an example app inside the [`HelloAdjust` directory][example-app]. 
-You can try an example app to see how the adjust SDK can be integrated.
+You can use the example app to see how the adjust SDK can be integrated.
 
 ## Basic Installation
 
@@ -50,7 +50,7 @@ int main()
 }
 ```
 
-Replace `{YourAppToken}` with your app token. You can find in your [dashboard].
+Replace `{YourAppToken}` with your app token. You can this find in your [dashboard].
 
 Depending on whether you build your app for testing or for production, you must 
 set `environment` with one of these values:
@@ -92,8 +92,8 @@ You can find the needed [permissions][android-permissions] and how to add
 
 ### 5. Add Google Play Services
 
-Since 1st August 2014, all apps in the Google Play Store must use the [Google Advertising ID][google_ad_id] 
-to uniquely identify devices. To allow the  adjust SDK to use the Google Advertising ID, 
+Since 1 August 2014, all apps in the Google Play Store must use the [Google Advertising ID][google_ad_id] 
+to uniquely identify devices. To allow the adjust SDK to use the Google Advertising ID, 
 you must integrate the [Google Play Services][google_play_services].
 
 In order to add Google Play Services to your Marmalade app, you should edit your app's
@@ -139,10 +139,10 @@ adjust_event* event = new adjust_event("abc123");
 adjust_TrackEvent(event);
 ```
 
-### 7. Add tracking of revenue
+### 7. Add revenue tracking
 
 If your users can generate revenue by tapping on advertisements or making in-app 
-purchases, then you can track those revenues with events. Lets say a tap is worth 
+purchases, then you can track those revenues with events. Let's say a tap is worth 
 €0.01. You could track the revenue event like this:
 
 ```cpp
@@ -159,7 +159,7 @@ adjust_TrackEvent(event);
 You can also add an optional transaction ID to avoid tracking duplicate revenues. 
 The last ten transaction IDs are remembered, and revenue events with duplicate 
 transaction IDs are skipped. This is especially useful for in-app purchase tracking. 
-See an example below.
+You can see an example below.
 
 If you want to track in-app purchases, please make sure to call `adjust_TrackEvent` 
 only if the transaction is finished and item is purchased. That way you can avoid 
@@ -192,7 +192,7 @@ adjust_TrackEvent(event);
 
 ### 8. Add callback parameters
 
-You can also register a callback URL for that event in your [dashboard] and we will 
+You can also register a callback URL for that event in your [dashboard][dashboard] and we will 
 send a GET request to that URL whenever the event gets tracked. In that case you can 
 also put some key-value-pairs in an object and pass it to the `adjust_TrackEvent` method. 
 We will then append these named parameters to your callback URL.
@@ -246,7 +246,7 @@ You can read more about special partners and these integrations in our
 ### 10. Receive attribution change callback
 
 You can register a callback to be notified of tracker attribution changes. Due to the 
-different sources considered for attribution, this information can not by provided 
+different sources considered for attribution, this information cannot by provided 
 synchronously. Follow these steps to implement the optional callback in your application:
 
 1. Create void method which receives parameter of type `adjust_attribution_data*`.
@@ -306,7 +306,7 @@ Please make sure to consider [applicable attribution data policies.][attribution
 
 ### 11. Set up deep link reattributions
 
-You can set up the adjust SDK to handle deep links that are used to open your app. 
+You can set up the adjust SDK to handle any deep links used to open your app. 
 We will only read certain, adjust-specific parameters. This is essential if you are 
 planning to run retargeting or re-engagement campaigns with deep links. The only thing 
 you need to do is to properly set your app schema name for iOS and Android platform. By 
@@ -413,7 +413,7 @@ adjust_SetOfflineMode(true);
 
 Conversely, you can deactivate offline mode by calling `adjust_SetOfflineMode` with `false`. 
 When the adjust SDK is put back in online mode, all saved information is sent to our servers 
-with the correct timstamps.
+with the correct timestamps.
 
 Unlike disabling tracking, this setting is *not remembered* between sessions. This means that 
 the SDK is in online mode whenever it is started, even if the app was terminated in offline mode.
