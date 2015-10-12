@@ -37,7 +37,7 @@ In the `main` function, initialize `adjust_config` structure and call the functi
 
 int main()
 {
-    const char* app_token = "YourAppToken";
+    const char* app_token = "{YourAppToken}";
     const char* environment = "sandbox";
     const char* log_level = "verbose";
 
@@ -50,7 +50,7 @@ int main()
 }
 ```
 
-Replace `YourAppToken` with your app token. You can find in your [dashboard].
+Replace `{YourAppToken}` with your app token. You can find in your [dashboard].
 
 Depending on whether you build your app for testing or for production, you must 
 set `environment` with one of these values:
