@@ -154,7 +154,7 @@ adjust_TrackEvent(event);
 
 #### iOS
 
-##### <a id="deduplication"></a> Revenue deduplication
+##### <a id="deduplication"></a>Revenue deduplication
 
 You can also add an optional transaction ID to avoid tracking duplicate revenues. 
 The last ten transaction IDs are remembered, and revenue events with duplicate 
@@ -273,6 +273,7 @@ Here is a quick summary of its properties:
 
 static void trace_attribution_data(adjust_attribution_data* attribution) 
 {
+    // Printing all attribution properties
     IwTrace(ADJUSTMARMALADE, ("Attribution changed!"));
     IwTrace(ADJUSTMARMALADE, (attribution->tracker_token));
     IwTrace(ADJUSTMARMALADE, (attribution->tracker_name));
@@ -287,7 +288,7 @@ static void trace_attribution_data(adjust_attribution_data* attribution)
 
 int main()
 {
-    const char* app_token = "YourAppToken";
+    const char* app_token = "{YourAppToken}";
     const char* environment = "sandbox";
     const char* log_level = "verbose";
 
