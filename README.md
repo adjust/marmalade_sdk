@@ -251,7 +251,7 @@ synchronously. Follow these steps to implement the optional callback in your app
 
 1. Create void method which receives parameter of type `adjust_attribution_data*`.
 
-2. After creating instance of `adjust_config`, call the `adjust_SetAttributionCallback`
+2. After creating instance of `adjust_config`, call its `set_attribution_callback` method
 with the previously created method as parameter.
 
 The callback function will get called when the SDK receives final attribution data. 
@@ -294,8 +294,8 @@ int main()
 
     adjust_config* config = new adjust_config(app_token, environment);
     config->set_log_level(log_level);
-
-    adjust_SetAttributionCallback(trace_attribution_data);
+    config->set_attribution_callback(trace_attribution_data);
+    
     adjust_Start(config);
 
     // ...
