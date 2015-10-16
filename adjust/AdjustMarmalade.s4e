@@ -19,106 +19,42 @@ struct adjust_attribution_data {
 
 typedef void (*adjust_attribution_delegate)(adjust_attribution_data*);
 
-struct adjust_config {
-    const char* app_token;
-    const char* log_level;
-    const char* environment;
-    const char* process_name;
-    const char* default_tracker;
-    const char* sdk_prefix;
-    bool is_event_buffering_enabled;
-    bool is_mac_md5_tracking_enabled;
-
-    adjust_config() {
-        app_token = NULL;
-        log_level = NULL;
-        environment = NULL;
-        process_name = NULL;
-        default_tracker = NULL;
-        sdk_prefix = NULL;
-        is_event_buffering_enabled = false;
-        is_mac_md5_tracking_enabled = false;
-    }
-
-    adjust_config(const char* p_app_token, const char* p_environment) {
-        app_token = p_app_token;
-        environment = p_environment;
-        log_level = NULL;
-        process_name = NULL;
-        default_tracker = NULL;
-        sdk_prefix = NULL;
-        is_event_buffering_enabled = false;
-        is_mac_md5_tracking_enabled = false;
-    }
-
-    void set_log_level(const char* p_log_level) {
-        log_level = p_log_level;
-    }
-
-    void set_default_tracker(const char* p_default_tracker) {
-        default_tracker = p_default_tracker;
-    }
-
-    void set_process_name(const char* p_process_name) {
-        process_name = p_process_name;
-    }
-
-    void set_event_buffering_enabled(bool is_enabled) {
-        is_event_buffering_enabled = is_enabled;
-    }
-
-    void set_mac_md5_tracking_enabled(bool is_enabled) {
-        is_mac_md5_tracking_enabled = is_enabled;
-    }
-
-    void set_sdk_prefix(const char* p_sdk_prefix) {
-        sdk_prefix = p_sdk_prefix;
-    }
-};
-
 struct adjust_event {
+    double* revenue;
+    bool* is_receipt_set;
     const char* event_token;
     const char* currency;
     const char* transaction_id;
     const char* receipt;
-    double revenue;
     adjust_param_type* callback_params;
     adjust_param_type* partner_params;
-    bool is_receipt_set;
 
     adjust_event() {
+        revenue = NULL;
+        is_receipt_set = NULL;
         event_token = NULL;
         currency = NULL;
         transaction_id = NULL;
         receipt = NULL;
         callback_params = new adjust_param_type();
         partner_params = new adjust_param_type();
-        revenue = -1;
-        is_receipt_set = false;
     }
 
     adjust_event(const char* p_event_token) {
+        revenue = NULL;
+        is_receipt_set = NULL;
         event_token = p_event_token;
         currency = NULL;
         transaction_id = NULL;
         receipt = NULL;
         callback_params = new adjust_param_type();
         partner_params = new adjust_param_type();
-        revenue = -1;
-        is_receipt_set = false;
     }
 
     void set_revenue(double p_revenue, const char* p_currency) {
-        revenue = p_revenue;
+        revenue = new double();
+        *revenue = p_revenue;
         currency = p_currency;
-    }
-
-    void add_callback_parameter(const char* key, const char* value) {
-        callback_params->push_back(std::make_pair(key, value));
-    }
-
-    void add_partner_parameter(const char* key, const char* value) {
-        partner_params->push_back(std::make_pair(key, value));
     }
 
     void set_transaction_id(const char* p_transaction_id) {
@@ -128,7 +64,85 @@ struct adjust_event {
     void set_receipt(const char* p_receipt, const char* p_transaction_id) {
         receipt = p_receipt;
         transaction_id = p_transaction_id;
-        is_receipt_set = true;
+        is_receipt_set = new bool();
+        *is_receipt_set = true;
+    }
+
+    void add_callback_parameter(const char* key, const char* value) {
+        callback_params->push_back(std::make_pair(key, value));
+    }
+
+    void add_partner_parameter(const char* key, const char* value) {
+        partner_params->push_back(std::make_pair(key, value));
+    }
+};
+
+struct adjust_config {
+    const char* app_token;
+    const char* environment;
+    const char* log_level;
+    const char* process_name;
+    const char* default_tracker;
+    const char* sdk_prefix;
+    bool* is_event_buffering_enabled;
+    bool* is_mac_md5_tracking_enabled;
+    bool* is_attribution_delegate_set;
+    adjust_attribution_delegate attribution_callback;
+
+    adjust_config() {
+        app_token = NULL;
+        environment = NULL;
+        log_level = NULL;
+        process_name = NULL;
+        default_tracker = NULL;
+        sdk_prefix = NULL;
+        is_event_buffering_enabled = NULL;
+        is_mac_md5_tracking_enabled = NULL;
+        is_attribution_delegate_set = NULL;
+    }
+
+    adjust_config(const char* p_app_token, const char* p_environment) {
+        app_token = p_app_token;
+        environment = p_environment;
+        log_level = NULL;
+        process_name = NULL;
+        default_tracker = NULL;
+        sdk_prefix = NULL;
+        is_event_buffering_enabled = NULL;
+        is_mac_md5_tracking_enabled = NULL;
+        is_attribution_delegate_set = NULL;
+    }
+
+    void set_log_level(const char* p_log_level) {
+        log_level = p_log_level;
+    }
+
+    void set_process_name(const char* p_process_name) {
+        process_name = p_process_name;
+    }
+
+    void set_default_tracker(const char* p_default_tracker) {
+        default_tracker = p_default_tracker;
+    }
+
+    void set_sdk_prefix(const char* p_sdk_prefix) {
+        sdk_prefix = p_sdk_prefix;
+    }
+
+    void set_event_buffering_enabled(bool is_enabled) {
+        is_event_buffering_enabled = new bool();
+        *is_event_buffering_enabled = is_enabled;
+    }
+
+    void set_mac_md5_tracking_enabled(bool is_enabled) {
+        is_mac_md5_tracking_enabled = new bool();
+        *is_mac_md5_tracking_enabled = is_enabled;
+    }
+
+    void set_attribution_callback(adjust_attribution_delegate p_attribution_callback) {
+        attribution_callback = p_attribution_callback;
+        is_attribution_delegate_set = new bool();
+        *is_attribution_delegate_set = true;
     }
 };
   
@@ -142,5 +156,3 @@ s3eResult adjust_OnPause() S3E_RESULT_ERROR
 s3eResult adjust_OnResume() S3E_RESULT_ERROR
 s3eResult adjust_SetReferrer(const char* referrer) S3E_RESULT_ERROR
 s3eResult adjust_SetDeviceToken(const char* device_token) S3E_RESULT_ERROR
-
-s3eResult adjust_SetAttributionCallback(adjust_attribution_delegate attribution_callback) S3E_RESULT_ERROR

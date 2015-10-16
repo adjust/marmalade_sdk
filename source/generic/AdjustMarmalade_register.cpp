@@ -10,11 +10,10 @@
  * to nothing if this extension is not enabled in the loader
  * at build time.
  */
-
+#include "AdjustMarmalade_autodefs.h"
 #include "s3eEdk.h"
 #include "AdjustMarmalade.h"
 #include "AdjustMarmalade_internal.h"
-#include "AdjustMarmalade_autodefs.h"
 
 //Declarations of Init and Term functions
 extern s3eResult AdjustMarmaladeInit();
@@ -24,7 +23,7 @@ extern void AdjustMarmaladeTerminate();
 void AdjustMarmaladeRegisterExt()
 {
     /* fill in the function pointer struct for this extension */
-    void* funcPtrs[10];
+    void* funcPtrs[9];
     funcPtrs[0] = (void*)adjust_Start;
     funcPtrs[1] = (void*)adjust_TrackEvent;
     funcPtrs[2] = (void*)adjust_SetEnabled;
@@ -34,12 +33,11 @@ void AdjustMarmaladeRegisterExt()
     funcPtrs[6] = (void*)adjust_OnResume;
     funcPtrs[7] = (void*)adjust_SetReferrer;
     funcPtrs[8] = (void*)adjust_SetDeviceToken;
-    funcPtrs[9] = (void*)adjust_SetAttributionCallback;
 
     /*
      * Flags that specify the extension's use of locking and stackswitching
      */
-    int flags[10] = { 0 };
+    int flags[9] = { 0 };
 
     /*
      * Register the extension

@@ -74,8 +74,6 @@ s3eResult adjust_SetReferrer_platform(const char* referrer);
 
 s3eResult adjust_SetDeviceToken_platform(const char* device_token);
 
-s3eResult adjust_SetAttributionCallback_platform(adjust_attribution_delegate attribution_callback);
-
 char* adjust_CopyString(const char* source);
 
 void adjust_CleanupAttributionCallback(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData);

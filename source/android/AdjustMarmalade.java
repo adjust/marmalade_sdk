@@ -24,15 +24,14 @@ import com.ideaworks3d.marmalade.SuspendResumeEvent;
 public class AdjustMarmalade implements OnAttributionChangedListener {
     public native void attributionCallback(String attributionString);
 
-    private boolean isAttributionCallbackSet = false;
-
     public void adjust_Start(String appToken, String environment, String logLevel, String sdkPrefix,
-        boolean isEventBufferingEnabled, String processName, String defaultTracker, boolean isMacMd5TrackingEnabled) {
+        boolean isEventBufferingEnabled, String processName, String defaultTracker, boolean isMacMd5TrackingEnabled,
+        boolean isAttributionCallbackSet) {
 
-        if (appToken != null && !appToken.equals("") && environment != null && !environment.equals("")) {
+        if (isStringValid(appToken) && isStringValid(environment)) {
             AdjustConfig adjustConfig = new AdjustConfig(LoaderAPI.getActivity(), appToken, environment);
 
-            if (logLevel != null && !logLevel.equals("")) {
+            if (isStringValid(logLevel)) {
                 if (logLevel.equals("verbose")) {
                     adjustConfig.setLogLevel(LogLevel.VERBOSE);
                 } else if (logLevel.equals("debug")) {
@@ -48,15 +47,15 @@ public class AdjustMarmalade implements OnAttributionChangedListener {
                 }
             }
 
-            if (processName != null && !processName.equals("")) {
+            if (isStringValid(processName)) {
                 adjustConfig.setProcessName(processName);
             }
 
-            if (defaultTracker != null && !defaultTracker.equals("")) {
+            if (isStringValid(defaultTracker)) {
                 adjustConfig.setDefaultTracker(defaultTracker);
             }
 
-            if (sdkPrefix != null && !sdkPrefix.equals("")) {
+            if (isStringValid(sdkPrefix)) {
                 adjustConfig.setSdkPrefix(sdkPrefix);
             }
 
@@ -73,7 +72,7 @@ public class AdjustMarmalade implements OnAttributionChangedListener {
 
     public void adjust_TrackEvent(String eventToken, String currency, String transactionId, String receipt, 
         double revenue, Map<String, String> callbackParams, Map<String, String> partnerParams, boolean isReceiptSet) {
-        if (eventToken != null && !eventToken.equals("")) {
+        if (isStringValid(eventToken)) {
             AdjustEvent adjustEvent = new AdjustEvent(eventToken);
 
             if (revenue != -1) {
@@ -116,12 +115,6 @@ public class AdjustMarmalade implements OnAttributionChangedListener {
         Adjust.onResume();
     }
 
-    public void adjust_SetDeviceToken(String deviceToken) {}
-
-    public void adjust_SetAttributionCallback() {
-        isAttributionCallbackSet = true;
-    }
-
     @Override
     public void onAttributionChanged(AdjustAttribution attribution) {
         JSONObject jsonAttribution = new JSONObject();
@@ -134,12 +127,18 @@ public class AdjustMarmalade implements OnAttributionChangedListener {
             jsonAttribution.put("ad_group", attribution.adgroup);
             jsonAttribution.put("creative", attribution.creative);
             jsonAttribution.put("click_label", attribution.clickLabel);
-
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         attributionCallback(jsonAttribution.toString());
+    }
+
+    private boolean isStringValid(String string) {
+        if (string != null && !string.equals("")) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

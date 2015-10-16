@@ -245,23 +245,3 @@ s3eResult adjust_SetDeviceToken(const char* device_token)
 
     return ret;
 }
-
-s3eResult adjust_SetAttributionCallback(adjust_attribution_delegate attribution_callback)
-{
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[9] func: adjust_SetAttributionCallback"));
-
-    if (!_extLoad())
-        return S3E_RESULT_ERROR;
-
-#ifdef LOADER_CALL_LOCK
-    s3eDeviceLoaderCallStart(S3E_TRUE, (void*)g_Ext.m_adjust_SetAttributionCallback);
-#endif
-
-    s3eResult ret = g_Ext.m_adjust_SetAttributionCallback(attribution_callback);
-
-#ifdef LOADER_CALL_LOCK
-    s3eDeviceLoaderCallDone(S3E_TRUE, (void*)g_Ext.m_adjust_SetAttributionCallback);
-#endif
-
-    return ret;
-}

@@ -14,7 +14,6 @@ typedef  s3eResult(*adjust_OnPause_t)();
 typedef  s3eResult(*adjust_OnResume_t)();
 typedef  s3eResult(*adjust_SetReferrer_t)(const char* referrer);
 typedef  s3eResult(*adjust_SetDeviceToken_t)(const char* device_token);
-typedef  s3eResult(*adjust_SetAttributionCallback_t)(adjust_attribution_delegate attribution_callback);
 
 /**
  * struct that gets filled in by AdjustMarmaladeRegister
@@ -30,5 +29,4 @@ typedef struct AdjustMarmaladeFuncs
     adjust_OnResume_t m_adjust_OnResume;
     adjust_SetReferrer_t m_adjust_SetReferrer;
     adjust_SetDeviceToken_t m_adjust_SetDeviceToken;
-    adjust_SetAttributionCallback_t m_adjust_SetAttributionCallback;
 } AdjustMarmaladeFuncs;

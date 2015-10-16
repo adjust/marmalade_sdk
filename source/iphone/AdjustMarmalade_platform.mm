@@ -61,6 +61,14 @@ static id<AdjustDelegate> adjustMarmaladeInstance = nil;
 
 @end
 
+BOOL is_string_valid(NSString *string) {
+    if (string != nil && ![string isEqualToString:@""]) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
 int32 handleOpenURL(void* systemData, void* userData)
 {
     NSURL *url = (NSURL *)systemData;
@@ -100,23 +108,19 @@ s3eResult adjust_Start_platform(adjust_config* config)
     NSString *processName = config->process_name ? [NSString stringWithUTF8String:config->process_name] : nil;
     NSString *defaultTracker = config->default_tracker ? [NSString stringWithUTF8String:config->default_tracker] : nil;
 
-    BOOL isEventBufferingEnabled = config->is_event_buffering_enabled;
-    BOOL isMacMd5TrackingEnabled = config->is_mac_md5_tracking_enabled;
-
     // If no app token nor environment is set, skip initialisation.
-    if (appToken != nil && environment != nil
-        && ![appToken isEqualToString:@""] && ![environment isEqualToString:@""]) {
+    if (is_string_valid(appToken) && is_string_valid(environment)) {
         ADJConfig *adjustConfig = [ADJConfig configWithAppToken:appToken environment:environment];
 
-        if (logLevel != nil && ![logLevel isEqualToString:@""]) {
+        if (is_string_valid(logLevel)) {
             [adjustConfig setLogLevel:[ADJLogger LogLevelFromString:logLevel]];
         }
 
-        if (defaultTracker != nil && ![defaultTracker isEqualToString:@""]) {
+        if (is_string_valid(defaultTracker)) {
             [adjustConfig setDefaultTracker:defaultTracker];
         }
 
-        if (sdkPrefix != nil && ![sdkPrefix isEqualToString:@""]) {
+        if (is_string_valid(sdkPrefix)) {
             [adjustConfig setSdkPrefix:sdkPrefix];
         }
 
@@ -124,9 +128,24 @@ s3eResult adjust_Start_platform(adjust_config* config)
             [adjustConfig setDelegate:(id)adjustMarmaladeInstance];
         }
 
-        [adjustConfig setEventBufferingEnabled:isEventBufferingEnabled];
-        [adjustConfig setMacMd5TrackingEnabled:isMacMd5TrackingEnabled];
-        
+        if (config->is_event_buffering_enabled != NULL) {
+            [adjustConfig setEventBufferingEnabled:*(config->is_event_buffering_enabled)];
+        }
+
+        if (config->is_mac_md5_tracking_enabled != NULL) {
+            [adjustConfig setMacMd5TrackingEnabled:*(config->is_mac_md5_tracking_enabled)];
+        }
+
+        if (config->is_attribution_delegate_set != NULL) {
+            if (*(config->is_attribution_delegate_set) == true) {
+                EDK_CALLBACK_REG(ADJUST, ADJUST_ATTRIBUTION_DATA,
+                                 (s3eCallback)config->attribution_callback, NULL, false);
+
+                adjustMarmaladeInstance = [[AdjustMarmalade_platform alloc] init];
+
+                [adjustConfig setDelegate:(id)adjustMarmaladeInstance];
+            }
+        }
 
         [Adjust appDidLaunch:adjustConfig];
     }
@@ -136,19 +155,16 @@ s3eResult adjust_Start_platform(adjust_config* config)
 
 s3eResult adjust_TrackEvent_platform(adjust_event* event)
 {
-    double revenue = event->revenue;
-    BOOL isReceiptSet = event->is_receipt_set;
-
     NSString *eventToken = event->event_token ? [NSString stringWithUTF8String:event->event_token] : nil;
     NSString *currency = event->currency ? [NSString stringWithUTF8String:event->currency] : nil;
     NSString *transactionId = event->transaction_id ? [NSString stringWithUTF8String:event->transaction_id] : nil;
     NSData *receipt = event->receipt ? [[NSString stringWithUTF8String:event->receipt] dataUsingEncoding:NSUTF8StringEncoding] : nil;
 
-    if (eventToken != nil && ![eventToken isEqualToString:@""]) {
+    if (is_string_valid(eventToken)) {
         ADJEvent *adjustEvent = [ADJEvent eventWithEventToken:eventToken];
 
-        if (revenue != -1) {
-            [adjustEvent setRevenue:revenue currency:currency];
+        if (event->revenue != NULL) {
+            [adjustEvent setRevenue:*(event->revenue) currency:currency];
         }
 
         if (event->callback_params->size() > 0) {
@@ -173,10 +189,10 @@ s3eResult adjust_TrackEvent_platform(adjust_event* event)
             }
         }
 
-        if (isReceiptSet == true) {
+        if (event->is_receipt_set != NULL) {
             [adjustEvent setReceipt:receipt transactionId:transactionId];
         } else {
-            if (transactionId != nil && ![transactionId isEqualToString:@""]) {
+            if (is_string_valid(transactionId)) {
                 [adjustEvent setTransactionId:transactionId];
             }
         }
@@ -228,17 +244,8 @@ s3eResult adjust_SetReferrer_platform(const char* referrer)
 s3eResult adjust_SetDeviceToken_platform(const char* device_token)
 {
     NSData *deviceToken = [[NSString stringWithUTF8String:device_token] dataUsingEncoding:NSUTF8StringEncoding];
-    
+
     [Adjust setDeviceToken:deviceToken];
-    
+
     return S3E_RESULT_SUCCESS;
-}
-
-s3eResult adjust_SetAttributionCallback_platform(adjust_attribution_delegate attribution_callback)
-{
-    EDK_CALLBACK_REG(ADJUST, ADJUST_ATTRIBUTION_DATA, (s3eCallback)attribution_callback, NULL, false);
-
-    adjustMarmaladeInstance = [[AdjustMarmalade_platform alloc] init];
-
-    return (s3eResult)0;
 }
