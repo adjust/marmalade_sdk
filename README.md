@@ -8,9 +8,9 @@ adjust.com.
 There is an example app inside the [`HelloAdjust` directory][example-app]. 
 You can use the example app to see how the adjust SDK can be integrated.
 
-In order to test our sample app on Android device, Android Package Name
-should be named `com.adjust.HelloAdjust`. So, if your Marmalade Hub has
-changed this setting to your defaults, please make sure to rename it.
+In order to test our sample app on and Android device, the Android Package Name
+should be named `com.adjust.HelloAdjust`. If your Marmalade Hub has
+changed this setting to your defaults, the please be sure to rename it.
 
 ![][android-pkg-name]
 
