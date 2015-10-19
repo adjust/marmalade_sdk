@@ -9,8 +9,8 @@ This file should perform any platform-indepedentent functionality
  * be overwritten (unless --force is specified) and is intended to be modified.
  */
 
-
 #include "AdjustMarmalade_internal.h"
+
 s3eResult AdjustMarmaladeInit()
 {
     //Add any generic initialisation code here
@@ -23,23 +23,24 @@ void AdjustMarmaladeTerminate()
     AdjustMarmaladeTerminate_platform();
 }
 
-void adjust_CleanupResponseDataCallback(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData) {
-
-    adjust_response_data * rd = (adjust_response_data *) completeData;
-    if (rd == NULL) {
+void adjust_CleanupAttributionCallback(uint32 extID, int32 notification, void *systemData, void *instance, 
+    int32 returnCode, void *completeData)
+{
+    adjust_attribution_data* attribution = (adjust_attribution_data*)completeData;
+    
+    if (attribution == NULL) {
         return;
     }
 
-    free(rd->activityKind);
-    free(rd->error);
-    free(rd->trackerToken);
-    free(rd->trackerName);
-    free(rd->network);
-    free(rd->campaign);
-    free(rd->adgroup);
-    free(rd->creative);
+    free(attribution->tracker_token);
+    free(attribution->tracker_name);
+    free(attribution->network);
+    free(attribution->campaign);
+    free(attribution->ad_group);
+    free(attribution->creative);
+    free(attribution->click_label);
 
-    delete rd;
+    delete attribution;
 }
 
 char* adjust_CopyString(const char* source)
@@ -48,49 +49,55 @@ char* adjust_CopyString(const char* source)
         return NULL;
     }
 
-    char * target = (char *) malloc(sizeof(char) * strlen(source));
+    char* target = (char*) malloc(sizeof(char) * strlen(source));
     strcpy(target, source);
 
     return target;
 }
 
-s3eResult adjust_AppDidLaunch(const char* appToken, const char* environment, const char* logLevel, bool eventBuffering)
+s3eResult adjust_Start(adjust_config* config)
 {
-    const char* sdkPrefix = "marmalade3.4.0";
-    return adjust_AppDidLaunch_platform(appToken, environment, sdkPrefix, logLevel, eventBuffering);
+    config->set_sdk_prefix("marmalade4.0.0");
+    
+    return adjust_Start_platform(config);
 }
 
-s3eResult adjust_TrackEvent(const char* eventToken, const adjust_param_type* params)
+s3eResult adjust_TrackEvent(adjust_event* event)
 {
-    return adjust_TrackEvent_platform(eventToken, params);
+    return adjust_TrackEvent_platform(event);
 }
 
-s3eResult adjust_TrackEventIphone(const char* eventToken, const char** params_array, int param_size)
+s3eResult adjust_SetEnabled(bool is_enabled)
 {
-    return adjust_TrackEventIphone_platform(eventToken, params_array, param_size);
+    return adjust_SetEnabled_platform(is_enabled);
 }
 
-s3eResult adjust_TrackRevenue(double cents, const char* eventToken, const adjust_param_type* params)
+s3eResult adjust_IsEnabled(bool& is_enabled_out)
 {
-    return adjust_TrackRevenue_platform(cents, eventToken, params);
+    return adjust_IsEnabled_platform(is_enabled_out);
 }
 
-s3eResult adjust_TrackRevenueIphone(double cents, const char* eventToken, const char** params_array, int param_size)
+s3eResult adjust_SetOfflineMode(bool is_offline_mode_enabled)
 {
-    return adjust_TrackRevenueIphone_platform(cents, eventToken, params_array, param_size);
+    return adjust_SetOfflineMode_platform(is_offline_mode_enabled);
 }
 
-s3eResult adjust_SetEnabled(bool enabled)
+s3eResult adjust_OnPause()
 {
-    return adjust_SetEnabled_platform(enabled);
+    return adjust_OnPause_platform();
 }
 
-s3eResult adjust_IsEnabled(bool& isEnabled_out)
+s3eResult adjust_OnResume()
 {
-    return adjust_IsEnabled_platform(isEnabled_out);
+    return adjust_OnResume_platform();
 }
 
-s3eResult adjust_SetResponseDelegate(adjust_response_data_delegate delegateFn)
+s3eResult adjust_SetReferrer(const char* referrer)
 {
-    return adjust_SetResponseDelegate_platform(delegateFn);
+    return adjust_SetReferrer_platform(referrer);
+}
+
+s3eResult adjust_SetDeviceToken(const char* device_token)
+{
+    return adjust_SetDeviceToken_platform(device_token);
 }

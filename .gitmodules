@@ -1,6 +1,12 @@
-[submodule "source/generic/rapidjson"]
-	path = source/generic/rapidjson
+[submodule "ext/Android/sdk"]
+	path = ext/Android/sdk
+	url = git@github.com:adjust/android_sdk.git
+	branch = marmalade
+[submodule "source/rapidjson"]
+	path = source/rapidjson
 	url = git@github.com:damucz/rapidjson.git
-[submodule "source/iphone/ios_sdk"]
-	path = source/iphone/ios_sdk
+	branch = master
+[submodule "ext/iOS/sdk"]
+	path = ext/iOS/sdk
 	url = git@github.com:adjust/ios_sdk.git
+	branch = marmalade

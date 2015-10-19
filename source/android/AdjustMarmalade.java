@@ -9,76 +9,136 @@ These functions are called via JNI from native code.
  * NOTE: This file was originally written by the extension builder, but will not
  * be overwritten (unless --force is specified) and is intended to be modified.
  */
+
+import java.util.Map;
+import android.util.Log;
+import com.adjust.sdk.*;
+import org.json.JSONObject;
+import org.json.JSONException;
+
 import com.ideaworks3d.marmalade.LoaderAPI;
 import com.ideaworks3d.marmalade.LoaderActivity;
 import com.ideaworks3d.marmalade.SuspendResumeListener;
 import com.ideaworks3d.marmalade.SuspendResumeEvent;
-import com.adjust.sdk.Adjust;
-import com.adjust.sdk.AdjustFactory;
-import com.adjust.sdk.Logger;
-import com.adjust.sdk.OnFinishedListener;
-import com.adjust.sdk.ResponseData;
-import java.util.Map;
-import org.json.JSONObject;
 
-class AdjustMarmalade implements OnFinishedListener
-{
-    public void AppDidLaunch(String appToken, String environment, String sdkPrefix, String logLevel, boolean eventBuffering)
-    {
-        LoaderActivity activity = LoaderAPI.getActivity();
-        Adjust.appDidLaunch(activity,
-                            appToken,
-                            environment,
-                            logLevel,
-                            eventBuffering);
-        Adjust.setSdkPrefix(sdkPrefix);
-        Adjust.onResume(activity);
+public class AdjustMarmalade implements OnAttributionChangedListener {
+    public native void attributionCallback(String attributionString);
 
-        LoaderAPI.addSuspendResumeListener(new SuspendResumeListener() {
+    public void adjust_Start(String appToken, String environment, String logLevel, String sdkPrefix,
+        boolean isEventBufferingEnabled, String processName, String defaultTracker, boolean isMacMd5TrackingEnabled,
+        boolean isAttributionCallbackSet) {
 
-            @Override
-            public void onSuspendResumeEvent(SuspendResumeEvent paramSuspendResumeEvent) {
-                if (paramSuspendResumeEvent.eventType == 
-                    SuspendResumeEvent.EventType.SUSPEND) {
-                    Adjust.onPause();
-                }
+        if (isStringValid(appToken) && isStringValid(environment)) {
+            AdjustConfig adjustConfig = new AdjustConfig(LoaderAPI.getActivity(), appToken, environment);
 
-                if (paramSuspendResumeEvent.eventType ==
-                    SuspendResumeEvent.EventType.RESUME) {
-                    Adjust.onResume(LoaderAPI.getActivity());
+            if (isStringValid(logLevel)) {
+                if (logLevel.equals("verbose")) {
+                    adjustConfig.setLogLevel(LogLevel.VERBOSE);
+                } else if (logLevel.equals("debug")) {
+                    adjustConfig.setLogLevel(LogLevel.DEBUG);
+                } else if (logLevel.equals("info")) {
+                    adjustConfig.setLogLevel(LogLevel.INFO);
+                } else if (logLevel.equals("warn")) {
+                    adjustConfig.setLogLevel(LogLevel.WARN);
+                } else if (logLevel.equals("error")) {
+                    adjustConfig.setLogLevel(LogLevel.ERROR);
+                } else if (logLevel.equals("assert")) {
+                    adjustConfig.setLogLevel(LogLevel.ASSERT);
                 }
             }
-        });
+
+            if (isStringValid(processName)) {
+                adjustConfig.setProcessName(processName);
+            }
+
+            if (isStringValid(defaultTracker)) {
+                adjustConfig.setDefaultTracker(defaultTracker);
+            }
+
+            if (isStringValid(sdkPrefix)) {
+                adjustConfig.setSdkPrefix(sdkPrefix);
+            }
+
+            if (isAttributionCallbackSet) {
+                adjustConfig.setOnAttributionChangedListener(this);    
+            }
+
+            adjustConfig.setEventBufferingEnabled(isEventBufferingEnabled);
+
+            Adjust.onCreate(adjustConfig);
+            Adjust.onResume();
+        }
     }
-    public void TrackEvent(String eventToken, Map<String, String> parameters)
-    {
-        Adjust.trackEvent(eventToken, parameters);
+
+    public void adjust_TrackEvent(String eventToken, String currency, String transactionId, String receipt, 
+        double revenue, Map<String, String> callbackParams, Map<String, String> partnerParams, boolean isReceiptSet) {
+        if (isStringValid(eventToken)) {
+            AdjustEvent adjustEvent = new AdjustEvent(eventToken);
+
+            if (revenue != -1) {
+                adjustEvent.setRevenue(revenue, currency);
+            }
+
+            for (Map.Entry<String, String> parameter : callbackParams.entrySet()) {
+                adjustEvent.addCallbackParameter(parameter.getKey(), parameter.getValue());
+            }
+
+            for (Map.Entry<String, String> parameter : partnerParams.entrySet()) {
+                adjustEvent.addPartnerParameter(parameter.getKey(), parameter.getValue());
+            }
+
+            Adjust.trackEvent(adjustEvent);
+        }
     }
-    public void TrackRevenue(double cents, String eventToken, Map<String, String> parameters)
-    {
-        Adjust.trackRevenue(cents, eventToken, parameters);     
+
+    public void adjust_SetEnabled(boolean isEnabled) {
+        Adjust.setEnabled(isEnabled);
     }
-    public void setEnabled(boolean enabled)
-    {
-        Adjust.setEnabled(enabled);
-    }
-    public boolean isEnabled()
-    {
+
+    public boolean adjust_IsEnabled() {
         return Adjust.isEnabled();
     }
-    public void SetResponseDelegate()
-    {
-        Adjust.setOnFinishedListener(this);
+
+    public void adjust_SetOfflineMode(boolean isEnabled) {
+        Adjust.setOfflineMode(isEnabled);
+    }
+
+    public void adjust_SetReferrer(String referrer) {
+        Adjust.setReferrer(referrer);
+    }
+
+    public void adjust_OnPause() {
+        Adjust.onPause();
+    }
+
+    public void adjust_OnResume() {
+        Adjust.onResume();
     }
 
     @Override
-    public void onFinishedTracking(ResponseData responseData) {
-        Map<String, String> responseDataDic = responseData.toDic();
-        JSONObject responseDataJson = new JSONObject(responseDataDic);
-        String responseDataString = responseDataJson.toString();
+    public void onAttributionChanged(AdjustAttribution attribution) {
+        JSONObject jsonAttribution = new JSONObject();
 
-        responseDataCallback(responseDataString);
+        try {
+            jsonAttribution.put("tracker_token", attribution.trackerToken);
+            jsonAttribution.put("tracker_name", attribution.trackerName);
+            jsonAttribution.put("network", attribution.network);
+            jsonAttribution.put("campaign", attribution.campaign);
+            jsonAttribution.put("ad_group", attribution.adgroup);
+            jsonAttribution.put("creative", attribution.creative);
+            jsonAttribution.put("click_label", attribution.clickLabel);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        attributionCallback(jsonAttribution.toString());
     }
 
-    public native void responseDataCallback(String responseDataString);
+    private boolean isStringValid(String string) {
+        if (string != null && !string.equals("")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

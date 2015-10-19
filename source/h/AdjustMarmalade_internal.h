@@ -11,7 +11,6 @@
  * be overwritten (unless --force is specified) and is intended to be modified.
  */
 
-
 #ifndef ADJUSTMARMALADE_INTERNAL_H
 #define ADJUSTMARMALADE_INTERNAL_H
 
@@ -19,18 +18,11 @@
 #include "AdjustMarmalade.h"
 #include "AdjustMarmalade_autodefs.h"
 
-#include <stdio.h>
-#include "s3e.h"
-#include "s3eEdk.h"
-#include "IwDebug.h"
-#include <string.h>
-
-
 #define S3E_DEVICE_ADJUST                   S3E_EXT_ADJUSTMARMALADE_HASH
 
 typedef enum s3eAdjustCallback
 {
-    S3E_ADJUST_CALLBACK_ADJUST_RESPONSE_DATA,
+    S3E_ADJUST_CALLBACK_ADJUST_ATTRIBUTION_DATA,
     S3E_ADJUST_CALLBACK_MAX
 } s3eAdjustCallback;
 
@@ -63,23 +55,27 @@ void AdjustMarmaladeTerminate();
  * Platform-specific termination, implemented on each platform
  */
 void AdjustMarmaladeTerminate_platform();
-s3eResult adjust_AppDidLaunch_platform(const char* appToken, const char* environment, const char* sdkPrefix, const char* logLevel, bool eventBuffering);
 
-s3eResult adjust_TrackEvent_platform(const char* eventToken, const adjust_param_type* params);
+s3eResult adjust_Start_platform(adjust_config* config);
 
-s3eResult adjust_TrackEventIphone_platform(const char* eventToken, const char** params_array, int param_size);
+s3eResult adjust_TrackEvent_platform(adjust_event* event);
 
-s3eResult adjust_TrackRevenue_platform(double cents, const char* eventToken, const adjust_param_type* params);
+s3eResult adjust_SetEnabled_platform(bool is_enabled);
 
-s3eResult adjust_TrackRevenueIphone_platform(double cents, const char* eventToken, const char** params_array, int param_size);
+s3eResult adjust_IsEnabled_platform(bool& is_enabled_out);
 
-s3eResult adjust_SetEnabled_platform(bool enabled);
+s3eResult adjust_SetOfflineMode_platform(bool is_offline_mode_enabled);
 
-s3eResult adjust_IsEnabled_platform(bool& isEnabled_out);
+s3eResult adjust_OnPause_platform();
 
-s3eResult adjust_SetResponseDelegate_platform(adjust_response_data_delegate delegateFn);
+s3eResult adjust_OnResume_platform();
 
-void adjust_CleanupResponseDataCallback(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData);
+s3eResult adjust_SetReferrer_platform(const char* referrer);
+
+s3eResult adjust_SetDeviceToken_platform(const char* device_token);
 
 char* adjust_CopyString(const char* source);
+
+void adjust_CleanupAttributionCallback(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData);
+
 #endif /* !ADJUSTMARMALADE_INTERNAL_H */

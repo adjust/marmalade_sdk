@@ -28,50 +28,18 @@ subproject "$MARMALADE_ROOT/s3e/edk"
 
 if {{defined I3D_OS_IPHONE}}
 {
-    includepath
-    {
-        source/iphone/Adjust
-        source/iphone/Adjust/AIAdditions
-    }
-
     files
     {
-        ["h"]
-        (source/iphone)
-        AdjustMarmalade_platform.h
-
+        
         ["source"]
         (use_first_found, source/iphone, source/generic)
         AdjustMarmalade_platform.mm
         #Add any iphone-specific files here
-        Adjust/AIActivityHandler.m
-        Adjust/AIActivityKind.h
-        Adjust/AIActivityKind.m
-        Adjust/AIActivityPackage.h
-        Adjust/AIActivityPackage.m
-        Adjust/AIActivityState.h
-        Adjust/AIActivityState.m
-        Adjust/AIAdjustFactory.h
-        Adjust/AIAdjustFactory.m
-        Adjust/AILogger.h
-        Adjust/AILogger.m
-        Adjust/AIPackageBuilder.h
-        Adjust/AIPackageBuilder.m
-        Adjust/AIPackageHandler.h
-        Adjust/AIPackageHandler.m
-        Adjust/AIRequestHandler.h
-        Adjust/AIRequestHandler.m
-        Adjust/AIResponseData.h
-        Adjust/AIResponseData.m
-        Adjust/AITimer.h
-        Adjust/AITimer.m
-        Adjust/AIUtil.h
-        Adjust/AIUtil.m
-        Adjust/Adjust.h
-        Adjust/Adjust.m
-        Adjust/AIAdditions/NSDataAIAdditions.m
-        Adjust/AIAdditions/NSStringAIAdditions.m
-        Adjust/AIAdditions/UIDeviceAIAdditions.m
+    }
+
+    options
+    {
+        cflags="-F$CWD/sdk/ios"
     }
 }
 
@@ -164,6 +132,36 @@ if {{defined I3D_OS_WS81}}
         AdjustMarmalade_platform.cpp
         AdjustMarmalade_shim.cpp
         #Add any ws81-specific files here
+    }
+}
+
+if {{defined I3D_OS_WP81}}
+{
+    files
+    {
+        ["h"]
+        (source/wp81)
+        AdjustMarmalade_shim.h
+        ["source"]
+        (use_first_found, source/wp81, source/generic)
+        AdjustMarmalade_platform.cpp
+        AdjustMarmalade_shim.cpp
+        #Add any wp81-specific files here
+    }
+}
+
+if {{defined I3D_OS_WIN10}}
+{
+    files
+    {
+        ["h"]
+        (source/win10)
+        AdjustMarmalade_shim.h
+        ["source"]
+        (use_first_found, source/win10, source/generic)
+        AdjustMarmalade_platform.cpp
+        AdjustMarmalade_shim.cpp
+        #Add any win10-specific files here
     }
 }
 

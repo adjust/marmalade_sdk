@@ -8,94 +8,80 @@
  */
 #include "AdjustMarmalade_internal.h"
 
-#include "s3eEdk_android.h"
 #include <jni.h>
-
-#include <iostream>
-#include <sstream>
-
+#include "IwDebug.h"
+#include "s3eEdk.h"
+#include "s3eEdk_android.h"
 #include "rapidjson/document.h"
 
-
 static jobject g_Obj;
-static jmethodID g_AppDidLaunch;
-static jmethodID g_TrackEvent;
-static jmethodID g_TrackRevenue;
-static jmethodID g_setEnabled;
-static jmethodID g_isEnabled;
-static jmethodID g_SetResponseDelegate;
+static jmethodID g_adjust_Start;
+static jmethodID g_adjust_TrackEvent;
+static jmethodID g_adjust_SetEnabled;
+static jmethodID g_adjust_IsEnabled;
+static jmethodID g_adjust_SetOfflineMode;
+static jmethodID g_adjust_OnPause;
+static jmethodID g_adjust_OnResume;
+static jmethodID g_adjust_SetReferrer;
 
 char* get_json_string(rapidjson::Document &jsonDoc, const char* member_name)
 {
     if (!jsonDoc.HasMember(member_name)) {
         return NULL;
     }
-    const char * source = jsonDoc[member_name].GetString();
-    char * target = adjust_CopyString(source);
+
+    const char* source = jsonDoc[member_name].GetString();
+    char* target = adjust_CopyString(source);
+    
     return target;
 }
 
-bool get_json_bool(rapidjson::Document &jsonDoc, const char* member_name) 
+adjust_attribution_data* get_attribution_data(const char* jsonCString)
 {
-    char* boolString = get_json_string(jsonDoc, member_name);
-    bool jsonBool;
-
-    if (boolString == "true") {
-        jsonBool = true;
-    }
-    free(boolString);
-
-    return jsonBool;
-}
-
-adjust_response_data* get_response_data(const char* jsonCString)
-{
-    adjust_response_data* rd;
+    adjust_attribution_data* attribution;
     rapidjson::Document jsonDoc;
 
-    if(jsonDoc.Parse<0>(jsonCString).HasParseError()) {
-        IwTrace(ADJUSTMARMALADE,("error parsing response data json"));
+    if (jsonDoc.Parse<0>(jsonCString).HasParseError()) {
+        IwTrace(ADJUSTMARMALADE,("Error parsing response data json"));
+        
         return NULL;
     }
 
-    rd = new adjust_response_data();
+    attribution = new adjust_attribution_data();
     
-    rd->success         = get_json_bool(jsonDoc,  "success");
-    rd->willRetry       = get_json_bool(jsonDoc,  "willRetry");
-    rd->activityKind    = get_json_string(jsonDoc, "activityKind");
-    rd->error           = get_json_string(jsonDoc, "error");
-    rd->trackerToken    = get_json_string(jsonDoc, "trackerToken");
-    rd->trackerName     = get_json_string(jsonDoc, "trackerName");
-    rd->network         = get_json_string(jsonDoc, "network");
-    rd->campaign        = get_json_string(jsonDoc, "campaign");
-    rd->adgroup         = get_json_string(jsonDoc, "adgroup");
-    rd->creative        = get_json_string(jsonDoc, "creative");
-    return rd;
+    attribution->tracker_token   = get_json_string(jsonDoc, "tracker_token");
+    attribution->tracker_name    = get_json_string(jsonDoc, "tracker_name");
+    attribution->network         = get_json_string(jsonDoc, "network");
+    attribution->campaign        = get_json_string(jsonDoc, "campaign");
+    attribution->ad_group        = get_json_string(jsonDoc, "ad_group");
+    attribution->creative        = get_json_string(jsonDoc, "creative");
+    attribution->click_label     = get_json_string(jsonDoc, "click_label");
+
+    return attribution;
 }
 
-void responseData_callback(JNIEnv* env, jobject obj, jstring responseDataString) 
+void the_attribution_callback(JNIEnv* env, jobject obj, jstring attributionString) 
 {
-    const char* responseDataCString = env->GetStringUTFChars(responseDataString, NULL);
-
-    adjust_response_data* rd = get_response_data(responseDataCString);
+    const char* attributionCString = env->GetStringUTFChars(attributionString, NULL);
+    adjust_attribution_data* attribution = get_attribution_data(attributionCString);
 
     s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
-                            S3E_ADJUST_CALLBACK_ADJUST_RESPONSE_DATA,
-                            rd,
-                            sizeof(*rd),
-                            NULL,
-                            S3E_FALSE,
-                            &adjust_CleanupResponseDataCallback,
-                            (void*)rd);
+                           S3E_ADJUST_CALLBACK_ADJUST_ATTRIBUTION_DATA,
+                           attribution,
+                           sizeof(*attribution),
+                           NULL,
+                           S3E_FALSE,
+                           &adjust_CleanupAttributionCallback,
+                           (void*)attribution);
 }
 
-jobject create_global_java_dict(const adjust_param_type *params)
+jobject create_global_java_dict(const adjust_param_type* params)
 {
     if (params == NULL) {
         return NULL;
     }
 
-    // get JNI env
+    // Get JNI env
     JNIEnv* env = s3eEdkJNIGetEnv();
 
     // Get the HashMap class
@@ -119,7 +105,22 @@ jobject create_global_java_dict(const adjust_param_type *params)
     }
     
     jobject dict_jglobal = env->NewGlobalRef(dict_obj);
+
     return dict_jglobal;
+}
+
+static int32 applicationUnpaused(void* systemData, void* userData)
+{
+    adjust_OnResume_platform();
+
+    return 0;
+}
+
+static int32 applicationPaused(void* systemData, void* userData)
+{
+    adjust_OnPause_platform();
+
+    return 0;
 }
 
 s3eResult AdjustMarmaladeInit_platform()
@@ -128,9 +129,10 @@ s3eResult AdjustMarmaladeInit_platform()
     JNIEnv* env = s3eEdkJNIGetEnv();
     jobject obj = NULL;
     jmethodID cons = NULL;
+
     const JNINativeMethod methods[] =
     {
-        {"responseDataCallback","(Ljava/lang/String;)V",(void*)&responseData_callback}
+        {"attributionCallback", "(Ljava/lang/String;)V",(void*)&the_attribution_callback}
     };
 
     // Get the extension class
@@ -149,28 +151,38 @@ s3eResult AdjustMarmaladeInit_platform()
         goto fail;
 
     // Get all the extension methods
-    g_AppDidLaunch = env->GetMethodID(cls, "AppDidLaunch", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V");
-    if (!g_AppDidLaunch)
+    g_adjust_Start = env->GetMethodID(cls, "adjust_Start", 
+        "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;ZZ)V");
+    if (!g_adjust_Start)
         goto fail;
 
-    g_TrackEvent = env->GetMethodID(cls, "TrackEvent", "(Ljava/lang/String;Ljava/util/Map;)V");
-    if (!g_TrackEvent)
+    g_adjust_TrackEvent = env->GetMethodID(cls, "adjust_TrackEvent", 
+        "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;DLjava/util/Map;Ljava/util/Map;Z)V");
+    if (!g_adjust_TrackEvent)
         goto fail;
 
-    g_TrackRevenue = env->GetMethodID(cls, "TrackRevenue", "(DLjava/lang/String;Ljava/util/Map;)V");
-    if (!g_TrackRevenue)
+    g_adjust_SetEnabled = env->GetMethodID(cls, "adjust_SetEnabled", "(Z)V");
+    if (!g_adjust_SetEnabled)
         goto fail;
 
-    g_setEnabled = env->GetMethodID(cls, "setEnabled", "(Z)V");
-    if (!g_setEnabled)
+    g_adjust_IsEnabled = env->GetMethodID(cls, "adjust_IsEnabled", "()Z");
+    if (!g_adjust_IsEnabled)
         goto fail;
 
-    g_isEnabled = env->GetMethodID(cls, "isEnabled", "()Z");
-    if (!g_isEnabled)
+    g_adjust_SetOfflineMode = env->GetMethodID(cls, "adjust_SetOfflineMode", "(Z)V");
+    if (!g_adjust_SetOfflineMode)
         goto fail;
 
-    g_SetResponseDelegate = env->GetMethodID(cls, "SetResponseDelegate", "()V");
-    if (!g_SetResponseDelegate)
+    g_adjust_OnPause = env->GetMethodID(cls, "adjust_OnPause", "()V");
+    if (!g_adjust_OnPause)
+        goto fail;
+
+    g_adjust_OnResume = env->GetMethodID(cls, "adjust_OnResume", "()V");
+    if (!g_adjust_OnResume)
+        goto fail;
+
+    g_adjust_SetReferrer = env->GetMethodID(cls, "adjust_SetReferrer", "(Ljava/lang/String;)V");
+    if (!g_adjust_SetReferrer)
         goto fail;
 
     // Register the native hooks
@@ -183,6 +195,14 @@ s3eResult AdjustMarmaladeInit_platform()
     env->DeleteGlobalRef(cls);
 
     // Add any platform-specific initialisation code here
+    if (s3eDeviceRegister(S3E_DEVICE_UNPAUSE, (s3eCallback)applicationUnpaused, NULL) != S3E_RESULT_SUCCESS) {
+        return S3E_RESULT_ERROR;
+    }
+
+    if (s3eDeviceRegister(S3E_DEVICE_PAUSE, (s3eCallback)applicationPaused, NULL) != S3E_RESULT_SUCCESS) {
+        return S3E_RESULT_ERROR;
+    }
+
     return S3E_RESULT_SUCCESS;
 
 fail:
@@ -193,101 +213,161 @@ fail:
         env->ExceptionClear();
         IwTrace(AdjustMarmalade, ("One or more java methods could not be found"));
     }
-    return S3E_RESULT_ERROR;
 
+    env->DeleteLocalRef(obj);
+    env->DeleteGlobalRef(cls);
+    return S3E_RESULT_ERROR;
 }
 
 void AdjustMarmaladeTerminate_platform()
-{
+{ 
     // Add any platform-specific termination code here
+    s3eDeviceUnRegister(S3E_DEVICE_UNPAUSE, (s3eCallback)applicationUnpaused);
+    s3eDeviceUnRegister(S3E_DEVICE_PAUSE, (s3eCallback)applicationPaused);
+
+    JNIEnv* env = s3eEdkJNIGetEnv();
+    env->DeleteGlobalRef(g_Obj);
+    g_Obj = NULL;
 }
 
-s3eResult adjust_AppDidLaunch_platform(const char* appToken, const char* environment, const char* sdkPrefix, const char* logLevel, bool eventBuffering)
-{  
-    // get JNI env
+s3eResult adjust_Start_platform(adjust_config* config)
+{
     JNIEnv* env = s3eEdkJNIGetEnv();
-    // convert cstring's to jstring's
-    jstring appToken_jstr = env->NewStringUTF(appToken);
-    jstring environment_jstr = env->NewStringUTF(environment);
-    jstring sdkPrefix_jstr = env->NewStringUTF(sdkPrefix);
-    jstring logLevel_jstr = env->NewStringUTF(logLevel);
-    // call java track app did launch
-    env->CallVoidMethod(g_Obj, g_AppDidLaunch, appToken_jstr, environment_jstr, sdkPrefix_jstr, logLevel_jstr, eventBuffering);
+
+    jstring jAppToken = env->NewStringUTF(config->app_token);
+    jstring jEnvironment = env->NewStringUTF(config->environment);
+    jstring jLogLevel = env->NewStringUTF(config->log_level);
+    jstring jSdkPrefix = env->NewStringUTF(config->sdk_prefix);
+    jstring jProcessName = env->NewStringUTF(config->process_name);
+    jstring jDefaultTracker = env->NewStringUTF(config->default_tracker);
+    jboolean jIsEventBufferingEnabled = JNI_FALSE;
+    jboolean jIsMacMd5TrackingEnabled = JNI_FALSE;
+    jboolean jIsAttributionCallbackSet = JNI_FALSE;
+
+    if (config->is_event_buffering_enabled != NULL) {
+        jIsEventBufferingEnabled = (jboolean)(*(config->is_event_buffering_enabled));
+    }
+    
+    if (config->is_mac_md5_tracking_enabled != NULL) {
+        jIsMacMd5TrackingEnabled = (jboolean)(*(config->is_mac_md5_tracking_enabled));
+    }
+
+    if (config->is_attribution_delegate_set != NULL) {
+        jIsAttributionCallbackSet = (jboolean)(*(config->is_attribution_delegate_set));
+
+        if (jIsAttributionCallbackSet == JNI_TRUE) {
+            EDK_CALLBACK_REG(ADJUST, ADJUST_ATTRIBUTION_DATA, (s3eCallback)config->attribution_callback, NULL, false);
+        }
+    }
+
+    env->CallVoidMethod(g_Obj, g_adjust_Start, jAppToken, jEnvironment, jLogLevel, jSdkPrefix, 
+        jIsEventBufferingEnabled, jProcessName, jDefaultTracker, jIsMacMd5TrackingEnabled, jIsAttributionCallbackSet);
+
+    env->DeleteLocalRef(jAppToken);
+    env->DeleteLocalRef(jEnvironment);
+    env->DeleteLocalRef(jLogLevel);
+    env->DeleteLocalRef(jProcessName);
+    env->DeleteLocalRef(jDefaultTracker);
 
     return (s3eResult)0;
 }
 
-s3eResult adjust_TrackEvent_platform(const char* eventToken, const adjust_param_type* params)
-{    
-    // get JNI env
+s3eResult adjust_TrackEvent_platform(adjust_event* event)
+{
     JNIEnv* env = s3eEdkJNIGetEnv();
-    // convert cstring to jstring
-    jstring eventToken_jstr = env->NewStringUTF(eventToken);
-    // convert to java Dictionary as a global reference
-    jobject dict_jglobal = create_global_java_dict(params);
-    // call java track event
-    env->CallVoidMethod(g_Obj, g_TrackEvent, eventToken_jstr, dict_jglobal); 
-    // free global ref
-    env->DeleteGlobalRef(dict_jglobal);
+
+    jstring jEventToken = env->NewStringUTF(event->event_token);
+    jstring jCurrency = env->NewStringUTF(event->currency);
+    jstring jTransactionId = env->NewStringUTF(event->transaction_id);
+    jstring jReceipt = env->NewStringUTF(event->receipt);
+
+    jobject jCallbackParams = create_global_java_dict(event->callback_params);
+    jobject jPartnerParams = create_global_java_dict(event->partner_params);
+
+    jdouble jRevenue = event->revenue != NULL ? *(event->revenue) : -1;
+    jboolean jIsReceiptSet = event->is_receipt_set != NULL ? *(event->is_receipt_set) : JNI_FALSE;
+
+    env->CallVoidMethod(g_Obj, g_adjust_TrackEvent, jEventToken, jCurrency, jTransactionId, jReceipt,
+        jRevenue, jCallbackParams, jPartnerParams, jIsReceiptSet);
+
+    env->DeleteLocalRef(jEventToken);
+    env->DeleteLocalRef(jCurrency);
+    env->DeleteLocalRef(jTransactionId);
+    env->DeleteLocalRef(jReceipt);
+    env->DeleteGlobalRef(jCallbackParams);
+    env->DeleteGlobalRef(jPartnerParams);
 
     return (s3eResult)0;
 }
 
-s3eResult adjust_TrackEventIphone_platform(const char* eventToken, const char** params_array, int param_size)
+s3eResult adjust_SetEnabled_platform(bool is_enabled)
 {
-    return (s3eResult)1;
-}
-
-s3eResult adjust_TrackRevenue_platform(double cents, const char* eventToken, const adjust_param_type* params)
-{
-    // get JNI env
     JNIEnv* env = s3eEdkJNIGetEnv();
-    // convert cstring to jstring
-    jstring eventToken_jstr = env->NewStringUTF(eventToken);
-    // convert to java Dictionary as a global reference
-    jobject dict_jglobal = create_global_java_dict(params);
-    // call java track revenue
-    env->CallVoidMethod(g_Obj, g_TrackRevenue, cents, eventToken_jstr, dict_jglobal);
-    // free global ref 
-    env->DeleteGlobalRef(dict_jglobal);
-
-    return (s3eResult)0;
-}
-
-s3eResult adjust_TrackRevenueIphone_platform(double cents, const char* eventToken, const char** params_array, int param_size)
-{
-    return (s3eResult)1;    
-}
-
-s3eResult adjust_SetEnabled_platform(bool enabled)
-{
-    // get JNI env
-    JNIEnv* env = s3eEdkJNIGetEnv();
-    // call java set enable
-    env->CallVoidMethod(g_Obj, g_setEnabled, enabled);
+    env->CallVoidMethod(g_Obj, g_adjust_SetEnabled, is_enabled);
     
     return (s3eResult)0;
 }
 
-s3eResult adjust_IsEnabled_platform(bool& isEnabled_out)
+s3eResult adjust_IsEnabled_platform(bool& is_enabled_out)
 {
-    // get JNI env
     JNIEnv* env = s3eEdkJNIGetEnv();
-    // call java is enabled with boolean return
-    jboolean isEnabled_java = env->CallBooleanMethod(g_Obj, g_isEnabled);
-    // cast jboolean to cbool and store it in output parameter
-    isEnabled_out = (bool) isEnabled_java;
+    jboolean isEnabled_java = env->CallBooleanMethod(g_Obj, g_adjust_IsEnabled);
+
+    is_enabled_out = (bool)isEnabled_java;
 
     return (s3eResult)0;
 }
 
-s3eResult adjust_SetResponseDelegate_platform(adjust_response_data_delegate delegateFn)
+s3eResult adjust_SetOfflineMode_platform(bool is_offline_mode_enabled)
 {
     JNIEnv* env = s3eEdkJNIGetEnv();
-
-    EDK_CALLBACK_REG(ADJUST, ADJUST_RESPONSE_DATA, (s3eCallback)delegateFn, NULL, false);
-
-    env->CallVoidMethod(g_Obj, g_SetResponseDelegate);
+    env->CallVoidMethod(g_Obj, g_adjust_SetOfflineMode, is_offline_mode_enabled);
 
     return (s3eResult)0;
 }
+
+s3eResult adjust_SetReferrer_platform(const char* referrer)
+{
+    JNIEnv* env = s3eEdkJNIGetEnv();
+
+    jstring jReferrer = env->NewStringUTF(referrer);
+    
+    env->CallVoidMethod(g_Obj, g_adjust_SetReferrer, jReferrer);
+    env->DeleteLocalRef(jReferrer);
+
+    return (s3eResult)0;
+}
+
+s3eResult adjust_OnPause_platform()
+{
+    JNIEnv* env = s3eEdkJNIGetEnv();
+
+    env->CallVoidMethod(g_Obj, g_adjust_OnPause);
+
+    return (s3eResult)0;
+}
+
+s3eResult adjust_OnResume_platform()
+{
+    JNIEnv* env = s3eEdkJNIGetEnv();
+
+    env->CallVoidMethod(g_Obj, g_adjust_OnResume);
+
+    return (s3eResult)0;
+}
+
+s3eResult adjust_SetDeviceToken_platform(const char* device_token)
+{
+    return (s3eResult)0;
+}
+
+// s3eResult adjust_SetAttributionCallback_platform(adjust_attribution_delegate attribution_callback)
+// {
+//     JNIEnv* env = s3eEdkJNIGetEnv();
+
+//     env->CallVoidMethod(g_Obj, g_adjust_SetAttributionCallback);
+
+//     EDK_CALLBACK_REG(ADJUST, ADJUST_ATTRIBUTION_DATA, (s3eCallback)attribution_callback, NULL, false);
+
+//     return (s3eResult)0;
+// }
