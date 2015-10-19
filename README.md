@@ -8,10 +8,19 @@ adjust.com.
 There is an example app inside the [`HelloAdjust` directory][example-app]. 
 You can use the example app to see how the adjust SDK can be integrated.
 
+In order to test our sample app on Android device, Android Package Name
+should be named `com.adjust.HelloAdjust`. So, if your Marmalade Hub has
+changed this setting to your defaults, please make sure to rename it.
+
+![][android-pkg-name]
+
 ## Basic Installation
 
 These are the minimal steps required to integrate the adjust SDK into your
 Marmalade project.
+
+SDK 4.0.0 for Marmalade is built with Marmalade 7.10 and we advise you
+to use Marmalade 7.10 or higher in order to use our SDK.
 
 ### 1. Get the SDK
 
@@ -428,6 +437,7 @@ the SDK is in online mode whenever it is started, even if the app was terminated
 [google_play_services]: http://developer.android.com/google/play-services/setup.html
 [google_ad_id]: https://developer.android.com/google/play-services/id.html
 [xcode-logs]: https://raw.githubusercontent.com/adjust/sdks/master/Resources/marmalade/v4/xcode-logs.png
+[android-pkg-name]: https://raw.githubusercontent.com/adjust/sdks/master/Resources/marmalade/v4/android-pkg-name.png
 [special-partners]: https://docs.adjust.com/en/special-partners
 
 ## License
