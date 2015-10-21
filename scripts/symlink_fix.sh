@@ -5,7 +5,7 @@
 set -e
 
 # Go to framework folder
-cd ../source/sdk/iOS/Adjust.framework
+cd ../../source/sdk/iOS/Adjust.framework
 
 # Remove any existing symlinks
 rm -rf Adjust
