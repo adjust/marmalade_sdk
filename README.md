@@ -19,7 +19,7 @@ changed this setting to your defaults, the please be sure to rename it.
 These are the minimal steps required to integrate the adjust SDK into your
 Marmalade project.
 
-SDK 4.0.0 for Marmalade is built with Marmalade 7.10 and we advise you
+SDK 4.0.1 for Marmalade is built with Marmalade 7.10 and we advise you
 to use Marmalade 7.10 or higher in order to use our SDK.
 
 ### 1. Get the SDK
