@@ -11,6 +11,9 @@ cd ../../source/sdk/iOS/Adjust.framework
 rm -rf Adjust
 rm -rf Headers
 
-# Make new symlinks
-ln -s Versions/A/Adjust Adjust
-ln -s Versions/A/Headers Headers
+# Move library and headers
+mv Versions/A/Adjust .
+mv Versions/A/Headers .
+
+# Remove Versions folder
+rm -rf Versions
