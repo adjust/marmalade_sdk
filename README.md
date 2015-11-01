@@ -255,7 +255,7 @@ You can read more about special partners and these integrations in our
 ### 10. Receive attribution change callback
 
 You can register a callback to be notified of tracker attribution changes. Due to the 
-different sources considered for attribution, this information cannot by provided 
+different sources considered for attribution, this information cannot be provided 
 synchronously. Follow these steps to implement the optional callback in your application:
 
 1. Create void method which receives parameter of type `adjust_attribution_data*`.
