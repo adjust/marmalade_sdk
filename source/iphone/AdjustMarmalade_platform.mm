@@ -132,10 +132,6 @@ s3eResult adjust_Start_platform(adjust_config* config)
             [adjustConfig setEventBufferingEnabled:*(config->is_event_buffering_enabled)];
         }
 
-        if (config->is_mac_md5_tracking_enabled != NULL) {
-            [adjustConfig setMacMd5TrackingEnabled:*(config->is_mac_md5_tracking_enabled)];
-        }
-
         if (config->is_attribution_delegate_set != NULL) {
             if (*(config->is_attribution_delegate_set) == true) {
                 EDK_CALLBACK_REG(ADJUST, ADJUST_ATTRIBUTION_DATA,

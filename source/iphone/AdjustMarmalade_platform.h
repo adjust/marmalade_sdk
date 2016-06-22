@@ -6,7 +6,7 @@
 //
 //
 
-#import <Adjust/Adjust.h>
+#import <AdjustSdk/Adjust.h>
 
 @interface AdjustMarmalade_platform : NSObject<AdjustDelegate>
 
