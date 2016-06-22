@@ -195,13 +195,13 @@ s3eResult AdjustMarmaladeInit_platform()
     env->DeleteGlobalRef(cls);
 
     // Add any platform-specific initialisation code here
-    if (s3eDeviceRegister(S3E_DEVICE_UNPAUSE, (s3eCallback)applicationUnpaused, NULL) != S3E_RESULT_SUCCESS) {
-        return S3E_RESULT_ERROR;
-    }
+    // if (s3eDeviceRegister(S3E_DEVICE_UNPAUSE, (s3eCallback)applicationUnpaused, NULL) != S3E_RESULT_SUCCESS) {
+    //     return S3E_RESULT_ERROR;
+    // }
 
-    if (s3eDeviceRegister(S3E_DEVICE_PAUSE, (s3eCallback)applicationPaused, NULL) != S3E_RESULT_SUCCESS) {
-        return S3E_RESULT_ERROR;
-    }
+    // if (s3eDeviceRegister(S3E_DEVICE_PAUSE, (s3eCallback)applicationPaused, NULL) != S3E_RESULT_SUCCESS) {
+    //     return S3E_RESULT_ERROR;
+    // }
 
     return S3E_RESULT_SUCCESS;
 
@@ -340,18 +340,18 @@ s3eResult adjust_SetReferrer_platform(const char* referrer)
 
 s3eResult adjust_OnPause_platform()
 {
-    JNIEnv* env = s3eEdkJNIGetEnv();
+    // JNIEnv* env = s3eEdkJNIGetEnv();
 
-    env->CallVoidMethod(g_Obj, g_adjust_OnPause);
+    // env->CallVoidMethod(g_Obj, g_adjust_OnPause);
 
     return (s3eResult)0;
 }
 
 s3eResult adjust_OnResume_platform()
 {
-    JNIEnv* env = s3eEdkJNIGetEnv();
+    // JNIEnv* env = s3eEdkJNIGetEnv();
 
-    env->CallVoidMethod(g_Obj, g_adjust_OnResume);
+    // env->CallVoidMethod(g_Obj, g_adjust_OnResume);
 
     return (s3eResult)0;
 }

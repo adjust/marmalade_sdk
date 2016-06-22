@@ -18,16 +18,30 @@ import org.json.JSONException;
 
 import com.ideaworks3d.marmalade.LoaderAPI;
 import com.ideaworks3d.marmalade.LoaderActivity;
+import com.ideaworks3d.marmalade.LoaderActivitySlave;
 import com.ideaworks3d.marmalade.SuspendResumeListener;
 import com.ideaworks3d.marmalade.SuspendResumeEvent;
 
-public class AdjustMarmalade implements OnAttributionChangedListener {
+public class AdjustMarmalade extends LoaderActivitySlave implements OnAttributionChangedListener {
     public native void attributionCallback(String attributionString);
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Adjust.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        Adjust.onPause();
+    }
 
     public void adjust_Start(String appToken, String environment, String logLevel, String sdkPrefix,
         boolean isEventBufferingEnabled, String processName, String defaultTracker, boolean isMacMd5TrackingEnabled,
         boolean isAttributionCallbackSet) {
-
         if (isStringValid(appToken) && isStringValid(environment)) {
             AdjustConfig adjustConfig = new AdjustConfig(LoaderAPI.getActivity(), appToken, environment);
 
