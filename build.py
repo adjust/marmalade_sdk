@@ -34,7 +34,7 @@ def main():
         if parsed_args.post_compile:
             post_compile()
             return
-        if not (parsed_args.compile_android or parsed_args.compile_iphone):
+        if (parsed_args.clean):
             clean()
         if not parsed_args.clean:
             if not (parsed_args.compile_android or parsed_args.build_android or parsed_args.build_compile_android):
@@ -202,7 +202,7 @@ def move_iphone_source():
         shutil.copy("source/iphone/AdjustMarmalade_platform.h", "adjust/source/iphone")
         shutil.copy("source/iphone/AdjustMarmalade_platform.mm", "adjust/source/iphone")
 
-        shutil.copytree("source/rapidjson/include", "adjust/rapidjson/include")
+        copytree("source/rapidjson/include", "adjust/rapidjson/include")
         shutil.copy("source/rapidjson/rapidjson.mkf", "adjust/rapidjson/rapidjson.mkf")
         copytree("source/sdk/iOS", "adjust/sdk/iOS");
 
