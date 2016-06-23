@@ -67,7 +67,7 @@ def clean():
         break
 
 def build_android():
-    edk_build = Popen(["edk-build", "adjust/AdjustMarmalade.s4e", "--platform=android"], stdout=PIPE, stderr=PIPE)
+    edk_build = Popen(["edk-build", "--force", "adjust/AdjustMarmalade.s4e", "--platform=android"], stdout=PIPE, stderr=PIPE)
     out, err = edk_build.communicate()
 
     Log("edk-build android out: {0}".format(out))
@@ -83,7 +83,7 @@ def build_android():
     #edit_mkf("android")
 
 def build_iphone():
-    edk_build = Popen(["edk-build", "adjust/AdjustMarmalade.s4e", "--platform=iphone"], stdout=PIPE, stderr=PIPE)
+    edk_build = Popen(["edk-build", "--force", "adjust/AdjustMarmalade.s4e", "--platform=iphone"], stdout=PIPE, stderr=PIPE)
     out, err = edk_build.communicate()
 
     Log("edk-build iphone out: {0}".format(out))
