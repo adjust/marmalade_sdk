@@ -245,3 +245,13 @@ s3eResult adjust_SetDeviceToken_platform(const char* device_token)
 
     return S3E_RESULT_SUCCESS;
 }
+
+const char* adjust_GetGoogleAdId_platform()
+{
+    return "";
+}
+
+const char* adjust_GetIdfa_platform()
+{
+    return "";
+}

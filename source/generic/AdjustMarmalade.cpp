@@ -43,6 +43,118 @@ void adjust_CleanupAttributionCallback(uint32 extID, int32 notification, void *s
     delete attribution;
 }
 
+void adjust_CleanupEventSuccessCallback(uint32 extID, int32 notification, void *systemData, void *instance, 
+    int32 returnCode, void *completeData)
+{
+    adjust_event_success_data* event_success = (adjust_event_success_data*)completeData;
+    
+    if (event_success == NULL) {
+        return;
+    }
+
+    free(event_success->message);
+    free(event_success->timestamp);
+    free(event_success->event_token);
+    free(event_success->adid);
+    free(event_success->json_response);
+
+    delete event_success;
+}
+
+void adjust_CleanupEventFailureCallback(uint32 extID, int32 notification, void *systemData, void *instance, 
+    int32 returnCode, void *completeData)
+{
+    adjust_event_failure_data* event_failure = (adjust_event_failure_data*)completeData;
+    
+    if (event_failure == NULL) {
+        return;
+    }
+
+    free(event_failure->message);
+    free(event_failure->timestamp);
+    free(event_failure->event_token);
+    free(event_failure->adid);
+    free(event_failure->will_retry);
+    free(event_failure->json_response);
+
+    delete event_failure;
+}
+
+void adjust_CleanupSessionSuccessCallback(uint32 extID, int32 notification, void *systemData, void *instance, 
+    int32 returnCode, void *completeData)
+{
+    adjust_session_success_data* session_success = (adjust_session_success_data*)completeData;
+    
+    if (session_success == NULL) {
+        return;
+    }
+
+    free(session_success->message);
+    free(session_success->timestamp);
+    free(session_success->adid);
+    free(session_success->json_response);
+
+    delete session_success;
+}
+
+void adjust_CleanupSessionFailureCallback(uint32 extID, int32 notification, void *systemData, void *instance, 
+    int32 returnCode, void *completeData)
+{
+    adjust_session_failure_data* session_failure = (adjust_session_failure_data*)completeData;
+    
+    if (session_failure == NULL) {
+        return;
+    }
+
+    free(session_failure->message);
+    free(session_failure->timestamp);
+    free(session_failure->adid);
+    free(session_failure->will_retry);
+    free(session_failure->json_response);
+
+    delete session_failure;
+}
+
+void adjust_CleanupDeeplinkCallback(uint32 extID, int32 notification, void *systemData, void *instance, 
+    int32 returnCode, void *completeData)
+{   
+    if (completeData == NULL) {
+        return;
+    }
+
+    free(completeData);
+}
+
+void adjust_CleanupDeferredDeeplinkCallback(uint32 extID, int32 notification, void *systemData, void *instance, 
+    int32 returnCode, void *completeData)
+{   
+    if (completeData == NULL) {
+        return;
+    }
+
+    free(completeData);
+}
+
+void adjust_CleanupGoogleAdIdCallback(uint32 extID, int32 notification, void *systemData, void *instance, 
+    int32 returnCode, void *completeData)
+{   
+    if (completeData == NULL) {
+        return;
+    }
+
+    free(completeData);
+}
+
+void adjust_CleanupIdfaCallback(uint32 extID, int32 notification, void *systemData, void *instance, 
+    int32 returnCode, void *completeData)
+{   
+    if (completeData == NULL) {
+        return;
+    }
+
+    free(completeData);
+}
+
 char* adjust_CopyString(const char* source)
 {
     if (source == NULL) {
@@ -57,7 +169,7 @@ char* adjust_CopyString(const char* source)
 
 s3eResult adjust_Start(adjust_config* config)
 {
-    config->set_sdk_prefix("marmalade4.0.1");
+    config->set_sdk_prefix("marmalade4.7.0");
     
     return adjust_Start_platform(config);
 }
@@ -82,16 +194,6 @@ s3eResult adjust_SetOfflineMode(bool is_offline_mode_enabled)
     return adjust_SetOfflineMode_platform(is_offline_mode_enabled);
 }
 
-s3eResult adjust_OnPause()
-{
-    return adjust_OnPause_platform();
-}
-
-s3eResult adjust_OnResume()
-{
-    return adjust_OnResume_platform();
-}
-
 s3eResult adjust_SetReferrer(const char* referrer)
 {
     return adjust_SetReferrer_platform(referrer);
@@ -100,4 +202,14 @@ s3eResult adjust_SetReferrer(const char* referrer)
 s3eResult adjust_SetDeviceToken(const char* device_token)
 {
     return adjust_SetDeviceToken_platform(device_token);
+}
+
+s3eResult adjust_GetGoogleAdId()
+{
+    return adjust_GetGoogleAdId_platform();
+}
+
+s3eResult adjust_GetIdfa()
+{
+    return adjust_GetIdfa_platform();
 }
