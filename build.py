@@ -289,7 +289,7 @@ def edit_xcode_project(xcode_project_path):
 
     # Add Adjust framework.
     adjust_framework_path = os.path.dirname(os.path.abspath(__file__)) + "/adjust/sdk/ios/"
-    ios_XcodeProject.add_file_if_doesnt_exist(adjust_framework_path + "Adjust.framework", tree="SDKROOT", create_build_files=True, weak=True)
+    ios_XcodeProject.add_file_if_doesnt_exist(adjust_framework_path + "AdjustSdk.framework", tree="SDKROOT", create_build_files=True, weak=True)
 
     # Save changes.
     ios_XcodeProject.saveFormat3_2()
