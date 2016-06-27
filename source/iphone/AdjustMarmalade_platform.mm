@@ -291,10 +291,7 @@ void assign_delegate_if_not_assigned(ADJConfig *adjustConfig) {
     [adjustConfig setDelegate:(id)adjustMarmaladeInstance];
 }
 
-int32 handle_open_url(void* systemData, void* userData)
-{
-    NSLog(@"Standard link received!");
-
+int32 handle_open_url(void* systemData, void* userData) {
     NSURL *url = (NSURL *)systemData;
     [Adjust appWillOpenUrl:url];
 
@@ -313,10 +310,7 @@ int32 handle_open_url(void* systemData, void* userData)
     return 0;
 }
 
-int32 handle_open_universal_url(void* systemData, void* userData)
-{
-    NSLog(@"Universal link received!");
-
+int32 handle_open_universal_url(void* systemData, void* userData) {
     if (isDeeplinkCallbackSet == NO) {
         return 0;
     }
@@ -332,8 +326,7 @@ int32 handle_open_universal_url(void* systemData, void* userData)
     return 0;
 }
 
-s3eResult AdjustMarmaladeInit_platform()
-{
+s3eResult AdjustMarmaladeInit_platform() {
     // Subscribe for deep linking.
     s3eEdkCallbacksRegisterInternal(S3E_EDK_INTERNAL,
                                     S3E_EDK_CALLBACK_MAX,
@@ -353,8 +346,7 @@ s3eResult AdjustMarmaladeInit_platform()
     return S3E_RESULT_SUCCESS;
 }
 
-void AdjustMarmaladeTerminate_platform()
-{
+void AdjustMarmaladeTerminate_platform() {
     s3eEdkCallbacksUnRegister(S3E_EDK_INTERNAL,
                               S3E_EDK_CALLBACK_MAX,
                               S3E_EDK_IPHONE_HANDLEOPENURL,
@@ -366,8 +358,7 @@ void AdjustMarmaladeTerminate_platform()
                               (s3eCallback)handle_open_universal_url);
 }
 
-s3eResult adjust_Start_platform(adjust_config* config)
-{
+s3eResult adjust_Start_platform(adjust_config* config) {
     NSString *appToken = config->app_token ? [NSString stringWithUTF8String:config->app_token] : nil;
     NSString *environment = config->environment ? [NSString stringWithUTF8String:config->environment] : nil;
     NSString *logLevel = config->log_level ? [NSString stringWithUTF8String:config->log_level] : nil;
@@ -479,8 +470,7 @@ s3eResult adjust_Start_platform(adjust_config* config)
     return S3E_RESULT_SUCCESS;
 }
 
-s3eResult adjust_TrackEvent_platform(adjust_event* event)
-{
+s3eResult adjust_TrackEvent_platform(adjust_event* event) {
     NSString *eventToken = event->event_token ? [NSString stringWithUTF8String:event->event_token] : nil;
     NSString *currency = event->currency ? [NSString stringWithUTF8String:event->currency] : nil;
     NSString *transactionId = event->transaction_id ? [NSString stringWithUTF8String:event->transaction_id] : nil;
@@ -529,15 +519,12 @@ s3eResult adjust_TrackEvent_platform(adjust_event* event)
     return S3E_RESULT_SUCCESS;
 }
 
-s3eResult adjust_SetEnabled_platform(bool is_enabled)
-{
+s3eResult adjust_SetEnabled_platform(bool is_enabled) {
     [Adjust setEnabled:is_enabled];
-
     return S3E_RESULT_SUCCESS;
 }
 
-s3eResult adjust_IsEnabled_platform(bool& is_enabled_out)
-{
+s3eResult adjust_IsEnabled_platform(bool& is_enabled_out) {
     BOOL isEnabled = [Adjust isEnabled];
 
     is_enabled_out = isEnabled;
@@ -545,20 +532,16 @@ s3eResult adjust_IsEnabled_platform(bool& is_enabled_out)
     return S3E_RESULT_SUCCESS;
 }
 
-s3eResult adjust_SetOfflineMode_platform(bool is_offline_mode_enabled)
-{
+s3eResult adjust_SetOfflineMode_platform(bool is_offline_mode_enabled) {
     [Adjust setOfflineMode:is_offline_mode_enabled];
-
     return S3E_RESULT_SUCCESS;
 }
 
-s3eResult adjust_SetReferrer_platform(const char* referrer)
-{
+s3eResult adjust_SetReferrer_platform(const char* referrer) {
     return S3E_RESULT_SUCCESS;
 }
 
-s3eResult adjust_SetDeviceToken_platform(const char* device_token)
-{
+s3eResult adjust_SetDeviceToken_platform(const char* device_token) {
     NSData *deviceToken = [[NSString stringWithUTF8String:device_token] dataUsingEncoding:NSUTF8StringEncoding];
 
     [Adjust setDeviceToken:deviceToken];
@@ -566,8 +549,7 @@ s3eResult adjust_SetDeviceToken_platform(const char* device_token)
     return S3E_RESULT_SUCCESS;
 }
 
-s3eResult adjust_GetGoogleAdId_platform()
-{
+s3eResult adjust_GetGoogleAdId_platform() {
     if (isGoogleAdIdCallbackSet) {
         NSString *googleAdId = @"";
         const char* csGoogleAdId = googleAdId != nil ? [googleAdId UTF8String] : NULL;
@@ -581,8 +563,7 @@ s3eResult adjust_GetGoogleAdId_platform()
     return S3E_RESULT_SUCCESS;
 }
 
-s3eResult adjust_GetIdfa_platform()
-{
+s3eResult adjust_GetIdfa_platform() {
     if (isIdfaCallbackSet) {
         NSString *idfa = [Adjust idfa];
         const char* csIdfa = idfa != nil ? [idfa UTF8String] : NULL;

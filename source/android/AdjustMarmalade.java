@@ -12,7 +12,6 @@ These functions are called via JNI from native code.
 
 import java.util.Map;
 import android.net.Uri;
-import android.util.Log;
 import com.adjust.sdk.*;
 import org.json.JSONObject;
 import org.json.JSONException;

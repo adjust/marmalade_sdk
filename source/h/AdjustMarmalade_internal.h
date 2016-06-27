@@ -20,8 +20,7 @@
 
 #define S3E_DEVICE_ADJUST                   S3E_EXT_ADJUSTMARMALADE_HASH
 
-typedef enum s3eAdjustCallback
-{
+typedef enum s3eAdjustCallback {
     S3E_ADJUST_CALLBACK_ADJUST_ATTRIBUTION_DATA,
     S3E_ADJUST_CALLBACK_ADJUST_EVENT_SUCCESS_DATA,
     S3E_ADJUST_CALLBACK_ADJUST_EVENT_FAILURE_DATA,
@@ -37,9 +36,7 @@ typedef enum s3eAdjustCallback
 /**
  * Global data for AdjustMarmalade extension.
  */
-struct AdjustMarmaladeGlobals
-{
-};
+struct AdjustMarmaladeGlobals {};
 
 /**
  * Initialise the extension.  This is called once then the extension is first
