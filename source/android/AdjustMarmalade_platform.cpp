@@ -232,11 +232,7 @@ void JNICALL the_deeplink_callback(JNIEnv* env, jobject obj, jstring deeplinkStr
     s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
                            S3E_ADJUST_CALLBACK_ADJUST_DEEPLINK_DATA,
                            (char*)deeplinkCString,
-                           strlen(deeplinkCString),
-                           NULL,
-                           S3E_FALSE,
-                           &adjust_CleanupDeeplinkCallback,
-                           (void*)deeplinkCString);
+                           strlen(deeplinkCString));
 }
 
 void JNICALL the_deferred_deeplink_callback(JNIEnv* env, jobject obj, jstring deferredDeeplinkString) 
@@ -246,11 +242,7 @@ void JNICALL the_deferred_deeplink_callback(JNIEnv* env, jobject obj, jstring de
     s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
                            S3E_ADJUST_CALLBACK_ADJUST_DEFERRED_DEEPLINK_DATA,
                            (char*)deferredDeeplinkCString,
-                           strlen(deferredDeeplinkCString),
-                           NULL,
-                           S3E_FALSE,
-                           &adjust_CleanupDeferredDeeplinkCallback,
-                           (void*)deferredDeeplinkCString);
+                           strlen(deferredDeeplinkCString));
 }
 
 void JNICALL the_google_ad_id_callback(JNIEnv* env, jobject obj, jstring googleAdIdString) 
@@ -260,11 +252,7 @@ void JNICALL the_google_ad_id_callback(JNIEnv* env, jobject obj, jstring googleA
     s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
                            S3E_ADJUST_CALLBACK_ADJUST_GOOGLE_AD_ID_DATA,
                            (char*)googleAdIdCString,
-                           strlen(googleAdIdCString),
-                           NULL,
-                           S3E_FALSE,
-                           &adjust_CleanupIdfaCallback,
-                           (void*)googleAdIdCString);
+                           strlen(googleAdIdCString));
 }
 
 void JNICALL the_idfa_callback(JNIEnv* env, jobject obj, jstring idfaString) 
@@ -274,11 +262,7 @@ void JNICALL the_idfa_callback(JNIEnv* env, jobject obj, jstring idfaString)
     s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
                            S3E_ADJUST_CALLBACK_ADJUST_IDFA_DATA,
                            (char*)idfaCString,
-                           strlen(idfaCString),
-                           NULL,
-                           S3E_FALSE,
-                           &adjust_CleanupIdfaCallback,
-                           (void*)idfaCString);
+                           strlen(idfaCString));
 }
 
 jobject create_global_java_dict(const adjust_param_type* params)

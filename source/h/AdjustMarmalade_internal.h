@@ -65,41 +65,21 @@ void AdjustMarmaladeTerminate();
 void AdjustMarmaladeTerminate_platform();
 
 s3eResult adjust_Start_platform(adjust_config* config);
-
 s3eResult adjust_TrackEvent_platform(adjust_event* event);
-
 s3eResult adjust_SetEnabled_platform(bool is_enabled);
-
 s3eResult adjust_IsEnabled_platform(bool& is_enabled_out);
-
 s3eResult adjust_SetOfflineMode_platform(bool is_offline_mode_enabled);
-
 s3eResult adjust_SetReferrer_platform(const char* referrer);
-
 s3eResult adjust_SetDeviceToken_platform(const char* device_token);
-
 s3eResult adjust_GetGoogleAdId_platform();
-
 s3eResult adjust_GetIdfa_platform();
 
 char* adjust_CopyString(const char* source);
 
 void adjust_CleanupAttributionCallback(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData);
-
 void adjust_CleanupEventSuccessCallback(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData);
-
 void adjust_CleanupEventFailureCallback(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData);
-
 void adjust_CleanupSessionSuccessCallback(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData);
-
 void adjust_CleanupSessionFailureCallback(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData);
-
-void adjust_CleanupDeeplinkCallback(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData);
-
-void adjust_CleanupDeferredDeeplinkCallback(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData);
-
-void adjust_CleanupGoogleAdIdCallback(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData);
-
-void adjust_CleanupIdfaCallback(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData);
 
 #endif /* !ADJUSTMARMALADE_INTERNAL_H */

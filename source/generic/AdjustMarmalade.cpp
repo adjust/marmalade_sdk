@@ -1,8 +1,8 @@
 /*
-Generic implementation of the AdjustMarmalade extension.
-This file should perform any platform-indepedentent functionality
-(e.g. error checking) before calling platform-dependent implementations.
-*/
+ Generic implementation of the AdjustMarmalade extension.
+ This file should perform any platform-indepedentent functionality
+ (e.g. error checking) before calling platform-dependent implementations.
+ */
 
 /*
  * NOTE: This file was originally written by the extension builder, but will not
@@ -23,11 +23,11 @@ void AdjustMarmaladeTerminate()
     AdjustMarmaladeTerminate_platform();
 }
 
-void adjust_CleanupAttributionCallback(uint32 extID, int32 notification, void *systemData, void *instance, 
-    int32 returnCode, void *completeData)
+void adjust_CleanupAttributionCallback(uint32 extID, int32 notification, void *systemData, void *instance,
+                                       int32 returnCode, void *completeData)
 {
     adjust_attribution_data* attribution = (adjust_attribution_data*)completeData;
-    
+
     if (attribution == NULL) {
         return;
     }
@@ -43,11 +43,11 @@ void adjust_CleanupAttributionCallback(uint32 extID, int32 notification, void *s
     delete attribution;
 }
 
-void adjust_CleanupEventSuccessCallback(uint32 extID, int32 notification, void *systemData, void *instance, 
-    int32 returnCode, void *completeData)
+void adjust_CleanupEventSuccessCallback(uint32 extID, int32 notification, void *systemData, void *instance,
+                                        int32 returnCode, void *completeData)
 {
     adjust_event_success_data* event_success = (adjust_event_success_data*)completeData;
-    
+
     if (event_success == NULL) {
         return;
     }
@@ -61,11 +61,11 @@ void adjust_CleanupEventSuccessCallback(uint32 extID, int32 notification, void *
     delete event_success;
 }
 
-void adjust_CleanupEventFailureCallback(uint32 extID, int32 notification, void *systemData, void *instance, 
-    int32 returnCode, void *completeData)
+void adjust_CleanupEventFailureCallback(uint32 extID, int32 notification, void *systemData, void *instance,
+                                        int32 returnCode, void *completeData)
 {
     adjust_event_failure_data* event_failure = (adjust_event_failure_data*)completeData;
-    
+
     if (event_failure == NULL) {
         return;
     }
@@ -80,11 +80,11 @@ void adjust_CleanupEventFailureCallback(uint32 extID, int32 notification, void *
     delete event_failure;
 }
 
-void adjust_CleanupSessionSuccessCallback(uint32 extID, int32 notification, void *systemData, void *instance, 
-    int32 returnCode, void *completeData)
+void adjust_CleanupSessionSuccessCallback(uint32 extID, int32 notification, void *systemData, void *instance,
+                                          int32 returnCode, void *completeData)
 {
     adjust_session_success_data* session_success = (adjust_session_success_data*)completeData;
-    
+
     if (session_success == NULL) {
         return;
     }
@@ -97,11 +97,11 @@ void adjust_CleanupSessionSuccessCallback(uint32 extID, int32 notification, void
     delete session_success;
 }
 
-void adjust_CleanupSessionFailureCallback(uint32 extID, int32 notification, void *systemData, void *instance, 
-    int32 returnCode, void *completeData)
+void adjust_CleanupSessionFailureCallback(uint32 extID, int32 notification, void *systemData, void *instance,
+                                          int32 returnCode, void *completeData)
 {
     adjust_session_failure_data* session_failure = (adjust_session_failure_data*)completeData;
-    
+
     if (session_failure == NULL) {
         return;
     }
@@ -115,53 +115,18 @@ void adjust_CleanupSessionFailureCallback(uint32 extID, int32 notification, void
     delete session_failure;
 }
 
-void adjust_CleanupDeeplinkCallback(uint32 extID, int32 notification, void *systemData, void *instance, 
-    int32 returnCode, void *completeData)
-{   
-    if (completeData == NULL) {
-        return;
-    }
-
-    free(completeData);
-}
-
-void adjust_CleanupDeferredDeeplinkCallback(uint32 extID, int32 notification, void *systemData, void *instance, 
-    int32 returnCode, void *completeData)
-{   
-    if (completeData == NULL) {
-        return;
-    }
-
-    free(completeData);
-}
-
-void adjust_CleanupGoogleAdIdCallback(uint32 extID, int32 notification, void *systemData, void *instance, 
-    int32 returnCode, void *completeData)
-{   
-    if (completeData == NULL) {
-        return;
-    }
-
-    free(completeData);
-}
-
-void adjust_CleanupIdfaCallback(uint32 extID, int32 notification, void *systemData, void *instance, 
-    int32 returnCode, void *completeData)
-{   
-    if (completeData == NULL) {
-        return;
-    }
-
-    free(completeData);
-}
-
 char* adjust_CopyString(const char* source)
 {
     if (source == NULL) {
         return NULL;
     }
 
-    char* target = (char*) malloc(sizeof(char) * strlen(source));
+    char* target = (char*)malloc(sizeof(char) * (strlen(source) + 1));
+
+    if (target == NULL) {
+        return NULL;
+    }
+
     strcpy(target, source);
 
     return target;
@@ -170,7 +135,7 @@ char* adjust_CopyString(const char* source)
 s3eResult adjust_Start(adjust_config* config)
 {
     config->set_sdk_prefix("marmalade4.7.0");
-    
+
     return adjust_Start_platform(config);
 }
 

@@ -16,19 +16,29 @@
 @implementation AdjustMarmalade_platform
 
 static id<AdjustDelegate> adjustMarmaladeInstance = nil;
+static BOOL isAttributionCallbackSet = NO;
+static BOOL isSessionSuccessCallbackSet = NO;
+static BOOL isSessionFailureCallbackSet = NO;
+static BOOL isEventSuccessCallbackSet = NO;
+static BOOL isEventFailureCallbackSet = NO;
+static BOOL isDeeplinkCallbackSet = NO;
+static BOOL isDeferredDeplinkCallbackSet = NO;
+static BOOL shouldDeferredDeeplinkBeOpened = YES;
+static BOOL isGoogleAdIdCallbackSet = NO;
+static BOOL isIdfaCallbackSet = NO;
 
-- (id) init {
+- (id)init {
     self = [super init];
     return self;
 }
 
-- (char *)convertString:(NSString *)string {
+- (char*)convertString:(NSString *)string {
     if (string == nil) {
         return NULL;
     }
 
     const char* source = [string UTF8String];
-    char *target = adjust_CopyString(source);
+    char* target = adjust_CopyString(source);
     return target;
 }
 
@@ -46,17 +56,220 @@ static id<AdjustDelegate> adjustMarmaladeInstance = nil;
     return attribution;
 }
 
+- (adjust_session_success_data*)getSessionSuccessData:(ADJSessionSuccess *)sessionSuccessData {
+    adjust_session_success_data* sessionSuccess = new adjust_session_success_data();
+
+    sessionSuccess->message       = [self convertString:sessionSuccessData.message];
+    sessionSuccess->timestamp     = [self convertString:sessionSuccessData.timeStamp];
+    sessionSuccess->adid          = [self convertString:sessionSuccessData.adid];
+
+    if (sessionSuccessData.jsonResponse != nil) {
+        NSError *error;
+        NSString *jsonString = nil;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:sessionSuccessData.jsonResponse
+                                                           options:0
+                                                             error:&error];
+        if (jsonData == nil) {
+            sessionSuccess->json_response = [self convertString:@""];
+        } else {
+            jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            sessionSuccess->json_response = [self convertString:jsonString];
+        }
+    } else {
+        sessionSuccess->json_response = [self convertString:@""];
+    }
+
+    return sessionSuccess;
+}
+
+- (adjust_session_failure_data*)getSessionFailureData:(ADJSessionFailure *)sessionFailureData {
+    adjust_session_failure_data* sessionFailure = new adjust_session_failure_data();
+
+    sessionFailure->message       = [self convertString:sessionFailureData.message];
+    sessionFailure->timestamp     = [self convertString:sessionFailureData.timeStamp];
+    sessionFailure->adid          = [self convertString:sessionFailureData.adid];
+
+    NSString *booleanString = (sessionFailureData.willRetry) ? @"Yes" : @"No";
+    sessionFailure->will_retry    = [self convertString:booleanString];
+
+    if (sessionFailureData.jsonResponse != nil) {
+        NSError *error;
+        NSString *jsonString = nil;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:sessionFailureData.jsonResponse
+                                                           options:0
+                                                             error:&error];
+
+        if (jsonData == nil) {
+            sessionFailure->json_response = [self convertString:@""];
+        } else {
+            jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            sessionFailure->json_response = [self convertString:jsonString];
+        }
+    } else {
+        sessionFailure->json_response = [self convertString:@""];
+    }
+
+    return sessionFailure;
+}
+
+- (adjust_event_success_data*)getEventSuccessData:(ADJEventSuccess *)eventSuccessData {
+    adjust_event_success_data* eventSuccess = new adjust_event_success_data();
+
+    eventSuccess->message       = [self convertString:eventSuccessData.message];
+    eventSuccess->timestamp     = [self convertString:eventSuccessData.timeStamp];
+    eventSuccess->event_token   = [self convertString:eventSuccessData.eventToken];
+    eventSuccess->adid          = [self convertString:eventSuccessData.adid];
+
+    if (eventSuccessData.jsonResponse != nil) {
+        NSError *error;
+        NSString *jsonString = nil;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:eventSuccessData.jsonResponse
+                                                           options:0
+                                                             error:&error];
+
+        if (jsonData == nil) {
+            eventSuccess->json_response = [self convertString:@""];
+        } else {
+            jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            eventSuccess->json_response = [self convertString:jsonString];
+        }
+    } else {
+        eventSuccess->json_response = [self convertString:@""];
+    }
+
+    return eventSuccess;
+}
+
+- (adjust_event_failure_data*)getEventFailureData:(ADJEventFailure *)eventFailureData {
+    adjust_event_failure_data* eventFailure = new adjust_event_failure_data();
+
+    eventFailure->message       = [self convertString:eventFailureData.message];
+    eventFailure->timestamp     = [self convertString:eventFailureData.timeStamp];
+    eventFailure->event_token   = [self convertString:eventFailureData.eventToken];
+    eventFailure->adid          = [self convertString:eventFailureData.adid];
+
+    NSString *booleanString = (eventFailureData.willRetry) ? @"Yes" : @"No";
+    eventFailure->will_retry    = [self convertString:booleanString];
+
+    if (eventFailureData.jsonResponse != nil) {
+        NSError *error;
+        NSString *jsonString = nil;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:eventFailureData.jsonResponse
+                                                           options:0
+                                                             error:&error];
+
+        if (jsonData == nil) {
+            eventFailure->json_response = [self convertString:@""];
+        } else {
+            jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            eventFailure->json_response = [self convertString:jsonString];
+        }
+    } else {
+        eventFailure->json_response = [self convertString:@""];
+    }
+
+    return eventFailure;
+}
+
 - (void)adjustAttributionChanged:(ADJAttribution *)attribution {
-    adjust_attribution_data* attribution_data = [self getAttributionData:attribution];
+    if (isAttributionCallbackSet == NO) {
+        return;
+    }
+
+    adjust_attribution_data* attributionData = [self getAttributionData:attribution];
 
     s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
                            S3E_ADJUST_CALLBACK_ADJUST_ATTRIBUTION_DATA,
-                           attribution_data,
-                           sizeof(*attribution_data),
+                           attributionData,
+                           sizeof(*attributionData),
                            NULL,
                            S3E_FALSE,
                            &adjust_CleanupAttributionCallback,
-                           (void*)attribution_data);
+                           (void*)attributionData);
+}
+
+- (void)adjustSessionTrackingSucceeded:(ADJSessionSuccess *)sessionSuccessResponseData {
+    if (isSessionSuccessCallbackSet == NO) {
+        return;
+    }
+
+    adjust_session_success_data* sessionSuccessData = [self getSessionSuccessData:sessionSuccessResponseData];
+
+    s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
+                           S3E_ADJUST_CALLBACK_ADJUST_SESSION_SUCCESS_DATA,
+                           sessionSuccessData,
+                           sizeof(*sessionSuccessData),
+                           NULL,
+                           S3E_FALSE,
+                           &adjust_CleanupSessionSuccessCallback,
+                           (void*)sessionSuccessData);
+}
+
+- (void)adjustSessionTrackingFailed:(ADJSessionFailure *)sessionFailureResponseData {
+    if (isSessionFailureCallbackSet == NO) {
+        return;
+    }
+
+    adjust_session_failure_data* sessionFailureData = [self getSessionFailureData:sessionFailureResponseData];
+
+    s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
+                           S3E_ADJUST_CALLBACK_ADJUST_SESSION_FAILURE_DATA,
+                           sessionFailureData,
+                           sizeof(*sessionFailureData),
+                           NULL,
+                           S3E_FALSE,
+                           &adjust_CleanupSessionFailureCallback,
+                           (void*)sessionFailureData);
+}
+
+- (void)adjustEventTrackingSucceeded:(ADJEventSuccess *)eventSuccessResponseData {
+    if (isEventSuccessCallbackSet == NO) {
+        return;
+    }
+
+    adjust_event_success_data* eventSuccessData = [self getEventSuccessData:eventSuccessResponseData];
+
+    s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
+                           S3E_ADJUST_CALLBACK_ADJUST_EVENT_SUCCESS_DATA,
+                           eventSuccessData,
+                           sizeof(*eventSuccessData),
+                           NULL,
+                           S3E_FALSE,
+                           &adjust_CleanupEventSuccessCallback,
+                           (void*)eventSuccessData);
+}
+
+- (void)adjustEventTrackingFailed:(ADJEventFailure *)eventFailureResponseData {
+    if (isEventFailureCallbackSet == NO) {
+        return;
+    }
+
+    adjust_event_failure_data* eventFailureData = [self getEventFailureData:eventFailureResponseData];
+
+    s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
+                           S3E_ADJUST_CALLBACK_ADJUST_EVENT_FAILURE_DATA,
+                           eventFailureData,
+                           sizeof(*eventFailureData),
+                           NULL,
+                           S3E_FALSE,
+                           &adjust_CleanupEventFailureCallback,
+                           (void*)eventFailureData);
+}
+
+- (BOOL)adjustDeeplinkResponse:(NSURL *)deeplink {
+    if (isDeferredDeplinkCallbackSet == NO) {
+        return shouldDeferredDeeplinkBeOpened;
+    }
+
+    NSString *stringDeeplink = [deeplink absoluteString];
+    const char* csDeeplink = stringDeeplink != nil ? [stringDeeplink UTF8String] : NULL;
+
+    s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
+                           S3E_ADJUST_CALLBACK_ADJUST_DEFERRED_DEEPLINK_DATA,
+                           (void*)csDeeplink,
+                           (csDeeplink != NULL ? (int)strlen(csDeeplink) + 1 : 0));
+
+    return shouldDeferredDeeplinkBeOpened;
 }
 
 @end
@@ -69,11 +282,52 @@ BOOL is_string_valid(NSString *string) {
     }
 }
 
-int32 handleOpenURL(void* systemData, void* userData)
-{
-    NSURL *url = (NSURL *)systemData;
+void assign_delegate_if_not_assigned(ADJConfig *adjustConfig) {
+    if (adjustMarmaladeInstance != nil) {
+        return;
+    }
 
+    adjustMarmaladeInstance = [[AdjustMarmalade_platform alloc] init];
+    [adjustConfig setDelegate:(id)adjustMarmaladeInstance];
+}
+
+int32 handle_open_url(void* systemData, void* userData)
+{
+    NSLog(@"Standard link received!");
+
+    NSURL *url = (NSURL *)systemData;
     [Adjust appWillOpenUrl:url];
+
+    if (isDeeplinkCallbackSet == NO) {
+        return 0;
+    }
+
+    NSString *stringDeeplink = [url absoluteString];
+    const char* csDeeplink = stringDeeplink != nil ? [stringDeeplink UTF8String] : NULL;
+
+    s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
+                           S3E_ADJUST_CALLBACK_ADJUST_DEEPLINK_DATA,
+                           (void*)csDeeplink,
+                           (csDeeplink != NULL ? (int)strlen(csDeeplink) + 1 : 0));
+
+    return 0;
+}
+
+int32 handle_open_universal_url(void* systemData, void* userData)
+{
+    NSLog(@"Universal link received!");
+
+    if (isDeeplinkCallbackSet == NO) {
+        return 0;
+    }
+
+    NSString *stringDeeplink = @"deeplink";
+    const char* csDeeplink = stringDeeplink != nil ? [stringDeeplink UTF8String] : NULL;
+
+    s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
+                           S3E_ADJUST_CALLBACK_ADJUST_DEEPLINK_DATA,
+                           (void*)csDeeplink,
+                           (csDeeplink != NULL ? (int)strlen(csDeeplink) + 1 : 0));
 
     return 0;
 }
@@ -84,7 +338,15 @@ s3eResult AdjustMarmaladeInit_platform()
     s3eEdkCallbacksRegisterInternal(S3E_EDK_INTERNAL,
                                     S3E_EDK_CALLBACK_MAX,
                                     S3E_EDK_IPHONE_HANDLEOPENURL,
-                                    (s3eCallback)handleOpenURL,
+                                    (s3eCallback)handle_open_url,
+                                    NULL,
+                                    S3E_FALSE);
+
+    // Subscribe for universal deep linking.
+    s3eEdkCallbacksRegisterInternal(S3E_EDK_INTERNAL,
+                                    S3E_EDK_CALLBACK_MAX,
+                                    S3E_EDK_IPHONE_HANDLEOPENURL_EXTRA,
+                                    (s3eCallback)handle_open_universal_url,
                                     NULL,
                                     S3E_FALSE);
 
@@ -96,7 +358,12 @@ void AdjustMarmaladeTerminate_platform()
     s3eEdkCallbacksUnRegister(S3E_EDK_INTERNAL,
                               S3E_EDK_CALLBACK_MAX,
                               S3E_EDK_IPHONE_HANDLEOPENURL,
-                              (s3eCallback)handleOpenURL);
+                              (s3eCallback)handle_open_url);
+
+    s3eEdkCallbacksUnRegister(S3E_EDK_INTERNAL,
+                              S3E_EDK_CALLBACK_MAX,
+                              S3E_EDK_IPHONE_HANDLEOPENURL_EXTRA,
+                              (s3eCallback)handle_open_universal_url);
 }
 
 s3eResult adjust_Start_platform(adjust_config* config)
@@ -124,26 +391,89 @@ s3eResult adjust_Start_platform(adjust_config* config)
             [adjustConfig setSdkPrefix:sdkPrefix];
         }
 
-        if (adjustMarmaladeInstance != nil) {
-            [adjustConfig setDelegate:(id)adjustMarmaladeInstance];
-        }
-
         if (config->is_event_buffering_enabled != NULL) {
             [adjustConfig setEventBufferingEnabled:*(config->is_event_buffering_enabled)];
         }
 
+        if (config->is_sending_in_background_enabled != NULL) {
+            [adjustConfig setSendInBackground:*(config->is_sending_in_background_enabled)];
+        }
+
         if (config->is_attribution_delegate_set != NULL) {
             if (*(config->is_attribution_delegate_set) == true) {
-                EDK_CALLBACK_REG(ADJUST, ADJUST_ATTRIBUTION_DATA,
-                                 (s3eCallback)config->attribution_callback, NULL, false);
+                EDK_CALLBACK_REG(ADJUST, ADJUST_ATTRIBUTION_DATA, (s3eCallback)config->attribution_callback, NULL, false);
 
-                adjustMarmaladeInstance = [[AdjustMarmalade_platform alloc] init];
+                assign_delegate_if_not_assigned(adjustConfig);
+                isAttributionCallbackSet = YES;
+            }
+        }
 
-                [adjustConfig setDelegate:(id)adjustMarmaladeInstance];
+        if (config->is_session_success_delegate_set != NULL) {
+            if (*(config->is_session_success_delegate_set) == true) {
+                EDK_CALLBACK_REG(ADJUST, ADJUST_SESSION_SUCCESS_DATA, (s3eCallback)config->session_success_callback, NULL, false);
+
+                assign_delegate_if_not_assigned(adjustConfig);
+                isSessionSuccessCallbackSet = YES;
+            }
+        }
+
+        if (config->is_session_failure_delegate_set != NULL) {
+            if (*(config->is_session_failure_delegate_set) == true) {
+                EDK_CALLBACK_REG(ADJUST, ADJUST_SESSION_FAILURE_DATA, (s3eCallback)config->session_failure_callback, NULL, false);
+
+                assign_delegate_if_not_assigned(adjustConfig);
+                isSessionFailureCallbackSet = YES;
+            }
+        }
+
+        if (config->is_event_success_delegate_set != NULL) {
+            if (*(config->is_event_success_delegate_set) == true) {
+                EDK_CALLBACK_REG(ADJUST, ADJUST_EVENT_SUCCESS_DATA, (s3eCallback)config->event_success_callback, NULL, false);
+
+                assign_delegate_if_not_assigned(adjustConfig);
+                isEventSuccessCallbackSet = YES;
+            }
+        }
+
+        if (config->is_event_failure_delegate_set != NULL) {
+            if (*(config->is_event_failure_delegate_set) == true) {
+                EDK_CALLBACK_REG(ADJUST, ADJUST_EVENT_FAILURE_DATA, (s3eCallback)config->event_failure_callback, NULL, false);
+
+                assign_delegate_if_not_assigned(adjustConfig);
+                isEventFailureCallbackSet = YES;
+            }
+        }
+
+        if (config->is_deeplink_delegate_set != NULL) {
+            if (*(config->is_deeplink_delegate_set) == true) {
+                EDK_CALLBACK_REG(ADJUST, ADJUST_DEEPLINK_DATA, (s3eCallback)config->deeplink_callback, NULL, false);
+                isDeeplinkCallbackSet = YES;
+            }
+        }
+
+        if (config->is_deferred_deeplink_delegate_set != NULL) {
+            if (*(config->is_deferred_deeplink_delegate_set) == true) {
+                EDK_CALLBACK_REG(ADJUST, ADJUST_DEFERRED_DEEPLINK_DATA, (s3eCallback)config->deferred_deeplink_callback, NULL, false);
+                isDeferredDeplinkCallbackSet = YES;
+            }
+        }
+
+        if (config->is_google_ad_id_delegate_set != NULL) {
+            if (*(config->is_google_ad_id_delegate_set) == true) {
+                EDK_CALLBACK_REG(ADJUST, ADJUST_GOOGLE_AD_ID_DATA, (s3eCallback)config->google_ad_id_callback, NULL, false);
+                isGoogleAdIdCallbackSet = YES;
+            }
+        }
+
+        if (config->is_idfa_delegate_set != NULL) {
+            if (*(config->is_idfa_delegate_set) == true) {
+                EDK_CALLBACK_REG(ADJUST, ADJUST_IDFA_DATA, (s3eCallback)config->idfa_callback, NULL, false);
+                isIdfaCallbackSet = YES;
             }
         }
 
         [Adjust appDidLaunch:adjustConfig];
+        [Adjust trackSubsessionStart];
     }
 
     return S3E_RESULT_SUCCESS;
@@ -222,16 +552,6 @@ s3eResult adjust_SetOfflineMode_platform(bool is_offline_mode_enabled)
     return S3E_RESULT_SUCCESS;
 }
 
-s3eResult adjust_OnPause_platform()
-{
-    return S3E_RESULT_SUCCESS;
-}
-
-s3eResult adjust_OnResume_platform()
-{
-    return S3E_RESULT_SUCCESS;
-}
-
 s3eResult adjust_SetReferrer_platform(const char* referrer)
 {
     return S3E_RESULT_SUCCESS;
@@ -246,12 +566,32 @@ s3eResult adjust_SetDeviceToken_platform(const char* device_token)
     return S3E_RESULT_SUCCESS;
 }
 
-const char* adjust_GetGoogleAdId_platform()
+s3eResult adjust_GetGoogleAdId_platform()
 {
-    return "";
+    if (isGoogleAdIdCallbackSet) {
+        NSString *googleAdId = @"";
+        const char* csGoogleAdId = googleAdId != nil ? [googleAdId UTF8String] : NULL;
+
+        s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
+                               S3E_ADJUST_CALLBACK_ADJUST_GOOGLE_AD_ID_DATA,
+                               (void*)csGoogleAdId,
+                               (csGoogleAdId != NULL ? (int)strlen(csGoogleAdId) + 1 : 0));
+    }
+    
+    return S3E_RESULT_SUCCESS;
 }
 
-const char* adjust_GetIdfa_platform()
+s3eResult adjust_GetIdfa_platform()
 {
-    return "";
+    if (isIdfaCallbackSet) {
+        NSString *idfa = [Adjust idfa];
+        const char* csIdfa = idfa != nil ? [idfa UTF8String] : NULL;
+
+        s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
+                               S3E_ADJUST_CALLBACK_ADJUST_IDFA_DATA,
+                               (void*)csIdfa,
+                               (csIdfa != NULL ? (int)strlen(csIdfa) + 1 : 0));
+    }
+    
+    return S3E_RESULT_SUCCESS;
 }
