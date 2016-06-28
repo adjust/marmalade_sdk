@@ -26,8 +26,10 @@ static jmethodID g_adjust_SetReferrer;
 static jmethodID g_adjust_GetGoogleAdId;
 static jmethodID g_adjust_GetIdfa;
 
-char* get_json_string(rapidjson::Document &jsonDoc, const char* member_name) {
-    if (!jsonDoc.HasMember(member_name)) {
+char* get_json_string(rapidjson::Document &jsonDoc, const char* member_name)
+{
+    if (!jsonDoc.HasMember(member_name))
+    {
         return NULL;
     }
 
@@ -37,12 +39,14 @@ char* get_json_string(rapidjson::Document &jsonDoc, const char* member_name) {
     return target;
 }
 
-adjust_attribution_data* get_attribution_data(const char* jsonCString) {
+adjust_attribution_data* get_attribution_data(const char* jsonCString)
+{
     adjust_attribution_data* attribution;
     rapidjson::Document jsonDoc;
 
-    if (jsonDoc.Parse<0>(jsonCString).HasParseError()) {
-        IwTrace(ADJUSTMARMALADE,("Error parsing response data json"));
+    if (jsonDoc.Parse<0>(jsonCString).HasParseError())
+    {
+        IwTrace(ADJUSTMARMALADE,("Error parsing attribution data json string!"));
         return NULL;
     }
 
@@ -59,12 +63,57 @@ adjust_attribution_data* get_attribution_data(const char* jsonCString) {
     return attribution;
 }
 
-adjust_event_success_data* get_event_success_data(const char* jsonCString) {
+adjust_session_success_data* get_session_success_data(const char* jsonCString)
+{
+    adjust_session_success_data* sessionSuccess;
+    rapidjson::Document jsonDoc;
+
+    if (jsonDoc.Parse<0>(jsonCString).HasParseError())
+    {
+        IwTrace(ADJUSTMARMALADE,("Error parsing session success data json string!"));
+        return NULL;
+    }
+
+    sessionSuccess = new adjust_session_success_data();
+    
+    sessionSuccess->message       = get_json_string(jsonDoc, "message");
+    sessionSuccess->timestamp     = get_json_string(jsonDoc, "timestamp");
+    sessionSuccess->adid          = get_json_string(jsonDoc, "adid");
+    sessionSuccess->json_response = get_json_string(jsonDoc, "json_response");
+
+    return sessionSuccess;
+}
+
+adjust_session_failure_data* get_session_failure_data(const char* jsonCString)
+{
+    adjust_session_failure_data* sessionFailure;
+    rapidjson::Document jsonDoc;
+
+    if (jsonDoc.Parse<0>(jsonCString).HasParseError())
+    {
+        IwTrace(ADJUSTMARMALADE,("Error parsing session failure data json string!"));
+        return NULL;
+    }
+
+    sessionFailure = new adjust_session_failure_data();
+    
+    sessionFailure->message       = get_json_string(jsonDoc, "message");
+    sessionFailure->timestamp     = get_json_string(jsonDoc, "timestamp");
+    sessionFailure->adid          = get_json_string(jsonDoc, "adid");
+    sessionFailure->will_retry    = get_json_string(jsonDoc, "will_retry");
+    sessionFailure->json_response = get_json_string(jsonDoc, "json_response");
+
+    return sessionFailure;
+}
+
+adjust_event_success_data* get_event_success_data(const char* jsonCString)
+{
     adjust_event_success_data* eventSuccess;
     rapidjson::Document jsonDoc;
 
-    if (jsonDoc.Parse<0>(jsonCString).HasParseError()) {
-        IwTrace(ADJUSTMARMALADE,("Error parsing response data json"));
+    if (jsonDoc.Parse<0>(jsonCString).HasParseError())
+    {
+        IwTrace(ADJUSTMARMALADE,("Error parsing event success data json string!"));
         return NULL;
     }
 
@@ -79,12 +128,14 @@ adjust_event_success_data* get_event_success_data(const char* jsonCString) {
     return eventSuccess;
 }
 
-adjust_event_failure_data* get_event_failure_data(const char* jsonCString) {
+adjust_event_failure_data* get_event_failure_data(const char* jsonCString)
+{
     adjust_event_failure_data* eventFailure;
     rapidjson::Document jsonDoc;
 
-    if (jsonDoc.Parse<0>(jsonCString).HasParseError()) {
-        IwTrace(ADJUSTMARMALADE,("Error parsing response data json"));
+    if (jsonDoc.Parse<0>(jsonCString).HasParseError())
+    {
+        IwTrace(ADJUSTMARMALADE,("Error parsing event failure data json string!"));
         return NULL;
     }
 
@@ -100,46 +151,8 @@ adjust_event_failure_data* get_event_failure_data(const char* jsonCString) {
     return eventFailure;
 }
 
-adjust_session_success_data* get_session_success_data(const char* jsonCString) {
-    adjust_session_success_data* sessionSuccess;
-    rapidjson::Document jsonDoc;
-
-    if (jsonDoc.Parse<0>(jsonCString).HasParseError()) {
-        IwTrace(ADJUSTMARMALADE,("Error parsing response data json"));
-        return NULL;
-    }
-
-    sessionSuccess = new adjust_session_success_data();
-    
-    sessionSuccess->message       = get_json_string(jsonDoc, "message");
-    sessionSuccess->timestamp     = get_json_string(jsonDoc, "timestamp");
-    sessionSuccess->adid          = get_json_string(jsonDoc, "adid");
-    sessionSuccess->json_response = get_json_string(jsonDoc, "json_response");
-
-    return sessionSuccess;
-}
-
-adjust_session_failure_data* get_session_failure_data(const char* jsonCString) {
-    adjust_session_failure_data* sessionFailure;
-    rapidjson::Document jsonDoc;
-
-    if (jsonDoc.Parse<0>(jsonCString).HasParseError()) {
-        IwTrace(ADJUSTMARMALADE,("Error parsing response data json"));
-        return NULL;
-    }
-
-    sessionFailure = new adjust_session_failure_data();
-    
-    sessionFailure->message       = get_json_string(jsonDoc, "message");
-    sessionFailure->timestamp     = get_json_string(jsonDoc, "timestamp");
-    sessionFailure->adid          = get_json_string(jsonDoc, "adid");
-    sessionFailure->will_retry    = get_json_string(jsonDoc, "will_retry");
-    sessionFailure->json_response = get_json_string(jsonDoc, "json_response");
-
-    return sessionFailure;
-}
-
-void JNICALL the_attribution_callback(JNIEnv* env, jobject obj, jstring attributionString) {
+void JNICALL the_attribution_callback(JNIEnv* env, jobject obj, jstring attributionString)
+{
     const char* attributionCString = env->GetStringUTFChars(attributionString, NULL);
     adjust_attribution_data* attribution = get_attribution_data(attributionCString);
 
@@ -153,35 +166,8 @@ void JNICALL the_attribution_callback(JNIEnv* env, jobject obj, jstring attribut
                            (void*)attribution);
 }
 
-void JNICALL the_event_success_callback(JNIEnv* env, jobject obj, jstring eventSuccessString) {
-    const char* eventSuccessCString = env->GetStringUTFChars(eventSuccessString, NULL);
-    adjust_event_success_data* event_success = get_event_success_data(eventSuccessCString);
-
-    s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
-                           S3E_ADJUST_CALLBACK_ADJUST_EVENT_SUCCESS_DATA,
-                           event_success,
-                           sizeof(*event_success),
-                           NULL,
-                           S3E_FALSE,
-                           &adjust_CleanupEventSuccessCallback,
-                           (void*)event_success);
-}
-
-void JNICALL the_event_failure_callback(JNIEnv* env, jobject obj, jstring eventFailureString) {
-    const char* eventFailureCString = env->GetStringUTFChars(eventFailureString, NULL);
-    adjust_event_failure_data* event_failure = get_event_failure_data(eventFailureCString);
-
-    s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
-                           S3E_ADJUST_CALLBACK_ADJUST_EVENT_FAILURE_DATA,
-                           event_failure,
-                           sizeof(*event_failure),
-                           NULL,
-                           S3E_FALSE,
-                           &adjust_CleanupEventFailureCallback,
-                           (void*)event_failure);
-}
-
-void JNICALL the_session_success_callback(JNIEnv* env, jobject obj, jstring sessionSuccessString) {
+void JNICALL the_session_success_callback(JNIEnv* env, jobject obj, jstring sessionSuccessString)
+{
     const char* sessionSuccessCString = env->GetStringUTFChars(sessionSuccessString, NULL);
     adjust_session_success_data* session_success = get_session_success_data(sessionSuccessCString);
 
@@ -195,7 +181,8 @@ void JNICALL the_session_success_callback(JNIEnv* env, jobject obj, jstring sess
                            (void*)session_success);
 }
 
-void JNICALL the_session_failure_callback(JNIEnv* env, jobject obj, jstring sessionFailureString) {
+void JNICALL the_session_failure_callback(JNIEnv* env, jobject obj, jstring sessionFailureString)
+{
     const char* sessionFailureCString = env->GetStringUTFChars(sessionFailureString, NULL);
     adjust_session_failure_data* session_failure = get_session_failure_data(sessionFailureCString);
 
@@ -209,7 +196,38 @@ void JNICALL the_session_failure_callback(JNIEnv* env, jobject obj, jstring sess
                            (void*)session_failure);
 }
 
-void JNICALL the_deeplink_callback(JNIEnv* env, jobject obj, jstring deeplinkString) {
+void JNICALL the_event_success_callback(JNIEnv* env, jobject obj, jstring eventSuccessString)
+{
+    const char* eventSuccessCString = env->GetStringUTFChars(eventSuccessString, NULL);
+    adjust_event_success_data* event_success = get_event_success_data(eventSuccessCString);
+
+    s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
+                           S3E_ADJUST_CALLBACK_ADJUST_EVENT_SUCCESS_DATA,
+                           event_success,
+                           sizeof(*event_success),
+                           NULL,
+                           S3E_FALSE,
+                           &adjust_CleanupEventSuccessCallback,
+                           (void*)event_success);
+}
+
+void JNICALL the_event_failure_callback(JNIEnv* env, jobject obj, jstring eventFailureString)
+{
+    const char* eventFailureCString = env->GetStringUTFChars(eventFailureString, NULL);
+    adjust_event_failure_data* event_failure = get_event_failure_data(eventFailureCString);
+
+    s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
+                           S3E_ADJUST_CALLBACK_ADJUST_EVENT_FAILURE_DATA,
+                           event_failure,
+                           sizeof(*event_failure),
+                           NULL,
+                           S3E_FALSE,
+                           &adjust_CleanupEventFailureCallback,
+                           (void*)event_failure);
+}
+
+void JNICALL the_deeplink_callback(JNIEnv* env, jobject obj, jstring deeplinkString)
+{
     const char* deeplinkCString = env->GetStringUTFChars(deeplinkString, NULL);
 
     s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
@@ -218,7 +236,8 @@ void JNICALL the_deeplink_callback(JNIEnv* env, jobject obj, jstring deeplinkStr
                            strlen(deeplinkCString));
 }
 
-void JNICALL the_deferred_deeplink_callback(JNIEnv* env, jobject obj, jstring deferredDeeplinkString) {
+void JNICALL the_deferred_deeplink_callback(JNIEnv* env, jobject obj, jstring deferredDeeplinkString)
+{
     const char* deferredDeeplinkCString = env->GetStringUTFChars(deferredDeeplinkString, NULL);
 
     s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
@@ -227,7 +246,8 @@ void JNICALL the_deferred_deeplink_callback(JNIEnv* env, jobject obj, jstring de
                            strlen(deferredDeeplinkCString));
 }
 
-void JNICALL the_google_ad_id_callback(JNIEnv* env, jobject obj, jstring googleAdIdString) {
+void JNICALL the_google_ad_id_callback(JNIEnv* env, jobject obj, jstring googleAdIdString)
+{
     const char* googleAdIdCString = env->GetStringUTFChars(googleAdIdString, NULL);
 
     s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
@@ -236,7 +256,8 @@ void JNICALL the_google_ad_id_callback(JNIEnv* env, jobject obj, jstring googleA
                            strlen(googleAdIdCString));
 }
 
-void JNICALL the_idfa_callback(JNIEnv* env, jobject obj, jstring idfaString) {
+void JNICALL the_idfa_callback(JNIEnv* env, jobject obj, jstring idfaString)
+{
     const char* idfaCString = env->GetStringUTFChars(idfaString, NULL);
 
     s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
@@ -245,8 +266,10 @@ void JNICALL the_idfa_callback(JNIEnv* env, jobject obj, jstring idfaString) {
                            strlen(idfaCString));
 }
 
-jobject create_global_java_dict(const adjust_param_type* params) {
-    if (params == NULL) {
+jobject create_global_java_dict(const adjust_param_type* params)
+{
+    if (params == NULL)
+    {
         return NULL;
     }
 
@@ -266,7 +289,8 @@ jobject create_global_java_dict(const adjust_param_type* params) {
     jmethodID put_method = env->GetMethodID(dict_cls, "put", 
         "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
 
-    for (adjust_param_type::const_iterator pos = params->begin();pos != params->end(); ++pos) {
+    for (adjust_param_type::const_iterator pos = params->begin();pos != params->end(); ++pos)
+    {
         jstring key = env->NewStringUTF(pos->first);
         jstring value = env->NewStringUTF(pos->second);
 
@@ -301,79 +325,91 @@ s3eResult AdjustMarmaladeInit_platform()
     // Get the extension class.
     jclass cls = s3eEdkAndroidFindClass("AdjustMarmalade");
 
-    if (!cls) {
+    if (!cls)
+    {
         goto fail;
     }
 
     // Get its constructor.
     cons = env->GetMethodID(cls, "<init>", "()V");
 
-    if (!cons) {
+    if (!cons)
+    {
         goto fail;
     }
 
     // Construct the java class.
     obj = env->NewObject(cls, cons);
 
-    if (!obj) {
+    if (!obj)
+    {
         goto fail;
     }
 
     // Get all the extension methods.
     g_adjust_Start = env->GetMethodID(cls, "adjust_Start", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZZLjava/lang/String;Ljava/lang/String;ZZZZZZZZZ)V");
     
-    if (!g_adjust_Start) {
+    if (!g_adjust_Start)
+    {
         goto fail;
     }
 
     g_adjust_TrackEvent = env->GetMethodID(cls, "adjust_TrackEvent", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;DLjava/util/Map;Ljava/util/Map;Z)V");
     
-    if (!g_adjust_TrackEvent) {
+    if (!g_adjust_TrackEvent)
+    {
         goto fail;
     }
 
     g_adjust_SetEnabled = env->GetMethodID(cls, "adjust_SetEnabled", "(Z)V");
     
-    if (!g_adjust_SetEnabled) {
+    if (!g_adjust_SetEnabled)
+    {
         goto fail;
     }
 
     g_adjust_IsEnabled = env->GetMethodID(cls, "adjust_IsEnabled", "()Z");
     
-    if (!g_adjust_IsEnabled) {
+    if (!g_adjust_IsEnabled)
+    {
         goto fail;
     }
 
     g_adjust_SetOfflineMode = env->GetMethodID(cls, "adjust_SetOfflineMode", "(Z)V");
     
-    if (!g_adjust_SetOfflineMode) {
+    if (!g_adjust_SetOfflineMode)
+    {
         goto fail;
     }
 
     g_adjust_SetReferrer = env->GetMethodID(cls, "adjust_SetReferrer", "(Ljava/lang/String;)V");
     
-    if (!g_adjust_SetReferrer) {
+    if (!g_adjust_SetReferrer)
+    {
         goto fail;
     }
 
     g_adjust_GetGoogleAdId = env->GetMethodID(cls, "adjust_GetGoogleAdId", "()V");
     
-    if (!g_adjust_GetGoogleAdId) {
+    if (!g_adjust_GetGoogleAdId)
+    {
         goto fail;
     }
 
     g_adjust_GetIdfa = env->GetMethodID(cls, "adjust_GetIdfa", "()V");
     
-    if (!g_adjust_GetIdfa) {
+    if (!g_adjust_GetIdfa)
+    {
         goto fail;
     }
 
     // Register the native hooks.
-    if (env->RegisterNatives(cls, methods,sizeof(methods)/sizeof(methods[0]))) {
+    if (env->RegisterNatives(cls, methods,sizeof(methods)/sizeof(methods[0])))
+    {
         goto fail;
     }
 
-    IwTrace(ADJUSTMARMALADE, ("ADJUSTMARMALADE init success"));
+    IwTrace(ADJUSTMARMALADE, ("ADJUSTMARMALADE initialization successful!"));
     
     g_Obj = env->NewGlobalRef(obj);
     env->DeleteLocalRef(obj);
@@ -384,11 +420,12 @@ s3eResult AdjustMarmaladeInit_platform()
 fail:
     jthrowable exc = env->ExceptionOccurred();
 
-    if (exc) {
+    if (exc)
+    {
         env->ExceptionDescribe();
         env->ExceptionClear();
 
-        IwTrace(AdjustMarmalade, ("One or more java methods could not be found"));
+        IwTrace(AdjustMarmalade, ("Error: One or more java methods could not be found!"));
     }
 
     env->DeleteLocalRef(obj);
@@ -397,14 +434,16 @@ fail:
     return S3E_RESULT_ERROR;
 }
 
-void AdjustMarmaladeTerminate_platform() {
+void AdjustMarmaladeTerminate_platform()
+{
     // Add any platform-specific termination code here.
     JNIEnv* env = s3eEdkJNIGetEnv();
     env->DeleteGlobalRef(g_Obj);
     g_Obj = NULL;
 }
 
-s3eResult adjust_Start_platform(adjust_config* config) {
+s3eResult adjust_Start_platform(adjust_config* config)
+{
     JNIEnv* env = s3eEdkJNIGetEnv();
 
     jstring jAppToken = env->NewStringUTF(config->app_token);
@@ -426,86 +465,107 @@ s3eResult adjust_Start_platform(adjust_config* config) {
     jboolean jIsGoogleAdIdCallbackSet = JNI_FALSE;
     jboolean jIsIdfaCallbackSet = JNI_FALSE;
 
-    if (config->is_event_buffering_enabled != NULL) {
+    if (config->is_event_buffering_enabled != NULL)
+    {
         jIsEventBufferingEnabled = (jboolean)(*(config->is_event_buffering_enabled));
     }
 
-    if (config->is_sending_in_background_enabled != NULL) {
+    if (config->is_sending_in_background_enabled != NULL)
+    {
         jIsSendingInBackgroundEnabled = (jboolean)(*(config->is_sending_in_background_enabled));
     }
 
-    if (config->should_deferred_deeplink_be_opened != NULL) {
+    if (config->should_deferred_deeplink_be_opened != NULL)
+    {
         jShouldDeferredDeeplinkBeOpened = (jboolean)(*(config->should_deferred_deeplink_be_opened));
     }
 
-    if (config->is_attribution_delegate_set != NULL) {
+    if (config->is_attribution_delegate_set != NULL)
+    {
         jIsAttributionCallbackSet = (jboolean)(*(config->is_attribution_delegate_set));
 
-        if (jIsAttributionCallbackSet == JNI_TRUE) {
+        if (jIsAttributionCallbackSet == JNI_TRUE)
+        {
             EDK_CALLBACK_REG(ADJUST, ADJUST_ATTRIBUTION_DATA, (s3eCallback)config->attribution_callback, NULL, false);
         }
     }
 
-    if (config->is_event_success_delegate_set != NULL) {
+    if (config->is_event_success_delegate_set != NULL)
+    {
         jIsEventSuccessCallbackSet = (jboolean)(*(config->is_event_success_delegate_set));
 
-        if (jIsEventSuccessCallbackSet == JNI_TRUE) {
+        if (jIsEventSuccessCallbackSet == JNI_TRUE)
+        {
             EDK_CALLBACK_REG(ADJUST, ADJUST_EVENT_SUCCESS_DATA, (s3eCallback)config->event_success_callback, NULL, false);
         }
     }
 
-    if (config->is_event_failure_delegate_set != NULL) {
+    if (config->is_event_failure_delegate_set != NULL)
+    {
         jIsEventFailureCallbackSet = (jboolean)(*(config->is_event_failure_delegate_set));
 
-        if (jIsEventFailureCallbackSet == JNI_TRUE) {
+        if (jIsEventFailureCallbackSet == JNI_TRUE)
+        {
             EDK_CALLBACK_REG(ADJUST, ADJUST_EVENT_FAILURE_DATA, (s3eCallback)config->event_failure_callback, NULL, false);
         }
     }
 
-    if (config->is_session_success_delegate_set != NULL) {
+    if (config->is_session_success_delegate_set != NULL)
+    {
         jIsSessionSuccessCallbackSet = (jboolean)(*(config->is_session_success_delegate_set));
 
-        if (jIsSessionSuccessCallbackSet == JNI_TRUE) {
+        if (jIsSessionSuccessCallbackSet == JNI_TRUE)
+        {
             EDK_CALLBACK_REG(ADJUST, ADJUST_SESSION_SUCCESS_DATA, (s3eCallback)config->session_success_callback, NULL, false);
         }
     }
 
-    if (config->is_session_failure_delegate_set != NULL) {
+    if (config->is_session_failure_delegate_set != NULL)
+    {
         jIsSessionFailureCallbackSet = (jboolean)(*(config->is_session_failure_delegate_set));
 
-        if (jIsSessionFailureCallbackSet == JNI_TRUE) {
+        if (jIsSessionFailureCallbackSet == JNI_TRUE)
+        {
             EDK_CALLBACK_REG(ADJUST, ADJUST_SESSION_FAILURE_DATA, (s3eCallback)config->session_failure_callback, NULL, false);
         }
     }
 
-    if (config->is_deeplink_delegate_set != NULL) {
+    if (config->is_deeplink_delegate_set != NULL)
+    {
         jIsDeeplinkCallbackSet = (jboolean)(*(config->is_deeplink_delegate_set));
 
-        if (jIsDeeplinkCallbackSet == JNI_TRUE) {
+        if (jIsDeeplinkCallbackSet == JNI_TRUE)
+        {
             EDK_CALLBACK_REG(ADJUST, ADJUST_DEEPLINK_DATA, (s3eCallback)config->deeplink_callback, NULL, false);
         }
     }
 
-    if (config->is_deferred_deeplink_delegate_set != NULL) {
+    if (config->is_deferred_deeplink_delegate_set != NULL)
+    {
         jIsDeferredDeeplinkCallbackSet = (jboolean)(*(config->is_deferred_deeplink_delegate_set));
 
-        if (jIsDeferredDeeplinkCallbackSet == JNI_TRUE) {
+        if (jIsDeferredDeeplinkCallbackSet == JNI_TRUE)
+        {
             EDK_CALLBACK_REG(ADJUST, ADJUST_DEFERRED_DEEPLINK_DATA, (s3eCallback)config->deferred_deeplink_callback, NULL, false);
         }
     }
 
-    if (config->is_google_ad_id_delegate_set != NULL) {
+    if (config->is_google_ad_id_delegate_set != NULL)
+    {
         jIsGoogleAdIdCallbackSet = (jboolean)(*(config->is_google_ad_id_delegate_set));
 
-        if (jIsGoogleAdIdCallbackSet == JNI_TRUE) {
+        if (jIsGoogleAdIdCallbackSet == JNI_TRUE)
+        {
             EDK_CALLBACK_REG(ADJUST, ADJUST_GOOGLE_AD_ID_DATA, (s3eCallback)config->google_ad_id_callback, NULL, false);
         }
     }
 
-    if (config->is_idfa_delegate_set != NULL) {
+    if (config->is_idfa_delegate_set != NULL)
+    {
         jIsIdfaCallbackSet = (jboolean)(*(config->is_idfa_delegate_set));
 
-        if (jIsIdfaCallbackSet == JNI_TRUE) {
+        if (jIsIdfaCallbackSet == JNI_TRUE)
+        {
             EDK_CALLBACK_REG(ADJUST, ADJUST_IDFA_DATA, (s3eCallback)config->idfa_callback, NULL, false);
         }
     }
@@ -525,7 +585,8 @@ s3eResult adjust_Start_platform(adjust_config* config) {
     return (s3eResult)0;
 }
 
-s3eResult adjust_TrackEvent_platform(adjust_event* event) {
+s3eResult adjust_TrackEvent_platform(adjust_event* event)
+{
     JNIEnv* env = s3eEdkJNIGetEnv();
 
     jstring jEventToken = env->NewStringUTF(event->event_token);
@@ -551,14 +612,16 @@ s3eResult adjust_TrackEvent_platform(adjust_event* event) {
     return (s3eResult)0;
 }
 
-s3eResult adjust_SetEnabled_platform(bool is_enabled) {
+s3eResult adjust_SetEnabled_platform(bool is_enabled)
+{
     JNIEnv* env = s3eEdkJNIGetEnv();
     env->CallVoidMethod(g_Obj, g_adjust_SetEnabled, is_enabled);
     
     return (s3eResult)0;
 }
 
-s3eResult adjust_IsEnabled_platform(bool& is_enabled_out) {
+s3eResult adjust_IsEnabled_platform(bool& is_enabled_out)
+{
     JNIEnv* env = s3eEdkJNIGetEnv();
     jboolean isEnabled_java = env->CallBooleanMethod(g_Obj, g_adjust_IsEnabled);
 
@@ -567,14 +630,16 @@ s3eResult adjust_IsEnabled_platform(bool& is_enabled_out) {
     return (s3eResult)0;
 }
 
-s3eResult adjust_SetOfflineMode_platform(bool is_offline_mode_enabled) {
+s3eResult adjust_SetOfflineMode_platform(bool is_offline_mode_enabled)
+{
     JNIEnv* env = s3eEdkJNIGetEnv();
     env->CallVoidMethod(g_Obj, g_adjust_SetOfflineMode, is_offline_mode_enabled);
 
     return (s3eResult)0;
 }
 
-s3eResult adjust_SetReferrer_platform(const char* referrer) {
+s3eResult adjust_SetReferrer_platform(const char* referrer)
+{
     JNIEnv* env = s3eEdkJNIGetEnv();
 
     jstring jReferrer = env->NewStringUTF(referrer);
@@ -585,21 +650,22 @@ s3eResult adjust_SetReferrer_platform(const char* referrer) {
     return (s3eResult)0;
 }
 
-s3eResult adjust_SetDeviceToken_platform(const char* device_token) {
+s3eResult adjust_SetDeviceToken_platform(const char* device_token)
+{
     return (s3eResult)0;
 }
 
-s3eResult adjust_GetGoogleAdId_platform() {
+s3eResult adjust_GetGoogleAdId_platform()
+{
     JNIEnv* env = s3eEdkJNIGetEnv();
-    
     env->CallVoidMethod(g_Obj, g_adjust_GetGoogleAdId);
 
     return (s3eResult)0;
 }
 
-s3eResult adjust_GetIdfa_platform() {
+s3eResult adjust_GetIdfa_platform()
+{
     JNIEnv* env = s3eEdkJNIGetEnv();
-    
     env->CallVoidMethod(g_Obj, g_adjust_GetIdfa);
 
     return (s3eResult)0;

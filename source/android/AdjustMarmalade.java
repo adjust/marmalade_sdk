@@ -23,10 +23,8 @@ import com.ideaworks3d.marmalade.LoaderActivitySlave;
 import com.ideaworks3d.marmalade.SuspendResumeListener;
 import com.ideaworks3d.marmalade.SuspendResumeEvent;
 
-public class AdjustMarmalade extends LoaderActivitySlave 
-    implements  OnAttributionChangedListener, OnSessionTrackingSucceededListener,
-                OnSessionTrackingFailedListener, OnEventTrackingSucceededListener,
-                OnEventTrackingFailedListener, OnDeeplinkResponseListener {
+public class AdjustMarmalade extends LoaderActivitySlave implements  OnAttributionChangedListener, OnSessionTrackingSucceededListener,
+                OnSessionTrackingFailedListener, OnEventTrackingSucceededListener, OnEventTrackingFailedListener, OnDeeplinkResponseListener {
     public native void attributionCallback(String attributionString);
     public native void sessionSuccessCallback(String sessionSuccessString);
     public native void sessionFailureCallback(String sessionFailureString);
@@ -64,36 +62,19 @@ public class AdjustMarmalade extends LoaderActivitySlave
     @Override
     protected void onResume() {
         super.onResume();
-
         Adjust.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-
         Adjust.onPause();
     }
 
-    public void adjust_Start(
-        String appToken,
-        String environment,
-        String logLevel,
-        String sdkPrefix,
-        boolean isEventBufferingEnabled,
-        boolean isSendingInBackgroundEnabled,
-        boolean shouldDeferredDeeplinkBeOpened,
-        String processName,
-        String defaultTracker,
-        boolean isAttributionCallbackSet,
-        boolean isSessionSuccessCallbackSet,
-        boolean isSessionFailureCallbackSet,
-        boolean isEventSuccessCallbackSet,
-        boolean isEventFailureCallbackSet,
-        boolean isDeeplinkCallbackSet,
-        boolean isDeferredDeeplinkCallbackSet,
-        boolean isGoogleAdIdCallbackSet,
-        boolean isIdfaCallbackSet) {
+    public void adjust_Start(String appToken, String environment, String logLevel, String sdkPrefix, boolean isEventBufferingEnabled, boolean isSendingInBackgroundEnabled, 
+        boolean shouldDeferredDeeplinkBeOpened,  String processName, String defaultTracker, boolean isAttributionCallbackSet, boolean isSessionSuccessCallbackSet, 
+        boolean isSessionFailureCallbackSet, boolean isEventSuccessCallbackSet, boolean isEventFailureCallbackSet, boolean isDeeplinkCallbackSet, 
+        boolean isDeferredDeeplinkCallbackSet, boolean isGoogleAdIdCallbackSet, boolean isIdfaCallbackSet) {
         if (isStringValid(appToken) && isStringValid(environment)) {
             AdjustConfig adjustConfig = new AdjustConfig(LoaderAPI.getActivity(), appToken, environment);
 
@@ -162,8 +143,8 @@ public class AdjustMarmalade extends LoaderActivitySlave
         }
     }
 
-    public void adjust_TrackEvent(String eventToken, String currency, String transactionId, String receipt, 
-        double revenue, Map<String, String> callbackParams, Map<String, String> partnerParams, boolean isReceiptSet) {
+    public void adjust_TrackEvent(String eventToken, String currency, String transactionId, String receipt, double revenue, 
+        Map<String, String> callbackParams, Map<String, String> partnerParams, boolean isReceiptSet) {
         if (isStringValid(eventToken)) {
             AdjustEvent adjustEvent = new AdjustEvent(eventToken);
 

@@ -274,16 +274,22 @@ static BOOL isIdfaCallbackSet = NO;
 
 @end
 
-BOOL is_string_valid(NSString *string) {
-    if (string != nil && ![string isEqualToString:@""]) {
+BOOL is_string_valid(NSString *string)
+{
+    if (string != nil && ![string isEqualToString:@""])
+    {
         return YES;
-    } else {
+    }
+    else
+    {
         return NO;
     }
 }
 
-void assign_delegate_if_not_assigned(ADJConfig *adjustConfig) {
-    if (adjustMarmaladeInstance != nil) {
+void assign_delegate_if_not_assigned(ADJConfig *adjustConfig)
+{
+    if (adjustMarmaladeInstance != nil)
+    {
         return;
     }
 
@@ -291,11 +297,13 @@ void assign_delegate_if_not_assigned(ADJConfig *adjustConfig) {
     [adjustConfig setDelegate:(id)adjustMarmaladeInstance];
 }
 
-int32 handle_open_url(void* systemData, void* userData) {
+int32 handle_open_url(void* systemData, void* userData)
+{
     NSURL *url = (NSURL *)systemData;
     [Adjust appWillOpenUrl:url];
 
-    if (isDeeplinkCallbackSet == NO) {
+    if (isDeeplinkCallbackSet == NO)
+    {
         return 0;
     }
 
@@ -310,8 +318,10 @@ int32 handle_open_url(void* systemData, void* userData) {
     return 0;
 }
 
-int32 handle_open_universal_url(void* systemData, void* userData) {
-    if (isDeeplinkCallbackSet == NO) {
+int32 handle_open_universal_url(void* systemData, void* userData)
+{
+    if (isDeeplinkCallbackSet == NO)
+    {
         return 0;
     }
 
@@ -326,7 +336,8 @@ int32 handle_open_universal_url(void* systemData, void* userData) {
     return 0;
 }
 
-s3eResult AdjustMarmaladeInit_platform() {
+s3eResult AdjustMarmaladeInit_platform()
+{
     // Subscribe for deep linking.
     s3eEdkCallbacksRegisterInternal(S3E_EDK_INTERNAL,
                                     S3E_EDK_CALLBACK_MAX,
@@ -346,7 +357,8 @@ s3eResult AdjustMarmaladeInit_platform() {
     return S3E_RESULT_SUCCESS;
 }
 
-void AdjustMarmaladeTerminate_platform() {
+void AdjustMarmaladeTerminate_platform()
+{
     s3eEdkCallbacksUnRegister(S3E_EDK_INTERNAL,
                               S3E_EDK_CALLBACK_MAX,
                               S3E_EDK_IPHONE_HANDLEOPENURL,
@@ -358,7 +370,8 @@ void AdjustMarmaladeTerminate_platform() {
                               (s3eCallback)handle_open_universal_url);
 }
 
-s3eResult adjust_Start_platform(adjust_config* config) {
+s3eResult adjust_Start_platform(adjust_config* config)
+{
     NSString *appToken = config->app_token ? [NSString stringWithUTF8String:config->app_token] : nil;
     NSString *environment = config->environment ? [NSString stringWithUTF8String:config->environment] : nil;
     NSString *logLevel = config->log_level ? [NSString stringWithUTF8String:config->log_level] : nil;
@@ -367,31 +380,39 @@ s3eResult adjust_Start_platform(adjust_config* config) {
     NSString *defaultTracker = config->default_tracker ? [NSString stringWithUTF8String:config->default_tracker] : nil;
 
     // If no app token nor environment is set, skip initialisation.
-    if (is_string_valid(appToken) && is_string_valid(environment)) {
+    if (is_string_valid(appToken) && is_string_valid(environment))
+    {
         ADJConfig *adjustConfig = [ADJConfig configWithAppToken:appToken environment:environment];
 
-        if (is_string_valid(logLevel)) {
+        if (is_string_valid(logLevel))
+        {
             [adjustConfig setLogLevel:[ADJLogger LogLevelFromString:logLevel]];
         }
 
-        if (is_string_valid(defaultTracker)) {
+        if (is_string_valid(defaultTracker))
+        {
             [adjustConfig setDefaultTracker:defaultTracker];
         }
 
-        if (is_string_valid(sdkPrefix)) {
+        if (is_string_valid(sdkPrefix))
+        {
             [adjustConfig setSdkPrefix:sdkPrefix];
         }
 
-        if (config->is_event_buffering_enabled != NULL) {
+        if (config->is_event_buffering_enabled != NULL)
+        {
             [adjustConfig setEventBufferingEnabled:*(config->is_event_buffering_enabled)];
         }
 
-        if (config->is_sending_in_background_enabled != NULL) {
+        if (config->is_sending_in_background_enabled != NULL)
+        {
             [adjustConfig setSendInBackground:*(config->is_sending_in_background_enabled)];
         }
 
-        if (config->is_attribution_delegate_set != NULL) {
-            if (*(config->is_attribution_delegate_set) == true) {
+        if (config->is_attribution_delegate_set != NULL)
+        {
+            if (*(config->is_attribution_delegate_set) == true)
+            {
                 EDK_CALLBACK_REG(ADJUST, ADJUST_ATTRIBUTION_DATA, (s3eCallback)config->attribution_callback, NULL, false);
 
                 assign_delegate_if_not_assigned(adjustConfig);
@@ -399,8 +420,10 @@ s3eResult adjust_Start_platform(adjust_config* config) {
             }
         }
 
-        if (config->is_session_success_delegate_set != NULL) {
-            if (*(config->is_session_success_delegate_set) == true) {
+        if (config->is_session_success_delegate_set != NULL)
+        {
+            if (*(config->is_session_success_delegate_set) == true)
+            {
                 EDK_CALLBACK_REG(ADJUST, ADJUST_SESSION_SUCCESS_DATA, (s3eCallback)config->session_success_callback, NULL, false);
 
                 assign_delegate_if_not_assigned(adjustConfig);
@@ -408,8 +431,10 @@ s3eResult adjust_Start_platform(adjust_config* config) {
             }
         }
 
-        if (config->is_session_failure_delegate_set != NULL) {
-            if (*(config->is_session_failure_delegate_set) == true) {
+        if (config->is_session_failure_delegate_set != NULL)
+        {
+            if (*(config->is_session_failure_delegate_set) == true)
+            {
                 EDK_CALLBACK_REG(ADJUST, ADJUST_SESSION_FAILURE_DATA, (s3eCallback)config->session_failure_callback, NULL, false);
 
                 assign_delegate_if_not_assigned(adjustConfig);
@@ -417,8 +442,10 @@ s3eResult adjust_Start_platform(adjust_config* config) {
             }
         }
 
-        if (config->is_event_success_delegate_set != NULL) {
-            if (*(config->is_event_success_delegate_set) == true) {
+        if (config->is_event_success_delegate_set != NULL)
+        {
+            if (*(config->is_event_success_delegate_set) == true)
+            {
                 EDK_CALLBACK_REG(ADJUST, ADJUST_EVENT_SUCCESS_DATA, (s3eCallback)config->event_success_callback, NULL, false);
 
                 assign_delegate_if_not_assigned(adjustConfig);
@@ -426,8 +453,10 @@ s3eResult adjust_Start_platform(adjust_config* config) {
             }
         }
 
-        if (config->is_event_failure_delegate_set != NULL) {
-            if (*(config->is_event_failure_delegate_set) == true) {
+        if (config->is_event_failure_delegate_set != NULL)
+        {
+            if (*(config->is_event_failure_delegate_set) == true)
+            {
                 EDK_CALLBACK_REG(ADJUST, ADJUST_EVENT_FAILURE_DATA, (s3eCallback)config->event_failure_callback, NULL, false);
 
                 assign_delegate_if_not_assigned(adjustConfig);
@@ -435,29 +464,37 @@ s3eResult adjust_Start_platform(adjust_config* config) {
             }
         }
 
-        if (config->is_deeplink_delegate_set != NULL) {
-            if (*(config->is_deeplink_delegate_set) == true) {
+        if (config->is_deeplink_delegate_set != NULL)
+        {
+            if (*(config->is_deeplink_delegate_set) == true)
+            {
                 EDK_CALLBACK_REG(ADJUST, ADJUST_DEEPLINK_DATA, (s3eCallback)config->deeplink_callback, NULL, false);
                 isDeeplinkCallbackSet = YES;
             }
         }
 
-        if (config->is_deferred_deeplink_delegate_set != NULL) {
-            if (*(config->is_deferred_deeplink_delegate_set) == true) {
+        if (config->is_deferred_deeplink_delegate_set != NULL)
+        {
+            if (*(config->is_deferred_deeplink_delegate_set) == true)
+            {
                 EDK_CALLBACK_REG(ADJUST, ADJUST_DEFERRED_DEEPLINK_DATA, (s3eCallback)config->deferred_deeplink_callback, NULL, false);
                 isDeferredDeplinkCallbackSet = YES;
             }
         }
 
-        if (config->is_google_ad_id_delegate_set != NULL) {
-            if (*(config->is_google_ad_id_delegate_set) == true) {
+        if (config->is_google_ad_id_delegate_set != NULL)
+        {
+            if (*(config->is_google_ad_id_delegate_set) == true)
+            {
                 EDK_CALLBACK_REG(ADJUST, ADJUST_GOOGLE_AD_ID_DATA, (s3eCallback)config->google_ad_id_callback, NULL, false);
                 isGoogleAdIdCallbackSet = YES;
             }
         }
 
-        if (config->is_idfa_delegate_set != NULL) {
-            if (*(config->is_idfa_delegate_set) == true) {
+        if (config->is_idfa_delegate_set != NULL)
+        {
+            if (*(config->is_idfa_delegate_set) == true)
+            {
                 EDK_CALLBACK_REG(ADJUST, ADJUST_IDFA_DATA, (s3eCallback)config->idfa_callback, NULL, false);
                 isIdfaCallbackSet = YES;
             }
@@ -470,21 +507,26 @@ s3eResult adjust_Start_platform(adjust_config* config) {
     return S3E_RESULT_SUCCESS;
 }
 
-s3eResult adjust_TrackEvent_platform(adjust_event* event) {
+s3eResult adjust_TrackEvent_platform(adjust_event* event)
+{
     NSString *eventToken = event->event_token ? [NSString stringWithUTF8String:event->event_token] : nil;
     NSString *currency = event->currency ? [NSString stringWithUTF8String:event->currency] : nil;
     NSString *transactionId = event->transaction_id ? [NSString stringWithUTF8String:event->transaction_id] : nil;
     NSData *receipt = event->receipt ? [[NSString stringWithUTF8String:event->receipt] dataUsingEncoding:NSUTF8StringEncoding] : nil;
 
-    if (is_string_valid(eventToken)) {
+    if (is_string_valid(eventToken))
+    {
         ADJEvent *adjustEvent = [ADJEvent eventWithEventToken:eventToken];
 
-        if (event->revenue != NULL) {
+        if (event->revenue != NULL)
+        {
             [adjustEvent setRevenue:*(event->revenue) currency:currency];
         }
 
-        if (event->callback_params->size() > 0) {
-            for (int i = 0; i < event->callback_params->size(); i++) {
+        if (event->callback_params->size() > 0)
+        {
+            for (int i = 0; i < event->callback_params->size(); i++)
+            {
                 std::pair<const char*, const char*> param = event->callback_params->at(i);
 
                 NSString *key = [NSString stringWithUTF8String:param.first];
@@ -494,8 +536,10 @@ s3eResult adjust_TrackEvent_platform(adjust_event* event) {
             }
         }
 
-        if (event->partner_params->size() > 0) {
-            for (int i = 0; i < event->partner_params->size(); i++) {
+        if (event->partner_params->size() > 0)
+        {
+            for (int i = 0; i < event->partner_params->size(); i++)
+            {
                 std::pair<const char*, const char*> param = event->partner_params->at(i);
 
                 NSString *key = [NSString stringWithUTF8String:param.first];
@@ -505,10 +549,14 @@ s3eResult adjust_TrackEvent_platform(adjust_event* event) {
             }
         }
 
-        if (event->is_receipt_set != NULL) {
+        if (event->is_receipt_set != NULL)
+        {
             [adjustEvent setReceipt:receipt transactionId:transactionId];
-        } else {
-            if (is_string_valid(transactionId)) {
+        }
+        else
+        {
+            if (is_string_valid(transactionId))
+            {
                 [adjustEvent setTransactionId:transactionId];
             }
         }
@@ -519,38 +567,43 @@ s3eResult adjust_TrackEvent_platform(adjust_event* event) {
     return S3E_RESULT_SUCCESS;
 }
 
-s3eResult adjust_SetEnabled_platform(bool is_enabled) {
+s3eResult adjust_SetEnabled_platform(bool is_enabled)
+{
     [Adjust setEnabled:is_enabled];
     return S3E_RESULT_SUCCESS;
 }
 
-s3eResult adjust_IsEnabled_platform(bool& is_enabled_out) {
+s3eResult adjust_IsEnabled_platform(bool& is_enabled_out)
+{
     BOOL isEnabled = [Adjust isEnabled];
-
     is_enabled_out = isEnabled;
 
     return S3E_RESULT_SUCCESS;
 }
 
-s3eResult adjust_SetOfflineMode_platform(bool is_offline_mode_enabled) {
+s3eResult adjust_SetOfflineMode_platform(bool is_offline_mode_enabled)
+{
     [Adjust setOfflineMode:is_offline_mode_enabled];
     return S3E_RESULT_SUCCESS;
 }
 
-s3eResult adjust_SetReferrer_platform(const char* referrer) {
+s3eResult adjust_SetReferrer_platform(const char* referrer)
+{
     return S3E_RESULT_SUCCESS;
 }
 
-s3eResult adjust_SetDeviceToken_platform(const char* device_token) {
+s3eResult adjust_SetDeviceToken_platform(const char* device_token)
+{
     NSData *deviceToken = [[NSString stringWithUTF8String:device_token] dataUsingEncoding:NSUTF8StringEncoding];
-
     [Adjust setDeviceToken:deviceToken];
 
     return S3E_RESULT_SUCCESS;
 }
 
-s3eResult adjust_GetGoogleAdId_platform() {
-    if (isGoogleAdIdCallbackSet) {
+s3eResult adjust_GetGoogleAdId_platform()
+{
+    if (isGoogleAdIdCallbackSet)
+    {
         NSString *googleAdId = @"";
         const char* csGoogleAdId = googleAdId != nil ? [googleAdId UTF8String] : NULL;
 
@@ -563,8 +616,10 @@ s3eResult adjust_GetGoogleAdId_platform() {
     return S3E_RESULT_SUCCESS;
 }
 
-s3eResult adjust_GetIdfa_platform() {
-    if (isIdfaCallbackSet) {
+s3eResult adjust_GetIdfa_platform()
+{
+    if (isIdfaCallbackSet)
+    {
         NSString *idfa = [Adjust idfa];
         const char* csIdfa = idfa != nil ? [idfa UTF8String] : NULL;
 
