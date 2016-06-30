@@ -1,0 +1,29 @@
+#!/usr/bin/env mkb
+
+subproject ./adjust/AdjustMarmalade
+
+files
+{
+    Example.cpp
+}
+
+subprojects
+{
+    iwutil
+    iwnui
+    s3eGooglePlayServices
+}
+
+deployment
+{
+    iphone-bundle-url-name = com.adjust.example
+    iphone-bundle-url-schemes = adjustExample
+    android-extra-strings='(gps_app_id,com.adjust.example)'
+}
+
+#Hub deployment options, please do not add anything below this line
+subproject
+{
+    (.)
+    Example_deployment
+}

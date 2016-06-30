@@ -17,41 +17,112 @@ static void trace_attribution_data(adjust_attribution_data* response)
     IwTrace(ADJUSTMARMALADE, (response->click_label));
 }
 
+static void trace_session_success_data(adjust_session_success_data* response) 
+{
+    IwTrace(ADJUSTMARMALADE, ("Session successfully tracked!"));
+    IwTrace(ADJUSTMARMALADE, (response->message));
+    IwTrace(ADJUSTMARMALADE, (response->timestamp));
+    IwTrace(ADJUSTMARMALADE, (response->adid));
+    IwTrace(ADJUSTMARMALADE, (response->json_response));
+}
+
+static void trace_session_failure_data(adjust_session_failure_data* response) 
+{
+    IwTrace(ADJUSTMARMALADE, ("Session tracking failed!"));
+    IwTrace(ADJUSTMARMALADE, (response->message));
+    IwTrace(ADJUSTMARMALADE, (response->timestamp));
+    IwTrace(ADJUSTMARMALADE, (response->adid));
+    IwTrace(ADJUSTMARMALADE, (response->will_retry));
+    IwTrace(ADJUSTMARMALADE, (response->json_response));
+}
+
+static void trace_event_success_data(adjust_event_success_data* response) 
+{
+    IwTrace(ADJUSTMARMALADE, ("Event successfully tracked!"));
+    IwTrace(ADJUSTMARMALADE, (response->message));
+    IwTrace(ADJUSTMARMALADE, (response->timestamp));
+    IwTrace(ADJUSTMARMALADE, (response->event_token));
+    IwTrace(ADJUSTMARMALADE, (response->adid));
+    IwTrace(ADJUSTMARMALADE, (response->json_response));
+}
+
+static void trace_event_failure_data(adjust_event_failure_data* response) 
+{
+    IwTrace(ADJUSTMARMALADE, ("Event tracking failed!"));
+    IwTrace(ADJUSTMARMALADE, (response->message));
+    IwTrace(ADJUSTMARMALADE, (response->timestamp));
+    IwTrace(ADJUSTMARMALADE, (response->event_token));
+    IwTrace(ADJUSTMARMALADE, (response->adid));
+    IwTrace(ADJUSTMARMALADE, (response->will_retry));
+    IwTrace(ADJUSTMARMALADE, (response->json_response));
+}
+
+static void trace_deeplink_data(const char* response) 
+{
+    IwTrace(ADJUSTMARMALADE, ("Deeplink received!"));
+    IwTrace(ADJUSTMARMALADE, (response));
+}
+
+static void trace_deferred_deeplink_data(const char* response) 
+{
+    IwTrace(ADJUSTMARMALADE, ("Deferred deeplink received!"));
+    IwTrace(ADJUSTMARMALADE, (response));
+}
+
+static void trace_google_ad_id_data(const char* response) 
+{
+    IwTrace(ADJUSTMARMALADE, ("Google Advertising Identifier received!"));
+    IwTrace(ADJUSTMARMALADE, (response));
+}
+
+static void trace_idfa_data(const char* response) 
+{
+    IwTrace(ADJUSTMARMALADE, ("IDFA received!"));
+    IwTrace(ADJUSTMARMALADE, (response));
+}
+
 void initializeSDK() 
 {
     // Initialize adjust SDK
-    const char* app_token = "{YoutAppToken}";
+    const char* app_token = "{YourAppToken}";
     const char* environment = "sandbox";
     const char* log_level = "verbose";
 
     adjust_config* config = new adjust_config(app_token, environment);
     config->set_log_level(log_level);
+    config->set_is_sending_in_background_enabled(true);
     config->set_attribution_callback(trace_attribution_data);
+    config->set_session_success_callback(trace_session_success_data);
+    config->set_session_failure_callback(trace_session_failure_data);
+    config->set_event_success_callback(trace_event_success_data);
+    config->set_event_failure_callback(trace_event_failure_data);
+    config->set_deeplink_callback(trace_deeplink_data);
+    config->set_deferred_deeplink_callback(trace_deferred_deeplink_data);
+    config->set_google_ad_id_callback(trace_google_ad_id_data);
+    config->set_idfa_callback(trace_idfa_data);
 
     adjust_Start(config);
-
-    delete config;
 }
 
 bool OnTrackSimpleEventClick(void* data, CButton* button)
 {
+    adjust_GetGoogleAdId();
+
     adjust_event* event = new adjust_event("{YourEventToken}");
 
     adjust_TrackEvent(event);
-
-    delete event;
 
     return true;
 }
 
 bool onTrackRevenueEventClick(void* data, CButton* button)
 {
+    adjust_GetIdfa();
+
     adjust_event* event = new adjust_event("{YourEventToken}");
     event->set_revenue(0.01, "EUR");
 
     adjust_TrackEvent(event);
-
-    delete event;
 
     return true;
 }
@@ -65,8 +136,6 @@ bool OnTrackCallbackEventClick(void* data, CButton* button)
 
     adjust_TrackEvent(event);
 
-    delete event;
-
     return true;
 }
 
@@ -78,8 +147,6 @@ bool OnTrackPartnerEventClick(void* data, CButton* button)
     event->add_partner_parameter("x", "z");
 
     adjust_TrackEvent(event);
-
-    delete event;
 
     return true;
 }
