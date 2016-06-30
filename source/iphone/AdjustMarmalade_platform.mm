@@ -318,8 +318,8 @@ int32 handle_open_url(void* systemData, void* userData)
     return 0;
 }
 
-/*
 // To be added once universal links support is added to the Marmalade.
+/*
 int32 handle_open_universal_url(void* systemData, void* userData)
 {
     if (isDeeplinkCallbackSet == NO)
@@ -348,12 +348,13 @@ s3eResult AdjustMarmaladeInit_platform()
                                     (s3eCallback)handle_open_url,
                                     NULL,
                                     S3E_FALSE);
-    /*
+
     // To be added once universal links support is added to the Marmalade.
+    /*
     // Subscribe for universal deep linking.
     s3eEdkCallbacksRegisterInternal(S3E_EDK_INTERNAL,
                                     S3E_EDK_CALLBACK_MAX,
-                                    S3E_EDK_IPHONE_HANDLEOPENURL_EXTRA, // To be replaced with universal links callback.
+                                    S3E_EDK_IPHONE_HANDLEOPENURL_EXTRA,
                                     (s3eCallback)handle_open_universal_url,
                                     NULL,
                                     S3E_FALSE);
@@ -369,10 +370,13 @@ void AdjustMarmaladeTerminate_platform()
                               S3E_EDK_IPHONE_HANDLEOPENURL,
                               (s3eCallback)handle_open_url);
 
+    // To be added once universal links support is added to the Marmalade.
+    /*
     s3eEdkCallbacksUnRegister(S3E_EDK_INTERNAL,
                               S3E_EDK_CALLBACK_MAX,
                               S3E_EDK_IPHONE_HANDLEOPENURL_EXTRA,
                               (s3eCallback)handle_open_universal_url);
+    */
 }
 
 s3eResult adjust_Start_platform(adjust_config* config)

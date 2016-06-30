@@ -275,12 +275,12 @@ struct adjust_config {
 };
   
 functions:
-s3eResult adjust_Start(adjust_config* config) S3E_RESULT_ERROR run_on_os_thread
-s3eResult adjust_TrackEvent(adjust_event* event) S3E_RESULT_ERROR run_on_os_thread
-s3eResult adjust_SetEnabled(bool is_enabled) S3E_RESULT_ERROR run_on_os_thread
-s3eResult adjust_IsEnabled(bool& is_enabled_out) S3E_RESULT_ERROR run_on_os_thread
-s3eResult adjust_SetOfflineMode(bool is_offline_mode_enabled) S3E_RESULT_ERROR run_on_os_thread
-s3eResult adjust_SetReferrer(const char* referrer) S3E_RESULT_ERROR run_on_os_thread
-s3eResult adjust_SetDeviceToken(const char* device_token) S3E_RESULT_ERROR run_on_os_thread
-s3eResult adjust_GetGoogleAdId() S3E_RESULT_ERROR run_on_os_thread
-s3eResult adjust_GetIdfa() S3E_RESULT_ERROR run_on_os_thread
+s3eResult adjust_Start(adjust_config* config) S3E_RESULT_ERROR
+s3eResult adjust_TrackEvent(adjust_event* event) S3E_RESULT_ERROR
+s3eResult adjust_SetEnabled(bool is_enabled) S3E_RESULT_ERROR
+s3eResult adjust_IsEnabled(bool& is_enabled_out) S3E_RESULT_ERROR
+s3eResult adjust_SetOfflineMode(bool is_offline_mode_enabled) S3E_RESULT_ERROR
+s3eResult adjust_SetReferrer(const char* referrer) S3E_RESULT_ERROR
+s3eResult adjust_SetDeviceToken(const char* device_token) S3E_RESULT_ERROR
+s3eResult adjust_GetGoogleAdId() S3E_RESULT_ERROR
+s3eResult adjust_GetIdfa() S3E_RESULT_ERROR

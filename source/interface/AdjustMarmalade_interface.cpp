@@ -237,7 +237,7 @@ s3eResult adjust_GetIdfa()
     s3eDeviceLoaderCallStart(S3E_TRUE, (void*)g_Ext.m_adjust_GetIdfa);
 #endif
 
-    const char* ret = g_Ext.m_adjust_GetIdfa();
+    s3eResult ret = g_Ext.m_adjust_GetIdfa();
 
 #ifdef LOADER_CALL_LOCK
     s3eDeviceLoaderCallDone(S3E_TRUE, (void*)g_Ext.m_adjust_GetIdfa);

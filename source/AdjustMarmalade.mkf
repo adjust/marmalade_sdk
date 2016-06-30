@@ -56,4 +56,7 @@ deployments
     android-external-jars="lib/android/AdjustMarmalade.jar"
     android-external-jars="sdk/Android/adjust-android.jar"
     android-so="lib/android/libAdjustMarmalade.so"
+
+    android-extra-application-manifest="adjust_broadcast_receiver.xml"
+    android-extra-manifest="adjust_permissions.xml"
 }
