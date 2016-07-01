@@ -1,24 +1,53 @@
 ## Summary
 
-This is the Marmalade SDK of adjust™. You can read more about adjust™ at adjust.com.
+This is the Marmalade SDK of adjust™. You can read more about adjust™ at [adjust.com].
 
-## Example app
+## Table of contents
+
+* [Example app](#example-app)
+* [Basic integration](#basic-integration)
+    * [Get the SDK](#sdk-get)
+    * [Add the SDK to your project](#sdk-add)
+    * [Integrate with your app](#sdk-integrate)
+        * [Adjust Logging](#adjust-logging)
+    * [Adjust Android manifest](#android-manifest)
+    * [Google Play Services](#google-play-services)
+* [Additional features](#additional-features)
+    * [Event tracking](#event-tracking)
+        * [Track revenue](#revenue-tracking)
+            * [Revenue deduplication](#revenue-deduplication)
+            * [In-App Purchase verification](#iap-verification)
+        * [Callback parameters](#callback-parameters)
+        * [Partner parameters](#partner-parameters)
+    * [Attribution callback](#attribution-callback)
+    * [Session and event callbacks](#session-event-callbacks)
+    * [Disable tracking](#disable-tracking)
+    * [Offline mode](#offline-mode)
+    * [Device IDs](#device-ids)
+    * [Deep linking](#deeplinking)
+        * [Standard deep linking scenario](#deeplinking-standard)
+        * [Deferred deep linking scenario](#deeplinking-deferred)
+        * [Set up scheme on Android activity](#scheme-android)
+        * [Set up custom URL scheme in iOS](#scheme-ios)
+* [License](#license)
+
+## <a id="example-app"></a>Example app
 
 There is an example app inside the [`Example` directory][example-app]. You can use the example app to see how the 
 adjust SDK can be integrated.
 
-## Basic Installation
+## <a id="basic-integration">Basic integration
 
 These are the minimal steps required to integrate the adjust SDK into your Marmalade project.
 
 **Note**: SDK 4.7.0 for Marmalade is built with **Marmalade 8.3.0p3** and we advise you to use that Marmalade version 
 or higher especially if you want to rebuild our Marmalade extension on your own.
 
-### 1. Get the SDK
+### <a id="sdk-get">1. Get the SDK
 
 Download the latest version from our [releases page][releases]. Extract the zip file in a folder of your choice.
 
-### 2. Add the SDK to your project
+### <a id="sdk-add">2. Add the SDK to your project
 
 Add `AdjustMarmalade` as a subproject of your own.  Edit the `.mkb` file of your project and add the following line:
 
@@ -26,7 +55,7 @@ Add `AdjustMarmalade` as a subproject of your own.  Edit the `.mkb` file of your
 subproject path_to_folder/adjust/AdjustMarmalade
 ```
 
-### 3. Integrate with your app
+### <a id="sdk-integrate">3. Integrate with your app
 
 Add the `AdjustMarmalade.h` header to your project where the `main` function is located. In the `main` function, 
 initialize `adjust_config` structure and call the function `adjust_Start`.
@@ -65,7 +94,7 @@ and testing it again.
 We use this environment to distinguish between real traffic and test traffic from test devices. It is very important that
 you keep this value meaningful at all times! This is especially important if you are tracking revenue.
 
-#### Adjust Logging
+#### <a id="sdk-logging">Adjust Logging
 
 You can increase or decrease the amount of logs you see in tests by calling `set_log_level` on your `adjust_config` 
 instance with one of the following parameters:
@@ -79,7 +108,7 @@ config->set_log_level("error");   // disable warnings as well
 config->set_log_level("assert");  // disable errors as well
 ```
 
-### 4. Adjust Android manifest
+### <a id="android-manifest">4. Adjust Android manifest
 
 In order to use your Marmalade app for Android with our SDK, certain changes are needed in `AndroidManifest.xml` file of 
 your app.
@@ -100,7 +129,7 @@ file and remove line which automatically adds our custom broadcast receiver to y
 manifest file. `ACCESS_WIFI_STATE` permission is only needed if you *are not using Google Play Services* in your app. If
 this is the case, feel free to remove this permission unless you need it for something else.
 
-### 5. Add Google Play Services
+### <a id="google-play-services">5. Google Play Services
 
 Since 1 August 2014, all apps in the Google Play Store must use the [Google Advertising ID][google_ad_id] to uniquely 
 identify devices. To allow the adjust SDK to use the Google Advertising ID, you must integrate the 
@@ -116,11 +145,11 @@ android-extra-strings='(gps_app_id,your.app.package)'
 
 After this, Google Play Services will be successfully integrated in your Marmalade app.
 
-## Additional features
+## <a id="additional-features">Additional features
 
 You can take advantage of the following features once the adjust SDK is integrated into your project.
 
-### 6. Add tracking of custom events
+### <a id="event-tracking">6. Event tracking
 
 You can tell adjust about every event you want. Suppose you want to track every tap on a button. Simply create a new event
 token in your [dashboard]. Let's say that event token is `abc123`. You can add the following line in your button’s click
@@ -131,7 +160,7 @@ adjust_event* event = new adjust_event("abc123");
 adjust_TrackEvent(event);
 ```
 
-### 7. Add revenue tracking
+#### <a id="revenue-tracking">Track revenue
 
 If your users can generate revenue by tapping on advertisements or making In-App Purchases, then you can track those
 revenues with events. Let's say a tap is worth €0.01. You could track the revenue event like this:
@@ -143,9 +172,9 @@ event->set_revenue(0.01, "EUR");
 adjust_TrackEvent(event);
 ```
 
-#### iOS
+##### <a id="revenue-deduplication"></a>Revenue deduplication
 
-##### <a id="deduplication"></a>Revenue deduplication
+**Note**: At the moment, this is iOS feature only.
 
 You can also add an optional transaction ID to avoid tracking duplicate revenues. The last ten transaction IDs are
 remembered, and revenue events with duplicate transaction IDs are skipped. This is especially useful for In-App Purchase
@@ -163,12 +192,12 @@ event->set_transaction_id("transaction_id");
 adjust_TrackEvent(event);
 ```
 
-##### Receipt verification
+##### <a id="iap-verification">In-App Purchase verification
 
 If you want to check the validity of In-App Purchases made in your app by using the adjust Server Side Receipt Verification
 mechanism, stay tuned because the adjust purchase SDK for Marmalade will be released soon.
 
-### 8. Add callback parameters
+### <a id="callback-parameters">Callback parameters
 
 You can also register a callback URL for that event in your [dashboard][dashboard] and we will send a GET request to that
 URL whenever the event gets tracked. In that case you can also put some key-value-pairs in an object and pass it to the 
@@ -198,7 +227,7 @@ Advertisers of the current device for iOS and the `{android_id}` would be replac
 for Android. Also note that we don't store any of your custom parameters, but only append them to your callbacks. If you 
 haven't registered a callback for an event, these parameters won't even be read.
 
-### 9. Partner parameters
+### <a id="partner-parameters">Partner parameters
 
 You can also add parameters for integrations that have been activated in your adjust dashboard that are transmittable to
 network partners.
@@ -217,7 +246,7 @@ adjust_TrackEvent(event);
 
 You can read more about special partners and these integrations in our [guide to special partners.][special-partners]
 
-### 10. Receive attribution change callback
+### <a id="attribution-callback">7. Attribution callback
 
 You can register a callback to be notified of tracker attribution changes. Due to the different sources considered for
 attribution, this information cannot be provided synchronously. Follow these steps to implement the optional callback in
@@ -278,7 +307,7 @@ int main()
 
 Please make sure to consider [applicable attribution data policies.][attribution-data]
 
-### 11. Implement callbacks for tracked events and sessions
+### <a id="session-event-callback">8. Session and event callbacks
 
 You can register a callback to be notified of successful and failed tracked events and/or sessions.
 
@@ -439,7 +468,7 @@ And both event and session failed objects also contain:
 
 - `const char* willRetry` indicates there will be an attempt to resend the package at a later time.
 
-### 12. Disable tracking
+### <a id="disable-tracking">9. Disable tracking
 
 You can disable the adjust SDK from tracking by invoking the method `adjust_SetEnabled` with the enabled parameter as
 `false`. This setting is **remembered between sessions**, but it can only be activated after the first session.
@@ -451,7 +480,7 @@ adjust_SetEnabled(false);
 You can verify if the adjust SDK is currently active with the method `adjust_IsEnabled`. It is always possible to activate
 the adjust SDK by invoking `adjust_SetEnabled` with the parameter set to `true`.
 
-### 13. Offline mode
+### <a id="offline-mode">10. Offline mode
 
 You can put the adjust SDK in offline mode to suspend transmission to our servers, while retaining tracked data to be sent
 later. While in offline mode, all information is saved in a file, so be careful not to trigger too many events while in
@@ -469,7 +498,7 @@ in online mode, all saved information is send to our servers with the correct ti
 Unlike disabling tracking, this setting is *not remembered* bettween sessions. This means that the SDK is in online mode
 whenever it is started, even if the app was terminated in offline mode.
 
-### 14. Device IDs
+### <a id="device-ids">11. Device IDs
 
 Certain services (such as Google Analytics) require you to coordinate Device and Client IDs in order to prevent duplicate
 reporting. 
@@ -552,7 +581,7 @@ int main()
 }
 ```
 
-### 15. Deep linking
+### <a id="deeplinking">12. Deep linking
 
 If you are using the adjust tracker URL with an option to deep link into your app from the URL, the adjust SDK offers you 
 the possibility to get info about the deep link URL and it's content. Since hitting the URL can happen if your user has your
@@ -560,7 +589,7 @@ app already installed (standard deep linking scenario) or if he doesn't have the
 scenario), the adjust SDK offers you two methods for getting the URL content, based on the deep linking scenario which 
 happened.
 
-#### Standard deep linking scenario
+#### <a id="deeplinking-standard">Standard deep linking scenario
 
 In order to get info about the URL content in standard deep linking scenario, you should set a callback method on 
 `adjust_config` object which will receive one `const char*` parameter where the content of the URL will be delivered. You 
@@ -595,7 +624,7 @@ int main()
 }
 ```
 
-#### Deferred deep linking scenario
+#### <a id="deeplinking-deferred">Deferred deep linking scenario
 
 In order to get info about the URL content in deferred deep linking scenario, you should set a callback method on 
 `adjust_config` object which will receive one `const char*` parameter where the content of the URL will be delivered. You 
@@ -669,7 +698,7 @@ If nothing is set, by default the adjust SDK will always try to launch the URL.
 
 To enable your apps to support deep linking, you should set up schemes for each supported platform.
 
-#### Set up scheme on Android activity
+#### <a id="scheme-android">Set up scheme on Android activity
 
 To set a scheme name for your Android app, you should add the following `<intent-filter>` to the activity you want to launch
 after deep linking (usually to your default Marmalade Android activity):
@@ -706,7 +735,7 @@ After adding this intent filter to our example app, activity definition in `Andr
 </activity>
 ```
 
-#### Set up custom URL scheme in iOS
+#### <a id="scheme-ios">Set up custom URL scheme in iOS
 
 In iOS, you need to set up the custom URL scheme name, but unlike Android, all what needs to be edited is your app's `.mkb` 
 file. You need to add following lines to the `deployment` part of your app's `.mkb` file:
@@ -731,7 +760,7 @@ You should replace `com.your.bundle` with your app's bundle ID and `schemeName` 
 [special-partners]: https://docs.adjust.com/en/special-partners
 [universal-links-guide]: https://github.com/adjust/ios_sdk/#universal-links
 
-## License
+## <a id="license">License
 
 The adjust SDK is licensed under the MIT License.
 
