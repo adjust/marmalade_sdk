@@ -552,9 +552,173 @@ int main()
 }
 ```
 
-### 15. Deeplinking
+### 15. Deep linking
 
+If you are using the adjust tracker URL with an option to deep link into your app from the URL, the adjust SDK offers you 
+the possibility to get info about the deep link URL and it's content. Since hitting the URL can happen if your user has your
+app already installed (standard deep linking scenario) or if he doesn't have the app on his device (deferred deep linking 
+scenario), the adjust SDK offers you two methods for getting the URL content, based on the deep linking scenario which 
+happened.
 
+#### Standard deep linking scenario
+
+In order to get info about the URL content in standard deep linking scenario, you should set a callback method on 
+`adjust_config` object which will receive one `const char*` parameter where the content of the URL will be delivered. You 
+should set this method on the config object by calling the method `set_deeplink_callback`:
+
+```cpp
+#include "AdjustMarmalade.h"
+
+//...
+
+static void trace_deeplink_data(const char* response) 
+{
+    IwTrace(ADJUSTMARMALADE, ("Deeplink received!"));
+    IwTrace(ADJUSTMARMALADE, (response));
+}
+
+// ...
+
+int main()
+{
+    const char* app_token = "{YourAppToken}";
+    const char* environment = "sandbox";
+    const char* log_level = "verbose";
+
+    adjust_config* config = new adjust_config(app_token, environment);
+    config->set_log_level(log_level);
+    config->set_deeplink_callback(trace_deeplink_data);
+    
+    adjust_Start(config);
+
+    // ...
+}
+```
+
+#### Deferred deep linking scenario
+
+In order to get info about the URL content in deferred deep linking scenario, you should set a callback method on 
+`adjust_config` object which will receive one `const char*` parameter where the content of the URL will be delivered. You 
+should set this method on the config object by calling the method `set_deferred_deeplink_callback`:
+
+```cpp
+#include "AdjustMarmalade.h"
+
+//...
+
+static void trace_deferred_deeplink_data(const char* response) 
+{
+    IwTrace(ADJUSTMARMALADE, ("Deferred deeplink received!"));
+    IwTrace(ADJUSTMARMALADE, (response));
+}
+
+// ...
+
+int main()
+{
+    const char* app_token = "{YourAppToken}";
+    const char* environment = "sandbox";
+    const char* log_level = "verbose";
+
+    adjust_config* config = new adjust_config(app_token, environment);
+    config->set_log_level(log_level);
+    config->set_deferred_deeplink_callback(trace_deferred_deeplink_data);
+    
+    adjust_Start(config);
+
+    // ...
+}
+```
+
+In deferred deep linking scenario, there is one additional setting which can be set on the `adjust_config` object. Once the 
+adjust SDK gets the deferred deep link info, we are offering you possibility to choose whether our SDK should open this URL 
+or not. You can choose to set this option by calling the `set_should_deferred_deeplink_be_opened` method on the config 
+object:
+
+```cpp
+#include "AdjustMarmalade.h"
+
+//...
+
+static void trace_deferred_deeplink_data(const char* response) 
+{
+    IwTrace(ADJUSTMARMALADE, ("Deferred deeplink received!"));
+    IwTrace(ADJUSTMARMALADE, (response));
+}
+
+// ...
+
+int main()
+{
+    const char* app_token = "{YourAppToken}";
+    const char* environment = "sandbox";
+    const char* log_level = "verbose";
+
+    adjust_config* config = new adjust_config(app_token, environment);
+    config->set_log_level(log_level);
+    config->set_should_deferred_deeplink_be_opened(false);
+    config->set_deferred_deeplink_callback(trace_deferred_deeplink_data);
+    
+    adjust_Start(config);
+
+    // ...
+}
+```
+
+If nothing is set, by default the adjust SDK will always try to launch the URL.
+
+To enable your apps to support deep linking, you should set up schemes for each supported platform.
+
+#### Set up scheme on Android activity
+
+To set a scheme name for your Android app, you should add the following `<intent-filter>` to the activity you want to launch
+after deep linking (usually to your default Marmalade Android activity):
+
+```xml
+<intent-filter>
+    <action android:name="android.intent.action.VIEW" />
+    <category android:name="android.intent.category.DEFAULT" />
+    <category android:name="android.intent.category.BROWSABLE" />
+    <data android:scheme="schemeName" />
+</intent-filter>
+```
+
+You should replace `schemeName` with your desired scheme name for Android app.
+
+After adding this intent filter to our example app, activity definition in `AndroidManifest.xml` looks like this:
+
+```xml
+<activity android:name=".${CLASSNAME}"
+          android:label="@string/app_name"
+          android:configChanges="locale|keyboardHidden|orientation|screenSize"
+          android:launchMode="singleTask"
+          ${EXTRA_ACTIVITY_ATTRIBS}>
+    <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+    </intent-filter>
+    <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="adjustExample" />
+    </intent-filter>
+</activity>
+```
+
+#### Set up custom URL scheme in iOS
+
+In iOS, you need to set up the custom URL scheme name, but unlike Android, all what needs to be edited is your app's `.mkb` 
+file. You need to add following lines to the `deployment` part of your app's `.mkb` file:
+
+```
+iphone-bundle-url-name = com.your.bundle
+iphone-bundle-url-schemes = schemeName
+```
+
+You should replace `com.your.bundle` with your app's bundle ID and `schemeName` with your desired scheme name for iOS app.
+
+**Important**: By using this approach for deep linking support in iOS, you will support deep linking handling for devices which have **iOS 8 and lower**. Starting from **iOS 9**, Apple has introduced universal links for which, at this moment, there's no built in support inside the adjust SDK. In order to support that, you would need to edit natively generated iOS project in Xcode and add support to handle universal links from there. If you are interested in finding out how to do that on the native side, please consult our [native iOS universal links guide][universal-links-guide].
 
 [adjust.com]: http://adjust.com
 [dashboard]: http://adjust.com
@@ -564,9 +728,8 @@ int main()
 [attribution-data]: https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
 [google_play_services]: http://developer.android.com/google/play-services/setup.html
 [google_ad_id]: https://developer.android.com/google/play-services/id.html
-[xcode-logs]: https://raw.githubusercontent.com/adjust/sdks/master/Resources/marmalade/v4/xcode-logs.png
-[android-pkg-name]: https://raw.githubusercontent.com/adjust/sdks/master/Resources/marmalade/v4/android-pkg-name.png
 [special-partners]: https://docs.adjust.com/en/special-partners
+[universal-links-guide]: https://github.com/adjust/ios_sdk/#universal-links
 
 ## License
 
