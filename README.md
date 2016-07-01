@@ -9,8 +9,8 @@ This is the Marmalade SDK of adjust™. You can read more about adjust™ at [ad
     * [Get the SDK](#sdk-get)
     * [Add the SDK to your project](#sdk-add)
     * [Integrate with your app](#sdk-integrate)
-        * [Adjust Logging](#adjust-logging)
-    * [Adjust Android manifest](#android-manifest)
+        * [Adjust logging](#adjust-logging)
+    * [Android manifest](#android-manifest)
     * [Google Play Services](#google-play-services)
 * [Additional features](#additional-features)
     * [Event tracking](#event-tracking)
@@ -94,7 +94,7 @@ and testing it again.
 We use this environment to distinguish between real traffic and test traffic from test devices. It is very important that
 you keep this value meaningful at all times! This is especially important if you are tracking revenue.
 
-#### <a id="sdk-logging">Adjust Logging
+#### <a id="sdk-logging">Adjust logging
 
 You can increase or decrease the amount of logs you see in tests by calling `set_log_level` on your `adjust_config` 
 instance with one of the following parameters:
@@ -108,7 +108,7 @@ config->set_log_level("error");   // disable warnings as well
 config->set_log_level("assert");  // disable errors as well
 ```
 
-### <a id="android-manifest">4. Adjust Android manifest
+### <a id="android-manifest">4. Android manifest
 
 In order to use your Marmalade app for Android with our SDK, certain changes are needed in `AndroidManifest.xml` file of 
 your app.
@@ -307,7 +307,7 @@ int main()
 
 Please make sure to consider [applicable attribution data policies.][attribution-data]
 
-### <a id="session-event-callback">8. Session and event callbacks
+### <a id="session-event-callbacks">8. Session and event callbacks
 
 You can register a callback to be notified of successful and failed tracked events and/or sessions.
 
