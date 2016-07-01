@@ -40,8 +40,8 @@ adjust SDK can be integrated.
 
 These are the minimal steps required to integrate the adjust SDK into your Marmalade project.
 
-**Note**: SDK 4.7.0 for Marmalade is built with **Marmalade 8.3.0p3** and we advise you to use that Marmalade version 
-or higher especially if you want to rebuild our Marmalade extension on your own.
+**Note**: SDK 4.7.0 for Marmalade is built with **Marmalade 8.3.0p3** and we advise you to use this Marmalade version 
+or higher. Especially if you want to rebuild our Marmalade extension on your own.
 
 ### <a id="sdk-get">1. Get the SDK
 
@@ -113,13 +113,13 @@ config->set_log_level("assert");  // disable errors as well
 In order to use your Marmalade app for Android with our SDK, certain changes are needed in `AndroidManifest.xml` file of 
 your app.
 
-Automatically, the adjust SDK will add it's own broadcast receiver for the Android `INSTALL_REFERRER` intent and permissions needed for the SDK.
+Automatically, the adjust SDK will add its own broadcast receiver for the Android `INSTALL_REFERRER` intent and the permissions needed for the SDK.
 
-Please, have following in mind:
+Please, have the following in mind:
 
-- In case that you are using your own custom broadcast receiver for the `INSTALL_REFERRER` intent, please follow our 
-[guide][custom-receiver] in order to add needed calls to the adjust SDK. In this case, you can go to `AdjustMarmalade.mkf`
-file and remove line which automatically adds our custom broadcast receiver to your app's manifest file:
+- In case you are using your own custom broadcast receiver for the `INSTALL_REFERRER` intent, please follow our 
+[guide][custom-receiver] in order to add the needed calls to the adjust SDK. In this case, you can go to the `AdjustMarmalade.mkf`
+file and remove the line which automatically adds our custom broadcast receiver to your app's manifest file:
 
     ```xml
     android-extra-application-manifest="adjust_broadcast_receiver.xml"
@@ -136,7 +136,7 @@ identify devices. To allow the adjust SDK to use the Google Advertising ID, you 
 [Google Play Services][google_play_services].
 
 In order to add Google Play Services to your Marmalade app, you should edit your app's `.mkb` file and add 
-`s3eGooglePlayServices` in `subprojects` list. In addition to this, you should add following line to `deployment` list of 
+`s3eGooglePlayServices` in the `subprojects` list. In addition to this, you should add the following line to `deployment` list of 
 your `.mkb` file:
 
 ```
@@ -151,7 +151,7 @@ You can take advantage of the following features once the adjust SDK is integrat
 
 ### <a id="event-tracking">6. Event tracking
 
-You can tell adjust about every event you want. Suppose you want to track every tap on a button. Simply create a new event
+With adjust, you can track every event that you want. Suppose you want to track every tap on a button. Simply create a new event
 token in your [dashboard]. Let's say that event token is `abc123`. You can add the following line in your button’s click
 handler method to track the click:
 
@@ -174,7 +174,7 @@ adjust_TrackEvent(event);
 
 ##### <a id="revenue-deduplication"></a>Revenue deduplication
 
-**Note**: At the moment, this is iOS feature only.
+**Note**: At the moment, this is an iOS feature only.
 
 You can also add an optional transaction ID to avoid tracking duplicate revenues. The last ten transaction IDs are
 remembered, and revenue events with duplicate transaction IDs are skipped. This is especially useful for In-App Purchase
@@ -200,7 +200,7 @@ mechanism, stay tuned because the adjust purchase SDK for Marmalade will be rele
 ### <a id="callback-parameters">Callback parameters
 
 You can also register a callback URL for that event in your [dashboard][dashboard] and we will send a GET request to that
-URL whenever the event gets tracked. In that case you can also put some key-value-pairs in an object and pass it to the 
+URL whenever the event gets tracked. In that case you can also put some key-value pairs in an object and pass it to the 
 `adjust_TrackEvent` method. We will then append these named parameters to your callback URL.
 
 For example, suppose you have registered the URL `http://www.adjust.com/callback` for your event with event token `abc123`
@@ -221,18 +221,17 @@ In this case we would track the event and send a request to:
 http://www.adjust.com/callback?key=value&foo=bar
 ```
 
-It should be mentioned that we support a variety of placeholders like `{idfa}` for iOS or `{android_id}` for Android that
+It should be mentioned that we support a variety of placeholders like `{idfa}` for iOS or `{gps_adid}` for Android that
 can be used as parameter values.  In the resulting callback the `{idfa}` placeholder would be replaced with the ID for
-Advertisers of the current device for iOS and the `{android_id}` would be replaced with the AndroidID of the current device
+Advertisers of the current device for iOS and the `{gps_adid}` would be replaced with the Google Advertising ID of the current device
 for Android. Also note that we don't store any of your custom parameters, but only append them to your callbacks. If you 
 haven't registered a callback for an event, these parameters won't even be read.
 
 ### <a id="partner-parameters">Partner parameters
 
-You can also add parameters for integrations that have been activated in your adjust dashboard that are transmittable to
-network partners.
+Similarly to the callback parameters mentioned above, you can also add parameters that adjust will transmit to the network partners of your choice. You can activate these networks in your adjust dashboard.
 
-This works similarly to the callback parameters mentioned above, but can be added by calling the `add_partner_parameter`
+For partner parameters to be added, you would need to call the `add_partner_parameter`
 method on your `adjust_event` instance.
 
 ```cpp
@@ -244,11 +243,11 @@ event->add_partner_parameter("foo", "bar");
 adjust_TrackEvent(event);
 ```
 
-You can read more about special partners and these integrations in our [guide to special partners.][special-partners]
+You can read more about special partners and networks in our [guide to special partners.][special-partners]
 
 ### <a id="attribution-callback">7. Attribution callback
 
-You can register a callback to be notified of tracker attribution changes. Due to the different sources considered for
+adjust can also send you a callback upon change of attribution. Due to the different sources considered for
 attribution, this information cannot be provided synchronously. Follow these steps to implement the optional callback in
 your application:
 
@@ -482,8 +481,8 @@ the adjust SDK by invoking `adjust_SetEnabled` with the parameter set to `true`.
 
 ### <a id="offline-mode">10. Offline mode
 
-You can put the adjust SDK in offline mode to suspend transmission to our servers, while retaining tracked data to be sent
-later. While in offline mode, all information is saved in a file, so be careful not to trigger too many events while in
+You can put the adjust SDK in offline mode to suspend transmission to our servers while retaining tracked data to be sent
+later. When in offline mode, all information is saved in a file, so be careful not to trigger too many events while in
 offline mode.
 
 You can activate offline mode by calling `adjust_SetOfflineMode` with the parameter `true`.
@@ -495,7 +494,7 @@ adjust_SetOfflineMode(true);
 Conversely, you can deactivate offline mode by calling `adjust_SetOfflineMode` with `false`. When the adjust SDK is put back
 in online mode, all saved information is send to our servers with the correct time information.
 
-Unlike disabling tracking, this setting is *not remembered* bettween sessions. This means that the SDK is in online mode
+Unlike disabling tracking, this setting is *not remembered* between sessions. This means that the SDK is in online mode
 whenever it is started, even if the app was terminated in offline mode.
 
 ### <a id="device-ids">11. Device IDs
@@ -505,8 +504,8 @@ reporting.
 
 #### Android
 
-The adjust SDK provides you with possibility to read Google Advertising Identifier of the Android device which is running
-your app. In order to do that, you can set callback method on `adjust_config` object which receives `const char*` parameter.
+The adjust SDK provides you with the possibility to read Google Advertising Identifier of the Android device on which
+your app in running. In order to do that, you can set the callback method on the `adjust_config` object which receives the `const char*` parameter.
 After setting this, if you invoke the method `adjust_GetGoogleAdId`, you will get the Google Advertising Identifier value in
 your callback method:
 
@@ -545,7 +544,7 @@ int main()
 
 #### iOS
 
-Similarly like for Google Advertising Identifier on Android device, you can access to IDFA value on iOS device by setting 
+Similarly to the Google Advertising Identifier on Android device, you can access to IDFA value on iOS device by setting 
 the appropriate callback method on `adjust_config` object and by invoking the `adjust_GetIdfa` method:
 
 ```cpp
@@ -584,14 +583,14 @@ int main()
 ### <a id="deeplinking">12. Deep linking
 
 If you are using the adjust tracker URL with an option to deep link into your app from the URL, the adjust SDK offers you 
-the possibility to get info about the deep link URL and it's content. Since hitting the URL can happen if your user has your
-app already installed (standard deep linking scenario) or if he doesn't have the app on his device (deferred deep linking 
-scenario), the adjust SDK offers you two methods for getting the URL content, based on the deep linking scenario which 
+the possibility to get info about the deep link URL and its content. Since hitting the URL can happen if your user has your
+app already installed (standard deep linking scenario) or if they don't have the app on their device (deferred deep linking 
+scenario), the adjust SDK offers you two methods for getting the URL content, based on the deep linking scenario that 
 happened.
 
 #### <a id="deeplinking-standard">Standard deep linking scenario
 
-In order to get info about the URL content in standard deep linking scenario, you should set a callback method on 
+In order to get info about the URL content in a standard deep linking scenario, you should set a callback method on the 
 `adjust_config` object which will receive one `const char*` parameter where the content of the URL will be delivered. You 
 should set this method on the config object by calling the method `set_deeplink_callback`:
 
@@ -626,7 +625,7 @@ int main()
 
 #### <a id="deeplinking-deferred">Deferred deep linking scenario
 
-In order to get info about the URL content in deferred deep linking scenario, you should set a callback method on 
+In order to get info about the URL content in a deferred deep linking scenario, you should set a callback method on the 
 `adjust_config` object which will receive one `const char*` parameter where the content of the URL will be delivered. You 
 should set this method on the config object by calling the method `set_deferred_deeplink_callback`:
 
@@ -660,7 +659,7 @@ int main()
 ```
 
 In deferred deep linking scenario, there is one additional setting which can be set on the `adjust_config` object. Once the 
-adjust SDK gets the deferred deep link info, we are offering you possibility to choose whether our SDK should open this URL 
+adjust SDK gets the deferred deep link info, we are offering you the possibility to choose whether our SDK should open this URL 
 or not. You can choose to set this option by calling the `set_should_deferred_deeplink_be_opened` method on the config 
 object:
 
@@ -737,8 +736,8 @@ After adding this intent filter to our example app, activity definition in `Andr
 
 #### <a id="scheme-ios">Set up custom URL scheme in iOS
 
-In iOS, you need to set up the custom URL scheme name, but unlike Android, all what needs to be edited is your app's `.mkb` 
-file. You need to add following lines to the `deployment` part of your app's `.mkb` file:
+In iOS, you need to set up the custom URL scheme name, but unlike Android, all that needs to be edited is your app's `.mkb` 
+file. You need to add the following lines to the `deployment` part of your app's `.mkb` file:
 
 ```
 iphone-bundle-url-name = com.your.bundle
@@ -747,7 +746,7 @@ iphone-bundle-url-schemes = schemeName
 
 You should replace `com.your.bundle` with your app's bundle ID and `schemeName` with your desired scheme name for iOS app.
 
-**Important**: By using this approach for deep linking support in iOS, you will support deep linking handling for devices which have **iOS 8 and lower**. Starting from **iOS 9**, Apple has introduced universal links for which, at this moment, there's no built in support inside the adjust SDK. In order to support that, you would need to edit natively generated iOS project in Xcode and add support to handle universal links from there. If you are interested in finding out how to do that on the native side, please consult our [native iOS universal links guide][universal-links-guide].
+**Important**: By using this approach for deep linking support in iOS, you will support deep linking handling for devices which have **iOS 8 and lower**. Starting from **iOS 9**, Apple has introduced universal links for which, at this moment, there's no built in support inside the adjust SDK. In order to support that, you would need to edit the natively generated iOS project in Xcode and add support to handle universal links from there. If you are interested in finding out how to do that on the native side, please consult our [native iOS universal links guide][universal-links-guide].
 
 [adjust.com]: http://adjust.com
 [dashboard]: http://adjust.com
