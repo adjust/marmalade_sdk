@@ -5,14 +5,14 @@
 set -e
 
 # Go to framework folder
-cd ../../source/sdk/iOS/Adjust.framework
+cd ../../source/sdk/iOS/AdjustSdk.framework
 
 # Remove any existing symlinks
-rm -rf Adjust
+rm -rf AdjustSdk
 rm -rf Headers
 
 # Move library and headers
-mv Versions/A/Adjust .
+mv Versions/A/AdjustSdk .
 mv Versions/A/Headers .
 
 # Remove Versions folder

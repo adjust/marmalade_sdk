@@ -11,23 +11,70 @@ These functions are called via JNI from native code.
  */
 
 import java.util.Map;
-import android.util.Log;
+import android.net.Uri;
 import com.adjust.sdk.*;
 import org.json.JSONObject;
 import org.json.JSONException;
+import android.content.Intent;
 
 import com.ideaworks3d.marmalade.LoaderAPI;
 import com.ideaworks3d.marmalade.LoaderActivity;
+import com.ideaworks3d.marmalade.LoaderActivitySlave;
 import com.ideaworks3d.marmalade.SuspendResumeListener;
 import com.ideaworks3d.marmalade.SuspendResumeEvent;
 
-public class AdjustMarmalade implements OnAttributionChangedListener {
+public class AdjustMarmalade extends LoaderActivitySlave implements  OnAttributionChangedListener, OnSessionTrackingSucceededListener,
+                OnSessionTrackingFailedListener, OnEventTrackingSucceededListener, OnEventTrackingFailedListener, OnDeeplinkResponseListener {
     public native void attributionCallback(String attributionString);
+    public native void sessionSuccessCallback(String sessionSuccessString);
+    public native void sessionFailureCallback(String sessionFailureString);
+    public native void eventSuccessCallback(String eventSuccessString);
+    public native void eventFailureCallback(String eventFailureString);
+    public native void deeplinkCallback(String deferredDeeplinkString);
+    public native void deferredDeeplinkCallback(String deferredDeeplinkString);
+    public native void googleAdIdCallback(String googleAdIdString);
+    public native void idfaCallback(String idfaString);
 
-    public void adjust_Start(String appToken, String environment, String logLevel, String sdkPrefix,
-        boolean isEventBufferingEnabled, String processName, String defaultTracker, boolean isMacMd5TrackingEnabled,
-        boolean isAttributionCallbackSet) {
+    private boolean shouldDeferredDeeplinkBeOpened = true;
+    private boolean isGoogleAdIdCallbackSet = false;
+    private boolean isIdfaCallbackSet = false;
+    private boolean isDeeplinkCallbackSet = false;
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        Uri uriData = intent.getData();
+
+        if (uriData == null) {
+            return;
+        }
+
+        Adjust.appWillOpenUrl(uriData);
+
+        if (isDeeplinkCallbackSet == false) {
+            return;
+        }
+
+        deeplinkCallback(uriData.toString());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Adjust.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Adjust.onPause();
+    }
+
+    public void adjust_Start(String appToken, String environment, String logLevel, String sdkPrefix, boolean isEventBufferingEnabled, boolean isSendingInBackgroundEnabled, 
+        boolean shouldDeferredDeeplinkBeOpened,  String processName, String defaultTracker, boolean isAttributionCallbackSet, boolean isSessionSuccessCallbackSet, 
+        boolean isSessionFailureCallbackSet, boolean isEventSuccessCallbackSet, boolean isEventFailureCallbackSet, boolean isDeeplinkCallbackSet, 
+        boolean isDeferredDeeplinkCallbackSet, boolean isGoogleAdIdCallbackSet, boolean isIdfaCallbackSet) {
         if (isStringValid(appToken) && isStringValid(environment)) {
             AdjustConfig adjustConfig = new AdjustConfig(LoaderAPI.getActivity(), appToken, environment);
 
@@ -63,15 +110,41 @@ public class AdjustMarmalade implements OnAttributionChangedListener {
                 adjustConfig.setOnAttributionChangedListener(this);    
             }
 
+            if (isSessionSuccessCallbackSet) {
+                adjustConfig.setOnSessionTrackingSucceededListener(this);
+            }
+
+            if (isSessionFailureCallbackSet) {
+                adjustConfig.setOnSessionTrackingFailedListener(this);
+            }
+
+            if (isEventSuccessCallbackSet) {
+                adjustConfig.setOnEventTrackingSucceededListener(this);
+            }
+
+            if (isEventFailureCallbackSet) {
+                adjustConfig.setOnEventTrackingFailedListener(this);
+            }
+
+            if (isDeferredDeeplinkCallbackSet) {
+                adjustConfig.setOnDeeplinkResponseListener(this);
+            }
+
+            this.shouldDeferredDeeplinkBeOpened = shouldDeferredDeeplinkBeOpened;
+            this.isGoogleAdIdCallbackSet = isGoogleAdIdCallbackSet;
+            this.isIdfaCallbackSet = isIdfaCallbackSet;
+            this.isDeeplinkCallbackSet = isDeeplinkCallbackSet;
+
             adjustConfig.setEventBufferingEnabled(isEventBufferingEnabled);
+            adjustConfig.setSendInBackground(isSendingInBackgroundEnabled);
 
             Adjust.onCreate(adjustConfig);
             Adjust.onResume();
         }
     }
 
-    public void adjust_TrackEvent(String eventToken, String currency, String transactionId, String receipt, 
-        double revenue, Map<String, String> callbackParams, Map<String, String> partnerParams, boolean isReceiptSet) {
+    public void adjust_TrackEvent(String eventToken, String currency, String transactionId, String receipt, double revenue, 
+        Map<String, String> callbackParams, Map<String, String> partnerParams, boolean isReceiptSet) {
         if (isStringValid(eventToken)) {
             AdjustEvent adjustEvent = new AdjustEvent(eventToken);
 
@@ -107,12 +180,27 @@ public class AdjustMarmalade implements OnAttributionChangedListener {
         Adjust.setReferrer(referrer);
     }
 
-    public void adjust_OnPause() {
-        Adjust.onPause();
+    public void adjust_GetGoogleAdId() {
+        if (this.isGoogleAdIdCallbackSet) {
+            Adjust.getGoogleAdId(LoaderAPI.getActivity(), new OnDeviceIdsRead() {
+                @Override
+                public void onGoogleAdIdRead(String googleAdId) {
+                    if (googleAdId != null) {
+                        googleAdIdCallback(googleAdId);
+                    } else {
+                        googleAdIdCallback("");
+                    }
+                }
+            });
+        } else {
+            googleAdIdCallback("");
+        }
     }
 
-    public void adjust_OnResume() {
-        Adjust.onResume();
+    public void adjust_GetIdfa() {
+        if (this.isIdfaCallbackSet) {
+            idfaCallback("");
+        }
     }
 
     @Override
@@ -132,6 +220,100 @@ public class AdjustMarmalade implements OnAttributionChangedListener {
         }
 
         attributionCallback(jsonAttribution.toString());
+    }
+
+    @Override
+    public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess sessionSuccess) {
+        JSONObject jsonSessionSuccess = new JSONObject();
+
+        try {
+            jsonSessionSuccess.put("message", sessionSuccess.message);
+            jsonSessionSuccess.put("timestamp", sessionSuccess.timestamp);
+            jsonSessionSuccess.put("adid", sessionSuccess.adid);
+
+            if (sessionSuccess.jsonResponse != null) {
+                jsonSessionSuccess.put("json_response", sessionSuccess.jsonResponse.toString());
+            } else {
+                jsonSessionSuccess.put("json_response", "");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        sessionSuccessCallback(jsonSessionSuccess.toString());
+    }
+
+    @Override
+    public void onFinishedSessionTrackingFailed(AdjustSessionFailure sessionFailure) {
+        JSONObject jsonSessionFailure = new JSONObject();
+
+        try {
+            jsonSessionFailure.put("message", sessionFailure.message);
+            jsonSessionFailure.put("timestamp", sessionFailure.timestamp);
+            jsonSessionFailure.put("adid", sessionFailure.adid);
+            jsonSessionFailure.put("will_retry", String.valueOf(sessionFailure.willRetry));
+
+            if (sessionFailure.jsonResponse != null) {
+                jsonSessionFailure.put("json_response", sessionFailure.jsonResponse.toString());
+            } else {
+                jsonSessionFailure.put("json_response", "");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        sessionFailureCallback(jsonSessionFailure.toString());
+    }
+
+    @Override
+    public void onFinishedEventTrackingSucceeded(AdjustEventSuccess eventSuccess) {
+        JSONObject jsonEventSuccess = new JSONObject();
+
+        try {
+            jsonEventSuccess.put("message", eventSuccess.message);
+            jsonEventSuccess.put("timestamp", eventSuccess.timestamp);
+            jsonEventSuccess.put("event_token", eventSuccess.eventToken);
+            jsonEventSuccess.put("adid", eventSuccess.adid);
+
+            if (eventSuccess.jsonResponse != null) {
+                jsonEventSuccess.put("json_response", eventSuccess.jsonResponse.toString());
+            } else {
+                jsonEventSuccess.put("json_response", "");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        eventSuccessCallback(jsonEventSuccess.toString());
+    }
+
+    @Override
+    public void onFinishedEventTrackingFailed(AdjustEventFailure eventFailure) {
+        JSONObject jsonEventFailure = new JSONObject();
+
+        try {
+            jsonEventFailure.put("message", eventFailure.message);
+            jsonEventFailure.put("timestamp", eventFailure.timestamp);
+            jsonEventFailure.put("event_token", eventFailure.eventToken);
+            jsonEventFailure.put("adid", eventFailure.adid);
+            jsonEventFailure.put("will_retry", String.valueOf(eventFailure.willRetry));
+
+            if (eventFailure.jsonResponse != null) {
+                jsonEventFailure.put("json_response", eventFailure.jsonResponse.toString());
+            } else {
+                jsonEventFailure.put("json_response", "");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        eventFailureCallback(jsonEventFailure.toString());
+    }
+
+    @Override
+    public boolean launchReceivedDeeplink(Uri deeplink) {
+        deferredDeeplinkCallback(deeplink.toString());
+        return this.shouldDeferredDeeplinkBeOpened;
     }
 
     private boolean isStringValid(String string) {

@@ -29,10 +29,10 @@ void AdjustMarmaladeRegisterExt()
     funcPtrs[2] = (void*)adjust_SetEnabled;
     funcPtrs[3] = (void*)adjust_IsEnabled;
     funcPtrs[4] = (void*)adjust_SetOfflineMode;
-    funcPtrs[5] = (void*)adjust_OnPause;
-    funcPtrs[6] = (void*)adjust_OnResume;
-    funcPtrs[7] = (void*)adjust_SetReferrer;
-    funcPtrs[8] = (void*)adjust_SetDeviceToken;
+    funcPtrs[5] = (void*)adjust_SetReferrer;
+    funcPtrs[6] = (void*)adjust_SetDeviceToken;
+    funcPtrs[7] = (void*)adjust_GetGoogleAdId;
+    funcPtrs[8] = (void*)adjust_GetIdfa;
 
     /*
      * Flags that specify the extension's use of locking and stackswitching

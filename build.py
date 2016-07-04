@@ -34,7 +34,7 @@ def main():
         if parsed_args.post_compile:
             post_compile()
             return
-        if not (parsed_args.compile_android or parsed_args.compile_iphone):
+        if (parsed_args.clean):
             clean()
         if not parsed_args.clean:
             if not (parsed_args.compile_android or parsed_args.build_android or parsed_args.build_compile_android):
@@ -67,7 +67,7 @@ def clean():
         break
 
 def build_android():
-    edk_build = Popen(["edk-build", "adjust/AdjustMarmalade.s4e", "--platform=android"], stdout=PIPE, stderr=PIPE)
+    edk_build = Popen(["edk-build", "--force", "adjust/AdjustMarmalade.s4e", "--platform=android"], stdout=PIPE, stderr=PIPE)
     out, err = edk_build.communicate()
 
     Log("edk-build android out: {0}".format(out))
@@ -83,7 +83,7 @@ def build_android():
     #edit_mkf("android")
 
 def build_iphone():
-    edk_build = Popen(["edk-build", "adjust/AdjustMarmalade.s4e", "--platform=iphone"], stdout=PIPE, stderr=PIPE)
+    edk_build = Popen(["edk-build", "--force", "adjust/AdjustMarmalade.s4e", "--platform=iphone"], stdout=PIPE, stderr=PIPE)
     out, err = edk_build.communicate()
 
     Log("edk-build iphone out: {0}".format(out))
@@ -158,6 +158,9 @@ def move_android_source():
         shutil.copy("adjust/source/android/AdjustMarmalade.java", "source/android/AdjustMarmalade.bak.java")
         shutil.copy("adjust/source/android/AdjustMarmalade_platform.cpp", "source/android/AdjustMarmalade_platform.bak.cpp")
 
+        shutil.copy("adjust/adjust_permissions.xml","source/adjust_permissions.bak.xml")
+        shutil.copy("adjust/adjust_broadcast_receiver.xml","source/adjust_broadcast_receiver.bak.xml")
+
         shutil.copy("adjust/AdjustMarmalade.mkf","source/AdjustMarmalade.bak.mkf")
 
         shutil.copy("adjust/interface/AdjustMarmalade_interface.cpp", "source/interface/AdjustMarmalade_interface.bak.cpp")
@@ -166,6 +169,9 @@ def move_android_source():
         shutil.copy("adjust/source/h/AdjustMarmalade_internal.h","source/h/AdjustMarmalade_internal.bak.h")
 
     else:
+        shutil.copy("source/adjust_permissions.xml","adjust")
+        shutil.copy("source/adjust_broadcast_receiver.xml","adjust")
+
         shutil.copy("source/AdjustMarmalade.mkf", "adjust")
         shutil.copy("source/AdjustMarmalade_build.mkf", "adjust")
 
@@ -177,9 +183,10 @@ def move_android_source():
 
         shutil.copytree("source/rapidjson/include", "adjust/rapidjson/include")
         shutil.copy("source/rapidjson/rapidjson.mkf", "adjust/rapidjson/rapidjson.mkf")
+        
         copytree("source/sdk/Android", "adjust/sdk/Android");
 
-    Log("Copied android source")
+    Log("Copied Android source files!")
 
 def move_iphone_source():
     if parsed_args.keep_source:
@@ -202,11 +209,11 @@ def move_iphone_source():
         shutil.copy("source/iphone/AdjustMarmalade_platform.h", "adjust/source/iphone")
         shutil.copy("source/iphone/AdjustMarmalade_platform.mm", "adjust/source/iphone")
 
-        shutil.copytree("source/rapidjson/include", "adjust/rapidjson/include")
+        copytree("source/rapidjson/include", "adjust/rapidjson/include")
         shutil.copy("source/rapidjson/rapidjson.mkf", "adjust/rapidjson/rapidjson.mkf")
         copytree("source/sdk/iOS", "adjust/sdk/iOS");
 
-    Log("Copied iphone source")
+    Log("Copied iPhone source files!")
 
 def post_compile():
     shutil.copy("source/interface/AdjustMarmalade_interface.cpp", "adjust/interface/AdjustMarmalade_interface.cpp")
@@ -289,7 +296,7 @@ def edit_xcode_project(xcode_project_path):
 
     # Add Adjust framework.
     adjust_framework_path = os.path.dirname(os.path.abspath(__file__)) + "/adjust/sdk/ios/"
-    ios_XcodeProject.add_file_if_doesnt_exist(adjust_framework_path + "Adjust.framework", tree="SDKROOT", create_build_files=True, weak=True)
+    ios_XcodeProject.add_file_if_doesnt_exist(adjust_framework_path + "AdjustSdk.framework", tree="SDKROOT", create_build_files=True, weak=True)
 
     # Save changes.
     ios_XcodeProject.saveFormat3_2()

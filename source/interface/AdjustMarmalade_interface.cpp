@@ -166,49 +166,9 @@ s3eResult adjust_SetOfflineMode(bool is_offline_mode_enabled)
     return ret;
 }
 
-s3eResult adjust_OnPause()
-{
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[5] func: adjust_OnPause"));
-
-    if (!_extLoad())
-        return S3E_RESULT_ERROR;
-
-#ifdef LOADER_CALL_LOCK
-    s3eDeviceLoaderCallStart(S3E_TRUE, (void*)g_Ext.m_adjust_OnPause);
-#endif
-
-    s3eResult ret = g_Ext.m_adjust_OnPause();
-
-#ifdef LOADER_CALL_LOCK
-    s3eDeviceLoaderCallDone(S3E_TRUE, (void*)g_Ext.m_adjust_OnPause);
-#endif
-
-    return ret;
-}
-
-s3eResult adjust_OnResume()
-{
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[6] func: adjust_OnResume"));
-
-    if (!_extLoad())
-        return S3E_RESULT_ERROR;
-
-#ifdef LOADER_CALL_LOCK
-    s3eDeviceLoaderCallStart(S3E_TRUE, (void*)g_Ext.m_adjust_OnResume);
-#endif
-
-    s3eResult ret = g_Ext.m_adjust_OnResume();
-
-#ifdef LOADER_CALL_LOCK
-    s3eDeviceLoaderCallDone(S3E_TRUE, (void*)g_Ext.m_adjust_OnResume);
-#endif
-
-    return ret;
-}
-
 s3eResult adjust_SetReferrer(const char* referrer)
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[7] func: adjust_SetReferrer"));
+    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[5] func: adjust_SetReferrer"));
 
     if (!_extLoad())
         return S3E_RESULT_ERROR;
@@ -228,7 +188,7 @@ s3eResult adjust_SetReferrer(const char* referrer)
 
 s3eResult adjust_SetDeviceToken(const char* device_token)
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[8] func: adjust_SetDeviceToken"));
+    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[6] func: adjust_SetDeviceToken"));
 
     if (!_extLoad())
         return S3E_RESULT_ERROR;
@@ -241,6 +201,46 @@ s3eResult adjust_SetDeviceToken(const char* device_token)
 
 #ifdef LOADER_CALL_LOCK
     s3eDeviceLoaderCallDone(S3E_TRUE, (void*)g_Ext.m_adjust_SetDeviceToken);
+#endif
+
+    return ret;
+}
+
+s3eResult adjust_GetGoogleAdId()
+{
+    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[7] func: adjust_GetGoogleAdId"));
+
+    if (!_extLoad())
+        return S3E_RESULT_ERROR;
+
+#ifdef LOADER_CALL_LOCK
+    s3eDeviceLoaderCallStart(S3E_TRUE, (void*)g_Ext.m_adjust_GetGoogleAdId);
+#endif
+
+    s3eResult ret = g_Ext.m_adjust_GetGoogleAdId();
+
+#ifdef LOADER_CALL_LOCK
+    s3eDeviceLoaderCallDone(S3E_TRUE, (void*)g_Ext.m_adjust_GetGoogleAdId);
+#endif
+
+    return ret;
+}
+
+s3eResult adjust_GetIdfa()
+{
+    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[8] func: adjust_GetIdfa"));
+
+    if (!_extLoad())
+        return S3E_RESULT_ERROR;
+
+#ifdef LOADER_CALL_LOCK
+    s3eDeviceLoaderCallStart(S3E_TRUE, (void*)g_Ext.m_adjust_GetIdfa);
+#endif
+
+    s3eResult ret = g_Ext.m_adjust_GetIdfa();
+
+#ifdef LOADER_CALL_LOCK
+    s3eDeviceLoaderCallDone(S3E_TRUE, (void*)g_Ext.m_adjust_GetIdfa);
 #endif
 
     return ret;

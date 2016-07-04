@@ -1,5 +1,0 @@
-SCONS;build_helloadjust_scons_x86;
-SCONS;build_helloadjust_scons_mips;
-SCONS;build_helloadjust_scons_naclx86_64;
-SCONS;build_helloadjust_scons_aarch64;
-SCONS;build_helloadjust_scons_arm;

@@ -5,11 +5,10 @@ SCRIPTDIR = ../../scripts/
 default: copy
 
 build:	
-	cd $(SRCDIR); \
-	xcodebuild -target framework -configuration Release
+	cd $(SRCDIR)/Scripts; \
+	sh adjust_build.sh
 
 copy: build
-	rm -rf $(LIBOUTDIR)/Adjust.framework; \
-	cp -R $(SRCDIR)/Adjust.framework $(LIBOUTDIR); \
-	rm -rf $(SRCDIR)/Adjust.framework; \
+	rm -rf $(LIBOUTDIR)/AdjustSdk.framework; \
+	cp -R $(SRCDIR)/Frameworks/Static/AdjustSdk.framework $(LIBOUTDIR); \
 	sh $(SCRIPTDIR)/symlink_fix.sh

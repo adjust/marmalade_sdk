@@ -10,10 +10,10 @@ typedef  s3eResult(*adjust_TrackEvent_t)(adjust_event* event);
 typedef  s3eResult(*adjust_SetEnabled_t)(bool is_enabled);
 typedef  s3eResult(*adjust_IsEnabled_t)(bool& is_enabled_out);
 typedef  s3eResult(*adjust_SetOfflineMode_t)(bool is_offline_mode_enabled);
-typedef  s3eResult(*adjust_OnPause_t)();
-typedef  s3eResult(*adjust_OnResume_t)();
 typedef  s3eResult(*adjust_SetReferrer_t)(const char* referrer);
 typedef  s3eResult(*adjust_SetDeviceToken_t)(const char* device_token);
+typedef  s3eResult(*adjust_GetGoogleAdId_t)();
+typedef  s3eResult(*adjust_GetIdfa_t)();
 
 /**
  * struct that gets filled in by AdjustMarmaladeRegister
@@ -25,8 +25,8 @@ typedef struct AdjustMarmaladeFuncs
     adjust_SetEnabled_t m_adjust_SetEnabled;
     adjust_IsEnabled_t m_adjust_IsEnabled;
     adjust_SetOfflineMode_t m_adjust_SetOfflineMode;
-    adjust_OnPause_t m_adjust_OnPause;
-    adjust_OnResume_t m_adjust_OnResume;
     adjust_SetReferrer_t m_adjust_SetReferrer;
     adjust_SetDeviceToken_t m_adjust_SetDeviceToken;
+    adjust_GetGoogleAdId_t m_adjust_GetGoogleAdId;
+    adjust_GetIdfa_t m_adjust_GetIdfa;
 } AdjustMarmaladeFuncs;
