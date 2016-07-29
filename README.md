@@ -24,6 +24,7 @@ This is the Marmalade SDK of adjust™. You can read more about adjust™ at [ad
     * [Disable tracking](#disable-tracking)
     * [Offline mode](#offline-mode)
     * [Event buffering](#event-buffering)
+    * [Background tracking](#background-tracking)
     * [Device IDs](#device-ids)
     * [Deep linking](#deeplinking)
         * [Standard deep linking scenario](#deeplinking-standard)
@@ -524,6 +525,30 @@ int main()
 ```
 
 If nothing set, event buffering is **disabled by default**.
+
+### <a id="background-tracking">Background tracking
+
+The default behaviour of the adjust SDK is to **pause sending HTTP requests while the app is in the background**. You can 
+change this in your `adjust_config` instance by calling `set_is_sending_in_background_enabled` method:
+
+```cpp
+// ...
+
+int main()
+{
+    const char* app_token = "{YourAppToken}";
+    const char* environment = "sandbox";
+    const char* log_level = "verbose";
+
+    adjust_config* config = new adjust_config(app_token, environment);
+    config->set_log_level(log_level);
+    config->set_is_sending_in_background_enabled(true);
+    
+    adjust_Start(config);
+
+    // ...
+}
+```
 
 ### <a id="device-ids">Device IDs
 
