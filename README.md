@@ -174,7 +174,7 @@ event->set_revenue(0.01, "EUR");
 adjust_TrackEvent(event);
 ```
 
-##### <a id="revenue-deduplication"></a>Revenue deduplication
+#### <a id="revenue-deduplication"></a>Revenue deduplication
 
 **Note**: At the moment, this is an iOS feature only.
 
