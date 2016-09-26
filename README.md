@@ -42,7 +42,7 @@ adjust SDK can be integrated.
 
 These are the minimal steps required to integrate the adjust SDK into your Marmalade project.
 
-**Note**: SDK 4.7.0 for Marmalade is built with **Marmalade 8.3.0p3** and we advise you to use this Marmalade version 
+**Note**: SDK 4.10.0 for Marmalade is built with **Marmalade 8.6.0** and we advise you to use this Marmalade version 
 or higher. Especially if you want to rebuild our Marmalade extension on your own.
 
 ### <a id="sdk-get">Get the SDK
