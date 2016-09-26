@@ -11,24 +11,20 @@
 
 #include "AdjustMarmalade_internal.h"
 
-s3eResult AdjustMarmaladeInit()
-{
+s3eResult AdjustMarmaladeInit() {
     // Add any generic initialisation code here.
     return AdjustMarmaladeInit_platform();
 }
 
-void AdjustMarmaladeTerminate()
-{
+void AdjustMarmaladeTerminate() {
     // Add any generic termination code here.
     AdjustMarmaladeTerminate_platform();
 }
 
-void adjust_CleanupAttributionCallback(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData)
-{
+void adjust_CleanupAttributionCallback(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData) {
     adjust_attribution_data* attribution = (adjust_attribution_data*)completeData;
 
-    if (attribution == NULL)
-    {
+    if (attribution == NULL) {
         return;
     }
 
@@ -43,12 +39,10 @@ void adjust_CleanupAttributionCallback(uint32 extID, int32 notification, void *s
     delete attribution;
 }
 
-void adjust_CleanupEventSuccessCallback(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData)
-{
+void adjust_CleanupEventSuccessCallback(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData) {
     adjust_event_success_data* event_success = (adjust_event_success_data*)completeData;
 
-    if (event_success == NULL)
-    {
+    if (event_success == NULL) {
         return;
     }
 
@@ -61,12 +55,10 @@ void adjust_CleanupEventSuccessCallback(uint32 extID, int32 notification, void *
     delete event_success;
 }
 
-void adjust_CleanupEventFailureCallback(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData)
-{
+void adjust_CleanupEventFailureCallback(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData) {
     adjust_event_failure_data* event_failure = (adjust_event_failure_data*)completeData;
 
-    if (event_failure == NULL)
-    {
+    if (event_failure == NULL) {
         return;
     }
 
@@ -80,12 +72,10 @@ void adjust_CleanupEventFailureCallback(uint32 extID, int32 notification, void *
     delete event_failure;
 }
 
-void adjust_CleanupSessionSuccessCallback(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData)
-{
+void adjust_CleanupSessionSuccessCallback(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData) {
     adjust_session_success_data* session_success = (adjust_session_success_data*)completeData;
 
-    if (session_success == NULL)
-    {
+    if (session_success == NULL) {
         return;
     }
 
@@ -97,12 +87,10 @@ void adjust_CleanupSessionSuccessCallback(uint32 extID, int32 notification, void
     delete session_success;
 }
 
-void adjust_CleanupSessionFailureCallback(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData)
-{
+void adjust_CleanupSessionFailureCallback(uint32 extID, int32 notification, void *systemData, void *instance, int32 returnCode, void *completeData) {
     adjust_session_failure_data* session_failure = (adjust_session_failure_data*)completeData;
 
-    if (session_failure == NULL)
-    {
+    if (session_failure == NULL) {
         return;
     }
 
@@ -115,17 +103,14 @@ void adjust_CleanupSessionFailureCallback(uint32 extID, int32 notification, void
     delete session_failure;
 }
 
-char* adjust_CopyString(const char* source)
-{
-    if (source == NULL)
-    {
+char* adjust_CopyString(const char* source) {
+    if (source == NULL) {
         return NULL;
     }
 
     char* target = (char*)malloc(sizeof(char) * (strlen(source) + 1));
 
-    if (target == NULL)
-    {
+    if (target == NULL) {
         return NULL;
     }
 
@@ -134,44 +119,63 @@ char* adjust_CopyString(const char* source)
     return target;
 }
 
-s3eResult adjust_Start(adjust_config* config)
-{
+s3eResult adjust_Start(adjust_config* config) {
     config->set_sdk_prefix("marmalade4.7.0");
     return adjust_Start_platform(config);
 }
 
-s3eResult adjust_TrackEvent(adjust_event* event)
-{
+s3eResult adjust_TrackEvent(adjust_event* event) {
     return adjust_TrackEvent_platform(event);
 }
 
-s3eResult adjust_SetEnabled(bool is_enabled)
-{
+s3eResult adjust_SetEnabled(bool is_enabled) {
     return adjust_SetEnabled_platform(is_enabled);
 }
 
-s3eResult adjust_IsEnabled(bool& is_enabled_out)
-{
+s3eResult adjust_IsEnabled(bool& is_enabled_out) {
     return adjust_IsEnabled_platform(is_enabled_out);
 }
 
-s3eResult adjust_SetOfflineMode(bool is_offline_mode_enabled)
-{
+s3eResult adjust_SetOfflineMode(bool is_offline_mode_enabled) {
     return adjust_SetOfflineMode_platform(is_offline_mode_enabled);
 }
 
-s3eResult adjust_SetReferrer(const char* referrer)
-{
+s3eResult adjust_SetReferrer(const char* referrer) {
     return adjust_SetReferrer_platform(referrer);
 }
 
-s3eResult adjust_SetDeviceToken(const char* device_token)
-{
+s3eResult adjust_SetDeviceToken(const char* device_token) {
     return adjust_SetDeviceToken_platform(device_token);
 }
 
-s3eResult adjust_GetGoogleAdId()
-{
+s3eResult adjust_SendFirstPackages() {
+    return adjust_SendFirstPackages_platform();
+}
+
+s3eResult adjust_AddSessionCallbackParameter(const char* key, const char* value) {
+    return adjust_AddSessionCallbackParameter_platform(key, value);
+}
+
+s3eResult adjust_AddSessionPartnerParameter(const char* key, const char* value) {
+    return adjust_AddSessionPartnerParameter_platform(key, value);
+}
+
+s3eResult adjust_RemoveSessionCallbackParameter(const char* key) {
+    return adjust_RemoveSessionCallbackParameter_platform(key);
+}
+
+s3eResult adjust_RemoveSessionPartnerParameter(const char* key) {
+    return adjust_RemoveSessionPartnerParameter_platform(key);
+}
+
+s3eResult adjust_ResetSessionCallbackParameters() {
+    return adjust_ResetSessionCallbackParameters_platform();
+}
+s3eResult adjust_ResetSessionPartnerParameters() {
+    return adjust_ResetSessionPartnerParameters_platform();
+}
+
+s3eResult adjust_GetGoogleAdId() {
     return adjust_GetGoogleAdId_platform();
 }
 

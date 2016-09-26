@@ -23,7 +23,7 @@ import com.ideaworks3d.marmalade.LoaderActivitySlave;
 import com.ideaworks3d.marmalade.SuspendResumeListener;
 import com.ideaworks3d.marmalade.SuspendResumeEvent;
 
-public class AdjustMarmalade extends LoaderActivitySlave implements  OnAttributionChangedListener, OnSessionTrackingSucceededListener,
+public class AdjustMarmalade extends LoaderActivitySlave implements OnAttributionChangedListener, OnSessionTrackingSucceededListener,
                 OnSessionTrackingFailedListener, OnEventTrackingSucceededListener, OnEventTrackingFailedListener, OnDeeplinkResponseListener {
     public native void attributionCallback(String attributionString);
     public native void sessionSuccessCallback(String sessionSuccessString);
@@ -71,12 +71,29 @@ public class AdjustMarmalade extends LoaderActivitySlave implements  OnAttributi
         Adjust.onPause();
     }
 
-    public void adjust_Start(String appToken, String environment, String logLevel, String sdkPrefix, boolean isEventBufferingEnabled, boolean isSendingInBackgroundEnabled, 
-        boolean shouldDeferredDeeplinkBeOpened,  String processName, String defaultTracker, boolean isAttributionCallbackSet, boolean isSessionSuccessCallbackSet, 
-        boolean isSessionFailureCallbackSet, boolean isEventSuccessCallbackSet, boolean isEventFailureCallbackSet, boolean isDeeplinkCallbackSet, 
-        boolean isDeferredDeeplinkCallbackSet, boolean isGoogleAdIdCallbackSet, boolean isIdfaCallbackSet) {
+    public void adjust_Start(String appToken, 
+        String environment,
+        String logLevel,
+        String sdkPrefix,
+        boolean shouldAllowSuppressLogLevel,
+        double delayStart,
+        boolean isEventBufferingEnabled,
+        boolean isSendingInBackgroundEnabled,
+        boolean shouldDeferredDeeplinkBeOpened,
+        String processName,
+        String defaultTracker,
+        String userAgent,
+        boolean isAttributionCallbackSet,
+        boolean isSessionSuccessCallbackSet,
+        boolean isSessionFailureCallbackSet,
+        boolean isEventSuccessCallbackSet,
+        boolean isEventFailureCallbackSet,
+        boolean isDeeplinkCallbackSet,
+        boolean isDeferredDeeplinkCallbackSet,
+        boolean isGoogleAdIdCallbackSet,
+        boolean isIdfaCallbackSet) {
         if (isStringValid(appToken) && isStringValid(environment)) {
-            AdjustConfig adjustConfig = new AdjustConfig(LoaderAPI.getActivity(), appToken, environment);
+            AdjustConfig adjustConfig = new AdjustConfig(LoaderAPI.getActivity(), appToken, environment, shouldAllowSuppressLogLevel);
 
             if (isStringValid(logLevel)) {
                 if (logLevel.equals("verbose")) {
@@ -91,6 +108,8 @@ public class AdjustMarmalade extends LoaderActivitySlave implements  OnAttributi
                     adjustConfig.setLogLevel(LogLevel.ERROR);
                 } else if (logLevel.equals("assert")) {
                     adjustConfig.setLogLevel(LogLevel.ASSERT);
+                } else if (logLevel.equals("suppress")) {
+                    adjustConfig.setLogLevel(LogLevel.SUPRESS);
                 }
             }
 
@@ -104,6 +123,14 @@ public class AdjustMarmalade extends LoaderActivitySlave implements  OnAttributi
 
             if (isStringValid(sdkPrefix)) {
                 adjustConfig.setSdkPrefix(sdkPrefix);
+            }
+
+            if (isStringValid(userAgent)) {
+                adjustConfig.setUserAgent(userAgent);
+            }
+
+            if (delayStart != -1) {
+                adjustConfig.setDelayStart(delayStart);
             }
 
             if (isAttributionCallbackSet) {
@@ -143,8 +170,14 @@ public class AdjustMarmalade extends LoaderActivitySlave implements  OnAttributi
         }
     }
 
-    public void adjust_TrackEvent(String eventToken, String currency, String transactionId, String receipt, double revenue, 
-        Map<String, String> callbackParams, Map<String, String> partnerParams, boolean isReceiptSet) {
+    public void adjust_TrackEvent(String eventToken,
+        String currency,
+        String transactionId,
+        String receipt,
+        double revenue,
+        Map<String, String> callbackParams,
+        Map<String, String> partnerParams,
+        boolean isReceiptSet) {
         if (isStringValid(eventToken)) {
             AdjustEvent adjustEvent = new AdjustEvent(eventToken);
 
@@ -158,6 +191,10 @@ public class AdjustMarmalade extends LoaderActivitySlave implements  OnAttributi
 
             for (Map.Entry<String, String> parameter : partnerParams.entrySet()) {
                 adjustEvent.addPartnerParameter(parameter.getKey(), parameter.getValue());
+            }
+
+            if (null != transactionId) {
+                adjustEvent.setOrderId(transactionId);
             }
 
             Adjust.trackEvent(adjustEvent);
@@ -178,6 +215,37 @@ public class AdjustMarmalade extends LoaderActivitySlave implements  OnAttributi
 
     public void adjust_SetReferrer(String referrer) {
         Adjust.setReferrer(referrer);
+    }
+
+    public void adjust_SetDeviceToken(String deviceToken) {
+        Adjust.setPushToken(deviceToken);
+    }
+
+    public void adjust_SendFirstPackages() {
+        Adjust.sendFirstPackages();
+    }
+
+    public void adjust_AddSessionCallbackParameter(String key, String value) {
+        Adjust.addSessionCallbackParameter(key, value);
+    }
+
+    public void adjust_AddSessionPartnerParameter(String key, String value) {
+        Adjust.addSessionPartnerParameter(key, value);
+    }
+
+    public void adjust_RemoveSessionCallbackParameter(String key) {
+        Adjust.removeSessionCallbackParameter(key);
+    }
+
+    public void adjust_RemoveSessionPartnerParameter(String key) {
+        Adjust.removeSessionPartnerParameter(key);
+    }
+
+    public void adjust_ResetSessionCallbackParameters() {
+        Adjust.resetSessionCallbackParameters();
+    }
+    public void adjust_ResetSessionPartnerParameters() {
+        Adjust.resetSessionPartnerParameters();
     }
 
     public void adjust_GetGoogleAdId() {
