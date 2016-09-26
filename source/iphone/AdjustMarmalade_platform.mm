@@ -380,20 +380,22 @@ s3eResult adjust_Start_platform(adjust_config* config) {
 
     // If no app token nor environment is set, skip initialisation.
     if (is_string_valid(appToken) && is_string_valid(environment)) {
-        ADJConfig *adjustConfig;
-
-        if (config->should_allow_suppress_log_level != NULL) {
-            if (*(config->should_allow_suppress_log_level) == true) {
-                adjustConfig = [ADJConfig configWithAppToken:appToken environment:environment allowSuppressLogLevel:YES];
-            } else {
-                adjustConfig = [ADJConfig configWithAppToken:appToken environment:environment allowSuppressLogLevel:NO];
-            }
-        } else {
-            adjustConfig = [ADJConfig configWithAppToken:appToken environment:environment];
-        }
+        BOOL isSuppress = NO;
 
         if (is_string_valid(logLevel)) {
-            [adjustConfig setLogLevel:[ADJLogger LogLevelFromString:logLevel]];
+            if ([logLevel isEqualToString:@"suppress"]) {
+                isSuppress = YES;
+            }
+        }
+
+        ADJConfig *adjustConfig = [ADJConfig configWithAppToken:appToken environment:environment allowSuppressLogLevel:isSuppress];
+
+        if (is_string_valid(logLevel)) {
+            if (isSuppress) {
+                [adjustConfig setLogLevel:ADJLogLevelSuppress];
+            } else {
+              [adjustConfig setLogLevel:[ADJLogger LogLevelFromString:logLevel]];
+            }
         }
 
         if (is_string_valid(defaultTracker)) {

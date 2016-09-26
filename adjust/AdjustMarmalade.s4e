@@ -128,7 +128,6 @@ struct adjust_config {
     const char* user_agent;
     bool* is_event_buffering_enabled;
     bool* is_sending_in_background_enabled;
-    bool* should_allow_suppress_log_level;
     bool* should_deferred_deeplink_be_opened;
     bool* is_attribution_delegate_set;
     bool* is_session_success_delegate_set;
@@ -160,7 +159,6 @@ struct adjust_config {
         user_agent = NULL;
         is_event_buffering_enabled = NULL;
         is_sending_in_background_enabled = NULL;
-        should_allow_suppress_log_level = NULL;
         should_deferred_deeplink_be_opened = NULL;
         is_attribution_delegate_set = NULL;
         is_session_success_delegate_set = NULL;
@@ -184,32 +182,6 @@ struct adjust_config {
         user_agent = NULL;
         is_event_buffering_enabled = NULL;
         is_sending_in_background_enabled = NULL;
-        should_allow_suppress_log_level = NULL;
-        should_deferred_deeplink_be_opened = NULL;
-        is_attribution_delegate_set = NULL;
-        is_session_success_delegate_set = NULL;
-        is_session_failure_delegate_set = NULL;
-        is_event_success_delegate_set = NULL;
-        is_event_failure_delegate_set = NULL;
-        is_deeplink_delegate_set = NULL;
-        is_deferred_deeplink_delegate_set = NULL;
-        is_google_ad_id_delegate_set = NULL;
-        is_idfa_delegate_set = NULL;
-    }
-
-    adjust_config(const char* p_app_token, const char* p_environment, bool p_should_allow_suppress_log_level) {
-        delay_start = NULL;
-        app_token = p_app_token;
-        environment = p_environment;
-        log_level = NULL;
-        process_name = NULL;
-        default_tracker = NULL;
-        sdk_prefix = NULL;
-        user_agent = NULL;
-        is_event_buffering_enabled = NULL;
-        is_sending_in_background_enabled = NULL;
-        should_allow_suppress_log_level = new bool();
-        *should_allow_suppress_log_level = p_should_allow_suppress_log_level;
         should_deferred_deeplink_be_opened = NULL;
         is_attribution_delegate_set = NULL;
         is_session_success_delegate_set = NULL;

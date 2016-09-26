@@ -327,7 +327,7 @@ s3eResult AdjustMarmaladeInit_platform() {
     }
 
     // Get all the extension methods.
-    g_adjust_Start = env->GetMethodID(cls, "adjust_Start", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZZLjava/lang/String;Ljava/lang/String;ZZZZZZZZZ)V");
+    g_adjust_Start = env->GetMethodID(cls, "adjust_Start", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;DZZZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZZZZZZZZ)V");
     
     if (!g_adjust_Start) {
         goto fail;
@@ -471,7 +471,6 @@ s3eResult adjust_Start_platform(adjust_config* config) {
     jstring jUserAgent = env->NewStringUTF(config->user_agent);
     jboolean jIsEventBufferingEnabled = JNI_FALSE;
     jboolean jIsSendingInBackgroundEnabled = JNI_FALSE;
-    jboolean jShouldAllowSuppressLogLevel = JNI_FALSE;
     jboolean jShouldDeferredDeeplinkBeOpened = JNI_FALSE;
     jboolean jIsAttributionCallbackSet = JNI_FALSE;
     jboolean jIsEventSuccessCallbackSet = JNI_FALSE;
@@ -494,10 +493,6 @@ s3eResult adjust_Start_platform(adjust_config* config) {
 
     if (config->should_deferred_deeplink_be_opened != NULL) {
         jShouldDeferredDeeplinkBeOpened = (jboolean)(*(config->should_deferred_deeplink_be_opened));
-    }
-
-    if (config->should_allow_suppress_log_level != NULL) {
-        jShouldAllowSuppressLogLevel = (jboolean)(*(config->should_allow_suppress_log_level));
     }
 
     if (config->is_attribution_delegate_set != NULL) {
@@ -578,7 +573,6 @@ s3eResult adjust_Start_platform(adjust_config* config) {
         jEnvironment,
         jLogLevel,
         jSdkPrefix, 
-        jShouldAllowSuppressLogLevel,
         jDelayStart,
         jIsEventBufferingEnabled,
         jIsSendingInBackgroundEnabled,

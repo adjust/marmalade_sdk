@@ -75,7 +75,6 @@ public class AdjustMarmalade extends LoaderActivitySlave implements OnAttributio
         String environment,
         String logLevel,
         String sdkPrefix,
-        boolean shouldAllowSuppressLogLevel,
         double delayStart,
         boolean isEventBufferingEnabled,
         boolean isSendingInBackgroundEnabled,
@@ -93,7 +92,15 @@ public class AdjustMarmalade extends LoaderActivitySlave implements OnAttributio
         boolean isGoogleAdIdCallbackSet,
         boolean isIdfaCallbackSet) {
         if (isStringValid(appToken) && isStringValid(environment)) {
-            AdjustConfig adjustConfig = new AdjustConfig(LoaderAPI.getActivity(), appToken, environment, shouldAllowSuppressLogLevel);
+            boolean isSuppress = false;
+
+            if (isStringValid(logLevel)) {
+                if (logLevel.equals("suppress")) {
+                    isSuppress = true;
+                }
+            }
+
+            AdjustConfig adjustConfig = new AdjustConfig(LoaderAPI.getActivity(), appToken, environment, isSuppress);
 
             if (isStringValid(logLevel)) {
                 if (logLevel.equals("verbose")) {
