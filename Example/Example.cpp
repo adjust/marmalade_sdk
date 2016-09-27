@@ -89,8 +89,14 @@ void initializeSDK()
     const char* log_level = "verbose";
 
     adjust_config* config = new adjust_config(app_token, environment);
+    
     config->set_log_level(log_level);
     config->set_is_sending_in_background_enabled(true);
+    config->set_should_deferred_deeplink_be_opened(true);
+
+    // Delay SDK start upon installation if you want.
+    // config->set_delay_start(3.6);
+
     config->set_attribution_callback(trace_attribution_data);
     config->set_session_success_callback(trace_session_success_data);
     config->set_session_failure_callback(trace_session_failure_data);
@@ -98,16 +104,46 @@ void initializeSDK()
     config->set_event_failure_callback(trace_event_failure_data);
     config->set_deeplink_callback(trace_deeplink_data);
     config->set_deferred_deeplink_callback(trace_deferred_deeplink_data);
+    
     config->set_google_ad_id_callback(trace_google_ad_id_data);
     config->set_idfa_callback(trace_idfa_data);
 
+    // Add session callback parameters.
+    adjust_AddSessionCallbackParameter("scp_foo", "scp_bar");
+    adjust_AddSessionCallbackParameter("scp_key", "scp_value");
+
+    // Remove session callback parameters.
+    adjust_RemoveSessionCallbackParameter("scp_foo");
+
+    // Add session partner parameters.
+    adjust_AddSessionPartnerParameter("spp_a", "spp_b");
+    adjust_AddSessionPartnerParameter("spp_x", "spp_y");
+
+    // Remove session partner parameters.
+    adjust_RemoveSessionPartnerParameter("spp_a");
+
+    // Remove all session parameters.
+    adjust_ResetSessionCallbackParameters();
+    adjust_ResetSessionPartnerParameters();
+
     adjust_Start(config);
+
+    // Send us the push notifications token.
+    // adjust_SetDeviceToken("MyAppPushNotificationsToken");
+
+    // In case you delayed SDK start upon installation and you have obtained
+    // information you were waiting for, initialise it's start before timer ends.
+    // adjust_SendFirstPackages();
+
+    // Get Google Advertising Identifier.
+    // adjust_GetGoogleAdId();
+
+    // Get IDFA value.
+    // adjust_GetIdfa();
 }
 
 bool OnTrackSimpleEventClick(void* data, CButton* button)
 {
-    adjust_GetGoogleAdId();
-
     adjust_event* event = new adjust_event("{YourEventToken}");
 
     adjust_TrackEvent(event);
@@ -117,10 +153,12 @@ bool OnTrackSimpleEventClick(void* data, CButton* button)
 
 bool onTrackRevenueEventClick(void* data, CButton* button)
 {
-    adjust_GetIdfa();
-
     adjust_event* event = new adjust_event("{YourEventToken}");
+
     event->set_revenue(0.01, "EUR");
+
+    // Set transaction ID if you want.
+    // event->set_transaction_id("transaction_id");
 
     adjust_TrackEvent(event);
 
@@ -130,6 +168,7 @@ bool onTrackRevenueEventClick(void* data, CButton* button)
 bool OnTrackCallbackEventClick(void* data, CButton* button)
 {
     adjust_event* event = new adjust_event("{YourEventToken}");
+
     event->add_callback_parameter("a", "b");
     event->add_callback_parameter("foo", "bar");
     event->add_callback_parameter("a", "c");
@@ -142,6 +181,7 @@ bool OnTrackCallbackEventClick(void* data, CButton* button)
 bool OnTrackPartnerEventClick(void* data, CButton* button)
 {
     adjust_event* event = new adjust_event("{YourEventToken}");
+
     event->add_partner_parameter("x", "y");
     event->add_partner_parameter("key", "value");
     event->add_partner_parameter("x", "z");
