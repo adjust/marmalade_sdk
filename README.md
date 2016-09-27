@@ -35,8 +35,9 @@ This is the Marmalade SDK of adjust™. You can read more about adjust™ at [ad
     * [Deep linking](#deeplinking)
         * [Standard deep linking scenario](#deeplinking-standard)
         * [Deferred deep linking scenario](#deeplinking-deferred)
-        * [Set up scheme on Android activity](#scheme-android)
-        * [Set up custom URL scheme in iOS](#scheme-ios)
+        * [Deep linking setup for Android](#deeplinking-android)
+        * [Deep linking setup for iOS](#deeplinking-ios)
+        * [Reattribution via deep links](#deeplinking-reattribution)
 * [License](#license)
 
 ## <a id="example-app"></a>Example app
@@ -127,7 +128,7 @@ permissions needed for the SDK.
 
 Please, have the following in mind:
 
-- In case you are using your own custom broadcast receiver for the `INSTALL_REFERRER` intent, please follow our 
+- In case you are using **your own custom broadcast receiver** for the `INSTALL_REFERRER` intent, please follow our 
 [guide][custom-receiver] in order to add the needed calls to the adjust SDK. In this case, you can go to the 
 `AdjustMarmalade.mkf` file and remove the line which automatically adds our custom broadcast receiver to your app's manifest 
 file:
@@ -137,7 +138,7 @@ file:
     ```
     
 - By default, the adjust SDK extension is going to add the `INTERNET` and `ACCESS_WIFI_STATE` permissions to your app's
-manifest file. `ACCESS_WIFI_STATE` permission is only needed if you *are not using Google Play Services* in your app. If
+manifest file. `ACCESS_WIFI_STATE` permission is only needed if you **are not using Google Play Services** in your app. If
 this is the case, feel free to remove this permission unless you need it for something else.
 
 ### <a id="google-play-services">Google Play Services
@@ -200,6 +201,9 @@ event->set_transaction_id("transaction_id");
 
 adjust_TrackEvent(event);
 ```
+
+**Note**: Transaction ID is the iOS term, unique identifier for successfully finished Android In-App-Purchases is named 
+**Order ID**.
 
 ### <a id="iap-verification">In-App Purchase verification
 
@@ -771,13 +775,14 @@ If you want to use the adjust SDK to recognize users that found your app pre-ins
 
 ### <a id="deeplinking">Deep linking
 
-If you are using the adjust tracker URL with an option to deep link into your app from the URL, the adjust SDK offers you 
-the possibility to get info about the deep link URL and its content. Since hitting the URL can happen if your user has your
-app already installed (standard deep linking scenario) or if they don't have the app on their device (deferred deep linking 
-scenario), the adjust SDK offers you two methods for getting the URL content, based on the deep linking scenario that 
-happened.
+If you are using the adjust tracker URL with an option to deep link into your app from the URL, there is the possibility to 
+get info about the deep link URL and its content. Hitting the URL can happen when the user has your app already installed 
+(standard deep linking scenario) or if they don't have the app on their device (deferred deep linking scenario).
 
 ### <a id="deeplinking-standard">Standard deep linking scenario
+
+Standard deep linking scenario is platform specific feature and in order to support it, you need to add some additional 
+settings to your app.
 
 In order to get info about the URL content in a standard deep linking scenario, you should set a callback method on the 
 `adjust_config` object which will receive one `const char*` parameter where the content of the URL will be delivered. You 
@@ -814,6 +819,9 @@ int main()
 
 ### <a id="deeplinking-deferred">Deferred deep linking scenario
 
+Deferred deep linking is not something which platform supports out of the box, but the thing which the adjust SDK provides the 
+support for.
+ 
 In order to get info about the URL content in a deferred deep linking scenario, you should set a callback method on the 
 `adjust_config` object which will receive one `const char*` parameter where the content of the URL will be delivered. You 
 should set this method on the config object by calling the method `set_deferred_deeplink_callback`:
@@ -886,7 +894,7 @@ If nothing is set, **the adjust SDK will always try to launch the URL by default
 
 To enable your apps to support deep linking, you should set up schemes for each supported platform.
 
-### <a id="scheme-android">Set up scheme on Android activity
+### <a id="deeplinking-android">Deep linking setup for Android
 
 To set a scheme name for your Android app, you should add the following `<intent-filter>` to the activity you want to launch
 after deep linking (usually to your default Marmalade Android activity):
@@ -923,7 +931,7 @@ After adding this intent filter to our example app, activity definition in `Andr
 </activity>
 ```
 
-### <a id="scheme-ios">Set up custom URL scheme in iOS
+### <a id="deeplinking-ios">Deep linking setup for iOS
 
 In iOS, you need to set up the custom URL scheme name, but unlike Android, all that needs to be edited is your app's `.mkb` 
 file. You need to add the following lines to the `deployment` part of your app's `.mkb` file:
@@ -941,6 +949,14 @@ there's no built in support inside the adjust SDK. In order to support that, you
 iOS project in Xcode and add support to handle universal links from there. If you are interested in finding out how to do 
 that on the native side, please consult our [native iOS universal links guide][universal-links-guide].
 
+### <a id="deeplinking-reattribution">Reattribution via deep links
+
+Adjust enables you to run re-engagement campaigns with usage of deep links. For more information on how to do that, please 
+check our [official docs][reattribution-with-deeplinks]. 
+
+If you are using this feature, the adjust SDK supports this feature out of the box and no additional setup in your app's code 
+is needed.
+
 [dashboard]:   http://adjust.com
 [adjust.com]:  http://adjust.com
 
@@ -951,8 +967,10 @@ that on the native side, please consult our [native iOS universal links guide][u
 [custom-receiver]:        https://github.com/adjust/android_sdk/blob/master/doc/referrer.md
 [special-partners]:       https://docs.adjust.com/en/special-partners
 [attribution-data]:       https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
-[google_play_services]:   http://developer.android.com/google/play-services/setup.html
-[universal-links-guide]:  https://github.com/adjust/ios_sdk/#universal-links
+
+[google_play_services]:         http://developer.android.com/google/play-services/setup.html
+[universal-links-guide]:        https://github.com/adjust/ios_sdk/#deeplinking-setup-new
+[reattribution-with-deeplinks]: https://docs.adjust.com/en/deeplinking/#manually-appending-attribution-data-to-a-deep-link
 
 ## <a id="license">License
 
