@@ -945,9 +945,9 @@ You should replace `com.your.bundle` with your app's bundle ID and `schemeName` 
 
 **Important**: By using this approach for deep linking support in iOS, you will support deep linking handling for devices 
 which have **iOS 8 and lower**. Starting from **iOS 9**, Apple has introduced universal links for which, at this moment, 
-there's no built in support inside the adjust SDK. In order to support that, you would need to edit the natively generated 
-iOS project in Xcode and add support to handle universal links from there. If you are interested in finding out how to do 
-that on the native side, please consult our [native iOS universal links guide][universal-links-guide].
+there's no built in support inside the Marmalade platform. In order to support that, you would need to edit the natively 
+generated iOS project in Xcode (if possible) and add support to handle universal links from there. If you are interested in 
+finding out how to do that on the native side, please consult our [native iOS universal links guide][universal-links-guide].
 
 ### <a id="deeplinking-reattribution">Reattribution via deep links
 
