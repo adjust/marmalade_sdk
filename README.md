@@ -312,7 +312,7 @@ These will be transmitted to network partners, for the integrations that have be
 The session partner parameters have a similar interface to the event partner parameters. Instead of adding the key and its
 value to an event, it's added through a call to method `adjust_AddSessionPartnerParameter`:
 
-```cs
+```cpp
 adjust_AddSessionPartnerParameter("foo", "bar");
 ```
 
@@ -323,14 +323,14 @@ with the same key to one added from the session, the value that prevails is the 
 It's possible to remove a specific session partner parameter by passing the desiring key to the method
 `adjust_RemoveSessionPartnerParameter`.
 
-```cs
+```cpp
 adjust_RemoveSessionPartnerParameter("foo");
 ```
 
 If you wish to remove all keys and values from the session partner parameters, you can reset it with the method
 `adjust_ResetSessionPartnerParameters`.
 
-```cs
+```cpp
 adjust_ResetSessionPartnerParameters();
 ```
 
@@ -341,7 +341,7 @@ be sent on install.
 
 Set the initial delay time in seconds with the `set_delay_start` field of the `adjust_config` instance:
 
-```objc
+```cpp
 config->set_delay_start(5.5);
 ```
 
