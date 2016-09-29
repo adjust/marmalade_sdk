@@ -304,12 +304,12 @@ adjust_ResetSessionCallbackParameters();
 
 ### <a id="session-partner-parameters">Session partner parameters
 
-In the same way that there is [session callback parameters](#session-callback-parameters) that are sent every in event or
+In the same way that there is [session callback parameters](#session-callback-parameters) that are sent for every event or
 session of the adjust SDK, there is also session partner parameters.
 
 These will be transmitted to network partners, for the integrations that have been activated in your adjust [dashboard].
 
-The session partner parameters have a similar interface to the event partner parameters. Instead of adding the key and it's
+The session partner parameters have a similar interface to the event partner parameters. Instead of adding the key and its
 value to an event, it's added through a call to method `adjust_AddSessionPartnerParameter`:
 
 ```cs
@@ -327,7 +327,7 @@ It's possible to remove a specific session partner parameter by passing the desi
 adjust_RemoveSessionPartnerParameter("foo");
 ```
 
-If you wish to remove all key and values from the session partner parameters, you can reset it with the method
+If you wish to remove all keys and values from the session partner parameters, you can reset it with the method
 `adjust_ResetSessionPartnerParameters`.
 
 ```cs
@@ -337,7 +337,7 @@ adjust_ResetSessionPartnerParameters();
 ### <a id="delay-start">Delay start
 
 Delaying the start of the adjust SDK allows your app some time to obtain session parameters, such as unique identifiers, to
-be send on install.
+be sent on install.
 
 Set the initial delay time in seconds with the `set_delay_start` field of the `adjust_config` instance:
 
@@ -654,7 +654,7 @@ int main()
 }
 ```
 
-If nothing set, sending in background is **disabled by default**.
+If nothing is set, sending in background is **disabled by default**.
 
 ### <a id="device-ids">Device IDs
 
@@ -664,7 +664,7 @@ reporting.
 ### Android
 
 The adjust SDK provides you with the possibility to read Google Advertising Identifier of the Android device on which
-your app in running. In order to do that, you can set the callback method on the `adjust_config` object which receives the 
+your app is running. In order to do that, you can set the callback method on the `adjust_config` object which receives the 
 `const char*` parameter. After setting this, if you invoke the method `adjust_GetGoogleAdId`, you will get the Google 
 Advertising Identifier value in your callback method:
 
@@ -741,7 +741,7 @@ int main()
 
 ### <a id="push-token">Push token
 
-To send us the push notifications token, then add the following call to Adjust **when ever you get your token in 
+To send us the push notifications token, then add the following call to Adjust **whenever you get your token in 
 the app or when it gets updated**:
 
 ```cpp
@@ -767,7 +767,7 @@ If you want to use the adjust SDK to recognize users that found your app pre-ins
   URL (including `http://app.adjust.com/`). In your source code, you should specify only the six-character token and not the
   entire URL.
 
-3. Build and run your app. You should see a line like the following in app's log output:
+3. Build and run your app. You should see a line like the following in the app's log output:
 
     ```
     Default tracker: 'abc123'
@@ -781,7 +781,7 @@ get info about the deep link URL and its content. Hitting the URL can happen whe
 
 ### <a id="deeplinking-standard">Standard deep linking scenario
 
-Standard deep linking scenario is platform specific feature and in order to support it, you need to add some additional 
+Standard deep linking scenario is a platform specific feature and in order to support it, you need to add some additional 
 settings to your app.
 
 In order to get info about the URL content in a standard deep linking scenario, you should set a callback method on the 
@@ -819,8 +819,7 @@ int main()
 
 ### <a id="deeplinking-deferred">Deferred deep linking scenario
 
-Deferred deep linking is not something which platform supports out of the box, but the thing which the adjust SDK provides the 
-support for.
+While deferred deep linking is not supported out of the box on Android and iOS, our adjust SDK makes it possible.
  
 In order to get info about the URL content in a deferred deep linking scenario, you should set a callback method on the 
 `adjust_config` object which will receive one `const char*` parameter where the content of the URL will be delivered. You 
@@ -945,17 +944,16 @@ You should replace `com.your.bundle` with your app's bundle ID and `schemeName` 
 
 **Important**: By using this approach for deep linking support in iOS, you will support deep linking handling for devices 
 which have **iOS 8 and lower**. Starting from **iOS 9**, Apple has introduced universal links for which, at this moment, 
-there's no built in support inside the Marmalade platform. In order to support that, you would need to edit the natively 
+there's no built in support inside the Marmalade platform. To support this, you would need to edit the natively 
 generated iOS project in Xcode (if possible) and add support to handle universal links from there. If you are interested in 
 finding out how to do that on the native side, please consult our [native iOS universal links guide][universal-links-guide].
 
 ### <a id="deeplinking-reattribution">Reattribution via deep links
 
-Adjust enables you to run re-engagement campaigns with usage of deep links. For more information on how to do that, please 
+Adjust enables you to run re-engagement campaigns by using deep links. For more information on this, please 
 check our [official docs][reattribution-with-deeplinks]. 
 
-If you are using this feature, the adjust SDK supports this feature out of the box and no additional setup in your app's code 
-is needed.
+The adjust SDK supports this feature out of the box and no additional setup is needed in your app's code.
 
 [dashboard]:   http://adjust.com
 [adjust.com]:  http://adjust.com
