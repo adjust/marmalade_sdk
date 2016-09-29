@@ -1,4 +1,4 @@
-### Version 4.10.0 (27th September 2016)
+### Version 4.10.0 (29th September 2016)
 #### Added
 - Added support for iOS 10.
 - Added revenue deduplication for Android platform.
