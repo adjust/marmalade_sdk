@@ -20,8 +20,7 @@
 
 #define S3E_DEVICE_ADJUST                   S3E_EXT_ADJUSTMARMALADE_HASH
 
-typedef enum s3eAdjustCallback
-{
+typedef enum s3eAdjustCallback {
     S3E_ADJUST_CALLBACK_ADJUST_ATTRIBUTION_DATA,
     S3E_ADJUST_CALLBACK_ADJUST_EVENT_SUCCESS_DATA,
     S3E_ADJUST_CALLBACK_ADJUST_EVENT_FAILURE_DATA,
@@ -37,9 +36,7 @@ typedef enum s3eAdjustCallback
 /**
  * Global data for AdjustMarmalade extension.
  */
-struct AdjustMarmaladeGlobals
-{
-};
+struct AdjustMarmaladeGlobals {};
 
 /**
  * Initialise the extension.  This is called once then the extension is first
@@ -71,6 +68,13 @@ s3eResult adjust_IsEnabled_platform(bool& is_enabled_out);
 s3eResult adjust_SetOfflineMode_platform(bool is_offline_mode_enabled);
 s3eResult adjust_SetReferrer_platform(const char* referrer);
 s3eResult adjust_SetDeviceToken_platform(const char* device_token);
+s3eResult adjust_SendFirstPackages_platform();
+s3eResult adjust_AddSessionCallbackParameter_platform(const char* key, const char* value);
+s3eResult adjust_AddSessionPartnerParameter_platform(const char* key, const char* value);
+s3eResult adjust_RemoveSessionCallbackParameter_platform(const char* key);
+s3eResult adjust_RemoveSessionPartnerParameter_platform(const char* key);
+s3eResult adjust_ResetSessionCallbackParameters_platform();
+s3eResult adjust_ResetSessionPartnerParameters_platform();
 s3eResult adjust_GetGoogleAdId_platform();
 s3eResult adjust_GetIdfa_platform();
 

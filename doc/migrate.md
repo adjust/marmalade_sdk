@@ -1,4 +1,4 @@
-## Migrate your adjust SDK for Marmalade to 4.7.0 from 3.4.0
+## Migrate your adjust SDK for Marmalade to 4.10.0 from 3.4.0
 
 ### SDK initialization
 

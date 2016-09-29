@@ -118,12 +118,14 @@ struct adjust_event {
 };
 
 struct adjust_config {
+    double* delay_start;
     const char* app_token;
     const char* environment;
     const char* log_level;
     const char* process_name;
     const char* default_tracker;
     const char* sdk_prefix;
+    const char* user_agent;
     bool* is_event_buffering_enabled;
     bool* is_sending_in_background_enabled;
     bool* should_deferred_deeplink_be_opened;
@@ -147,12 +149,14 @@ struct adjust_config {
     adjust_idfa_delegate idfa_callback;
 
     adjust_config() {
+        delay_start = NULL;
         app_token = NULL;
         environment = NULL;
         log_level = NULL;
         process_name = NULL;
         default_tracker = NULL;
         sdk_prefix = NULL;
+        user_agent = NULL;
         is_event_buffering_enabled = NULL;
         is_sending_in_background_enabled = NULL;
         should_deferred_deeplink_be_opened = NULL;
@@ -168,12 +172,14 @@ struct adjust_config {
     }
 
     adjust_config(const char* p_app_token, const char* p_environment) {
+        delay_start = NULL;
         app_token = p_app_token;
         environment = p_environment;
         log_level = NULL;
         process_name = NULL;
         default_tracker = NULL;
         sdk_prefix = NULL;
+        user_agent = NULL;
         is_event_buffering_enabled = NULL;
         is_sending_in_background_enabled = NULL;
         should_deferred_deeplink_be_opened = NULL;
@@ -186,6 +192,11 @@ struct adjust_config {
         is_deferred_deeplink_delegate_set = NULL;
         is_google_ad_id_delegate_set = NULL;
         is_idfa_delegate_set = NULL;
+    }
+
+    void set_delay_start(double p_delay_start) {
+        delay_start = new double();
+        *delay_start = p_delay_start;
     }
 
     void set_log_level(const char* p_log_level) {
@@ -202,6 +213,10 @@ struct adjust_config {
 
     void set_sdk_prefix(const char* p_sdk_prefix) {
         sdk_prefix = p_sdk_prefix;
+    }
+
+    void set_user_agent(const char* p_user_agent) {
+        user_agent = p_user_agent;
     }
 
     void set_event_buffering_enabled(bool is_enabled) {
@@ -282,5 +297,12 @@ s3eResult adjust_IsEnabled(bool& is_enabled_out) S3E_RESULT_ERROR
 s3eResult adjust_SetOfflineMode(bool is_offline_mode_enabled) S3E_RESULT_ERROR
 s3eResult adjust_SetReferrer(const char* referrer) S3E_RESULT_ERROR
 s3eResult adjust_SetDeviceToken(const char* device_token) S3E_RESULT_ERROR
+s3eResult adjust_SendFirstPackages() S3E_RESULT_ERROR
+s3eResult adjust_AddSessionCallbackParameter(const char* key, const char* value) S3E_RESULT_ERROR
+s3eResult adjust_AddSessionPartnerParameter(const char* key, const char* value) S3E_RESULT_ERROR
+s3eResult adjust_RemoveSessionCallbackParameter(const char* key) S3E_RESULT_ERROR
+s3eResult adjust_RemoveSessionPartnerParameter(const char* key) S3E_RESULT_ERROR
+s3eResult adjust_ResetSessionCallbackParameters() S3E_RESULT_ERROR
+s3eResult adjust_ResetSessionPartnerParameters() S3E_RESULT_ERROR
 s3eResult adjust_GetGoogleAdId() S3E_RESULT_ERROR
 s3eResult adjust_GetIdfa() S3E_RESULT_ERROR
