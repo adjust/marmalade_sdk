@@ -120,7 +120,7 @@ char* adjust_CopyString(const char* source) {
 }
 
 s3eResult adjust_Start(adjust_config* config) {
-    config->set_sdk_prefix("marmalade4.10.0");
+    config->set_sdk_prefix("marmalade4.10.1");
     return adjust_Start_platform(config);
 }
 
