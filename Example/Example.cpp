@@ -15,6 +15,7 @@ static void trace_attribution_data(adjust_attribution_data* response)
     IwTrace(ADJUSTMARMALADE, (response->ad_group));
     IwTrace(ADJUSTMARMALADE, (response->creative));
     IwTrace(ADJUSTMARMALADE, (response->click_label));
+    IwTrace(ADJUSTMARMALADE, (response->adid));
 }
 
 static void trace_session_success_data(adjust_session_success_data* response) 
@@ -84,18 +85,18 @@ static void trace_idfa_data(const char* response)
 void initializeSDK() 
 {
     // Initialize adjust SDK
-    const char* app_token = "{YourAppToken}";
+    const char* app_token = "2fm9gkqubvpc";
     const char* environment = "sandbox";
     const char* log_level = "verbose";
+    const char* user_agent = "dummy_agent";
 
     adjust_config* config = new adjust_config(app_token, environment);
     
     config->set_log_level(log_level);
     config->set_is_sending_in_background_enabled(true);
     config->set_should_deferred_deeplink_be_opened(true);
-
-    // Delay SDK start upon installation if you want.
-    // config->set_delay_start(3.6);
+    config->set_delay_start(3.6);
+    config->set_user_agent(user_agent);
 
     config->set_attribution_callback(trace_attribution_data);
     config->set_session_success_callback(trace_session_success_data);
@@ -122,29 +123,21 @@ void initializeSDK()
     // Remove session partner parameters.
     adjust_RemoveSessionPartnerParameter("spp_a");
 
-    // Remove all session parameters.
     adjust_ResetSessionCallbackParameters();
     adjust_ResetSessionPartnerParameters();
 
     adjust_Start(config);
 
-    // Send us the push notifications token.
-    // adjust_SetDeviceToken("MyAppPushNotificationsToken");
+    adjust_SetDeviceToken("mega_giga_dummy_token");
 
-    // In case you delayed SDK start upon installation and you have obtained
-    // information you were waiting for, initialise it's start before timer ends.
     // adjust_SendFirstPackages();
-
-    // Get Google Advertising Identifier.
-    // adjust_GetGoogleAdId();
-
-    // Get IDFA value.
-    // adjust_GetIdfa();
 }
 
 bool OnTrackSimpleEventClick(void* data, CButton* button)
 {
-    adjust_event* event = new adjust_event("{YourEventToken}");
+    adjust_GetGoogleAdId();
+
+    adjust_event* event = new adjust_event("g3mfiw");
 
     adjust_TrackEvent(event);
 
@@ -153,12 +146,11 @@ bool OnTrackSimpleEventClick(void* data, CButton* button)
 
 bool onTrackRevenueEventClick(void* data, CButton* button)
 {
-    adjust_event* event = new adjust_event("{YourEventToken}");
+    adjust_GetIdfa();
 
+    adjust_event* event = new adjust_event("a4fd35");
     event->set_revenue(0.01, "EUR");
-
-    // Set transaction ID if you want.
-    // event->set_transaction_id("transaction_id");
+    event->set_transaction_id("transaction_id");
 
     adjust_TrackEvent(event);
 
@@ -167,8 +159,19 @@ bool onTrackRevenueEventClick(void* data, CButton* button)
 
 bool OnTrackCallbackEventClick(void* data, CButton* button)
 {
-    adjust_event* event = new adjust_event("{YourEventToken}");
+    adjust_attribution_data* attribution = new adjust_attribution_data();
+    adjust_GetAttribution(attribution);
 
+    IwTrace(ADJUSTMARMALADE, (attribution->tracker_token));
+    IwTrace(ADJUSTMARMALADE, (attribution->tracker_name));
+    IwTrace(ADJUSTMARMALADE, (attribution->network));
+    IwTrace(ADJUSTMARMALADE, (attribution->campaign));
+    IwTrace(ADJUSTMARMALADE, (attribution->ad_group));
+    IwTrace(ADJUSTMARMALADE, (attribution->creative));
+    IwTrace(ADJUSTMARMALADE, (attribution->click_label));
+    IwTrace(ADJUSTMARMALADE, (attribution->adid));
+
+    adjust_event* event = new adjust_event("34vgg9");
     event->add_callback_parameter("a", "b");
     event->add_callback_parameter("foo", "bar");
     event->add_callback_parameter("a", "c");
@@ -180,8 +183,13 @@ bool OnTrackCallbackEventClick(void* data, CButton* button)
 
 bool OnTrackPartnerEventClick(void* data, CButton* button)
 {
-    adjust_event* event = new adjust_event("{YourEventToken}");
+    char* adid;
 
+    adjust_GetAdid(&adid);
+
+    IwTrace(ADJUSTMARMALADE, (adid));
+
+    adjust_event* event = new adjust_event("w788qs");
     event->add_partner_parameter("x", "y");
     event->add_partner_parameter("key", "value");
     event->add_partner_parameter("x", "z");
