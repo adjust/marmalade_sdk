@@ -16,9 +16,9 @@ subprojects
 
 deployment
 {
-    iphone-bundle-url-name = com.adjust.example
+    iphone-bundle-url-name = com.adjust.examples
     iphone-bundle-url-schemes = adjustExample
-    android-extra-strings='(gps_app_id,com.adjust.example)'
+    android-extra-strings='(gps_app_id,com.adjust.examples)'
 }
 
 #Hub deployment options, please do not add anything below this line

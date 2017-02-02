@@ -15,6 +15,7 @@ struct adjust_attribution_data {
     char* ad_group;
     char* creative;
     char* click_label;
+    char* adid;
 };
 
 struct adjust_session_success_data {
@@ -306,3 +307,5 @@ s3eResult adjust_ResetSessionCallbackParameters() S3E_RESULT_ERROR
 s3eResult adjust_ResetSessionPartnerParameters() S3E_RESULT_ERROR
 s3eResult adjust_GetGoogleAdId() S3E_RESULT_ERROR
 s3eResult adjust_GetIdfa() S3E_RESULT_ERROR
+s3eResult adjust_GetAdid(char** adid) S3E_RESULT_ERROR
+s3eResult adjust_GetAttribution(adjust_attribution_data* attribution) S3E_RESULT_ERROR

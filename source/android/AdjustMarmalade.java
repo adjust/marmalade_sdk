@@ -278,6 +278,14 @@ public class AdjustMarmalade extends LoaderActivitySlave implements OnAttributio
         }
     }
 
+    public String adjust_GetAdid() {
+        return Adjust.getAdid();
+    }
+
+    public AdjustAttribution adjust_GetAttribution() {
+        return Adjust.getAttribution();
+    }
+
     @Override
     public void onAttributionChanged(AdjustAttribution attribution) {
         JSONObject jsonAttribution = new JSONObject();
@@ -290,6 +298,7 @@ public class AdjustMarmalade extends LoaderActivitySlave implements OnAttributio
             jsonAttribution.put("ad_group", attribution.adgroup);
             jsonAttribution.put("creative", attribution.creative);
             jsonAttribution.put("click_label", attribution.clickLabel);
+            jsonAttribution.put("adid", attribution.adid);
         } catch (JSONException e) {
             e.printStackTrace();
         }

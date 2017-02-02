@@ -35,6 +35,7 @@ void adjust_CleanupAttributionCallback(uint32 extID, int32 notification, void *s
     free(attribution->ad_group);
     free(attribution->creative);
     free(attribution->click_label);
+    free(attribution->adid);
 
     delete attribution;
 }
@@ -181,4 +182,12 @@ s3eResult adjust_GetGoogleAdId() {
 
 s3eResult adjust_GetIdfa() {
     return adjust_GetIdfa_platform();
+}
+
+s3eResult adjust_GetAdid(char** adid) {
+    return adjust_GetAdid_platform(adid);
+}
+
+s3eResult adjust_GetAttribution(adjust_attribution_data* attribution) {
+    return adjust_GetAttribution_platform(attribution);
 }

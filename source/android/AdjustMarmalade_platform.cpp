@@ -33,6 +33,8 @@ static jmethodID g_adjust_OnResume;
 static jmethodID g_adjust_SetReferrer;
 static jmethodID g_adjust_GetGoogleAdId;
 static jmethodID g_adjust_GetIdfa;
+static jmethodID g_adjust_GetAdid;
+static jmethodID g_adjust_GetAttribution;
 
 char* get_json_string(rapidjson::Document &jsonDoc, const char* member_name) {
     if (!jsonDoc.HasMember(member_name)) {
@@ -63,6 +65,7 @@ adjust_attribution_data* get_attribution_data(const char* jsonCString) {
     attribution->ad_group        = get_json_string(jsonDoc, "ad_group");
     attribution->creative        = get_json_string(jsonDoc, "creative");
     attribution->click_label     = get_json_string(jsonDoc, "click_label");
+    attribution->adid            = get_json_string(jsonDoc, "adid");
 
     return attribution;
 }
@@ -423,6 +426,18 @@ s3eResult AdjustMarmaladeInit_platform() {
         goto fail;
     }
 
+    g_adjust_GetAdid = env->GetMethodID(cls, "adjust_GetAdid", "()Ljava/lang/String;");
+    
+    if (!g_adjust_GetAdid) {
+        goto fail;
+    }
+
+    g_adjust_GetAttribution = env->GetMethodID(cls, "adjust_GetAttribution", "()Lcom/adjust/sdk/AdjustAttribution;");
+    
+    if (!g_adjust_GetAttribution) {
+        goto fail;
+    }
+
     // Register the native hooks.
     if (env->RegisterNatives(cls, methods,sizeof(methods)/sizeof(methods[0]))) {
         goto fail;
@@ -764,6 +779,104 @@ s3eResult adjust_GetGoogleAdId_platform() {
 s3eResult adjust_GetIdfa_platform() {
     JNIEnv* env = s3eEdkJNIGetEnv();
     env->CallVoidMethod(g_Obj, g_adjust_GetIdfa);
+
+    return (s3eResult)0;
+}
+
+s3eResult adjust_GetAdid_platform(char** adid) {
+    JNIEnv* env = s3eEdkJNIGetEnv();
+
+    jstring jAdid = (jstring)env->CallObjectMethod(g_Obj, g_adjust_GetAdid);
+
+    *adid = (char*)env->GetStringUTFChars(jAdid, NULL);
+
+    env->DeleteLocalRef(jAdid);
+
+    return (s3eResult)0;
+}
+
+s3eResult adjust_GetAttribution_platform(adjust_attribution_data* attribution) {
+    JNIEnv* env = s3eEdkJNIGetEnv();
+    // attribution = new adjust_attribution_data();
+
+    jobject jAttribution = env->CallObjectMethod(g_Obj, g_adjust_GetAttribution);
+    jclass clsAdjustAttribution = env->FindClass("com/adjust/sdk/AdjustAttribution");
+
+    jfieldID fTrackerTokenID = env->GetFieldID(clsAdjustAttribution, "trackerToken", "Ljava/lang/String;");
+    jfieldID fTrackerNameID = env->GetFieldID(clsAdjustAttribution, "trackerName", "Ljava/lang/String;");
+    jfieldID fNetworkID = env->GetFieldID(clsAdjustAttribution, "network", "Ljava/lang/String;");
+    jfieldID fCampaignID = env->GetFieldID(clsAdjustAttribution, "campaign", "Ljava/lang/String;");
+    jfieldID fAdgroupID = env->GetFieldID(clsAdjustAttribution, "adgroup", "Ljava/lang/String;");
+    jfieldID fCreativeID = env->GetFieldID(clsAdjustAttribution, "creative", "Ljava/lang/String;");
+    jfieldID fClickLabelID = env->GetFieldID(clsAdjustAttribution, "clickLabel", "Ljava/lang/String;");
+    jfieldID fAdidID = env->GetFieldID(clsAdjustAttribution, "adid", "Ljava/lang/String;");
+
+    jstring jTrackerToken = (jstring)env->GetObjectField(jAttribution, fTrackerTokenID);
+    jstring jTrackerName = (jstring)env->GetObjectField(jAttribution, fTrackerNameID);
+    jstring jNetwork = (jstring)env->GetObjectField(jAttribution, fNetworkID);
+    jstring jCampaign = (jstring)env->GetObjectField(jAttribution, fCampaignID);
+    jstring jAdgroup = (jstring)env->GetObjectField(jAttribution, fAdgroupID);
+    jstring jCreative = (jstring)env->GetObjectField(jAttribution, fCreativeID);
+    jstring jClickLabel = (jstring)env->GetObjectField(jAttribution, fClickLabelID);
+    jstring jAdid = (jstring)env->GetObjectField(jAttribution, fAdidID);
+
+    if (NULL != jTrackerToken) {
+        attribution->tracker_token = (char*)env->GetStringUTFChars(jTrackerToken, NULL);
+        env->DeleteLocalRef(jTrackerToken);
+    } else {
+        attribution->tracker_token = NULL;
+    }
+
+    if (NULL != jTrackerName) {
+        attribution->tracker_name = (char*)env->GetStringUTFChars(jTrackerName, NULL);
+        env->DeleteLocalRef(jTrackerName);
+    } else {
+        attribution->tracker_name = NULL;
+    }
+
+    if (NULL != jNetwork) {
+        attribution->network = (char*)env->GetStringUTFChars(jNetwork, NULL);
+        env->DeleteLocalRef(jNetwork);
+    } else {
+        attribution->network = NULL;
+    }
+
+    if (NULL != jCampaign) {
+        attribution->campaign = (char*)env->GetStringUTFChars(jCampaign, NULL);
+        env->DeleteLocalRef(jCampaign);
+    } else {
+        attribution->campaign = NULL;
+    }
+
+    if (NULL != jAdgroup) {
+        attribution->ad_group = (char*)env->GetStringUTFChars(jAdgroup, NULL);
+        env->DeleteLocalRef(jAdgroup);
+    } else {
+        attribution->ad_group = NULL;
+    }
+
+    if (NULL != jCreative) {
+        attribution->creative = (char*)env->GetStringUTFChars(jCreative, NULL);
+        env->DeleteLocalRef(jCreative);
+    } else {
+        attribution->creative = NULL;
+    }
+
+    if (NULL != jClickLabel) {
+        attribution->click_label = (char*)env->GetStringUTFChars(jClickLabel, NULL);
+        env->DeleteLocalRef(jClickLabel);
+    } else {
+        attribution->click_label = NULL;
+    }
+
+    if (NULL != jAdid) {
+        attribution->adid = (char*)env->GetStringUTFChars(jAdid, NULL);
+        env->DeleteLocalRef(jAdid);
+    } else {
+        attribution->adid = NULL;
+    }
+
+    env->DeleteLocalRef(jAttribution);
 
     return (s3eResult)0;
 }
