@@ -153,6 +153,7 @@ adjust_event_failure_data* get_event_failure_data(const char* jsonCString) {
 void JNICALL the_attribution_callback(JNIEnv* env, jobject obj, jstring attributionString) {
     const char* attributionCString = env->GetStringUTFChars(attributionString, NULL);
     adjust_attribution_data* attribution = get_attribution_data(attributionCString);
+    env->ReleaseStringUTFChars(attributionString, attributionCString);
 
     s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
                            S3E_ADJUST_CALLBACK_ADJUST_ATTRIBUTION_DATA,
@@ -167,6 +168,7 @@ void JNICALL the_attribution_callback(JNIEnv* env, jobject obj, jstring attribut
 void JNICALL the_session_success_callback(JNIEnv* env, jobject obj, jstring sessionSuccessString) {
     const char* sessionSuccessCString = env->GetStringUTFChars(sessionSuccessString, NULL);
     adjust_session_success_data* session_success = get_session_success_data(sessionSuccessCString);
+    env->ReleaseStringUTFChars(sessionSuccessString, sessionSuccessCString);
 
     s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
                            S3E_ADJUST_CALLBACK_ADJUST_SESSION_SUCCESS_DATA,
@@ -181,6 +183,7 @@ void JNICALL the_session_success_callback(JNIEnv* env, jobject obj, jstring sess
 void JNICALL the_session_failure_callback(JNIEnv* env, jobject obj, jstring sessionFailureString) {
     const char* sessionFailureCString = env->GetStringUTFChars(sessionFailureString, NULL);
     adjust_session_failure_data* session_failure = get_session_failure_data(sessionFailureCString);
+    env->ReleaseStringUTFChars(sessionFailureString, sessionFailureCString);
 
     s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
                            S3E_ADJUST_CALLBACK_ADJUST_SESSION_FAILURE_DATA,
@@ -195,6 +198,7 @@ void JNICALL the_session_failure_callback(JNIEnv* env, jobject obj, jstring sess
 void JNICALL the_event_success_callback(JNIEnv* env, jobject obj, jstring eventSuccessString) {
     const char* eventSuccessCString = env->GetStringUTFChars(eventSuccessString, NULL);
     adjust_event_success_data* event_success = get_event_success_data(eventSuccessCString);
+    env->ReleaseStringUTFChars(eventSuccessString, eventSuccessCString);
 
     s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
                            S3E_ADJUST_CALLBACK_ADJUST_EVENT_SUCCESS_DATA,
@@ -209,6 +213,7 @@ void JNICALL the_event_success_callback(JNIEnv* env, jobject obj, jstring eventS
 void JNICALL the_event_failure_callback(JNIEnv* env, jobject obj, jstring eventFailureString) {
     const char* eventFailureCString = env->GetStringUTFChars(eventFailureString, NULL);
     adjust_event_failure_data* event_failure = get_event_failure_data(eventFailureCString);
+    env->ReleaseStringUTFChars(eventFailureString, eventFailureCString);
 
     s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
                            S3E_ADJUST_CALLBACK_ADJUST_EVENT_FAILURE_DATA,
@@ -221,7 +226,9 @@ void JNICALL the_event_failure_callback(JNIEnv* env, jobject obj, jstring eventF
 }
 
 void JNICALL the_deeplink_callback(JNIEnv* env, jobject obj, jstring deeplinkString) {
-    const char* deeplinkCString = env->GetStringUTFChars(deeplinkString, NULL);
+    const char* deeplinkTempCString = env->GetStringUTFChars(deeplinkString, NULL);
+    const char* deeplinkCString = adjust_CopyString(deeplinkTempCString);
+    env->ReleaseStringUTFChars(deeplinkString, deeplinkTempCString);
 
     s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
                            S3E_ADJUST_CALLBACK_ADJUST_DEEPLINK_DATA,
@@ -230,7 +237,9 @@ void JNICALL the_deeplink_callback(JNIEnv* env, jobject obj, jstring deeplinkStr
 }
 
 void JNICALL the_deferred_deeplink_callback(JNIEnv* env, jobject obj, jstring deferredDeeplinkString) {
-    const char* deferredDeeplinkCString = env->GetStringUTFChars(deferredDeeplinkString, NULL);
+    const char* deferredDeeplinkTempCString = env->GetStringUTFChars(deferredDeeplinkString, NULL);
+    const char* deferredDeeplinkCString = adjust_CopyString(deferredDeeplinkTempCString);
+    env->ReleaseStringUTFChars(deferredDeeplinkString, deferredDeeplinkTempCString);
 
     s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
                            S3E_ADJUST_CALLBACK_ADJUST_DEFERRED_DEEPLINK_DATA,
@@ -239,7 +248,9 @@ void JNICALL the_deferred_deeplink_callback(JNIEnv* env, jobject obj, jstring de
 }
 
 void JNICALL the_google_ad_id_callback(JNIEnv* env, jobject obj, jstring googleAdIdString) {
-    const char* googleAdIdCString = env->GetStringUTFChars(googleAdIdString, NULL);
+    const char* googleAdIdTempCString = env->GetStringUTFChars(googleAdIdString, NULL);
+    const char* googleAdIdCString = adjust_CopyString(googleAdIdTempCString);
+    env->ReleaseStringUTFChars(googleAdIdString, googleAdIdTempCString);
 
     s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
                            S3E_ADJUST_CALLBACK_ADJUST_GOOGLE_AD_ID_DATA,
@@ -248,7 +259,9 @@ void JNICALL the_google_ad_id_callback(JNIEnv* env, jobject obj, jstring googleA
 }
 
 void JNICALL the_idfa_callback(JNIEnv* env, jobject obj, jstring idfaString) {
-    const char* idfaCString = env->GetStringUTFChars(idfaString, NULL);
+    const char* idfaTempCString = env->GetStringUTFChars(idfaString, NULL);
+    const char* idfaCString = adjust_CopyString(idfaTempCString);
+    env->ReleaseStringUTFChars(idfaString, idfaTempCString);
 
     s3eEdkCallbacksEnqueue(S3E_DEVICE_ADJUST,
                            S3E_ADJUST_CALLBACK_ADJUST_IDFA_DATA,
@@ -788,8 +801,10 @@ s3eResult adjust_GetAdid_platform(char** adid) {
 
     jstring jAdid = (jstring)env->CallObjectMethod(g_Obj, g_adjust_GetAdid);
 
-    *adid = (char*)env->GetStringUTFChars(jAdid, NULL);
+    const char* adidCStr = env->GetStringUTFChars(jAdid, NULL);
+    *adid = (char*)adjust_CopyString(adidCStr);
 
+    env->ReleaseStringUTFChars(jAdid, adidCStr);
     env->DeleteLocalRef(jAdid);
 
     return (s3eResult)0;
@@ -797,7 +812,6 @@ s3eResult adjust_GetAdid_platform(char** adid) {
 
 s3eResult adjust_GetAttribution_platform(adjust_attribution_data* attribution) {
     JNIEnv* env = s3eEdkJNIGetEnv();
-    // attribution = new adjust_attribution_data();
 
     jobject jAttribution = env->CallObjectMethod(g_Obj, g_adjust_GetAttribution);
     jclass clsAdjustAttribution = env->FindClass("com/adjust/sdk/AdjustAttribution");
@@ -821,56 +835,80 @@ s3eResult adjust_GetAttribution_platform(adjust_attribution_data* attribution) {
     jstring jAdid = (jstring)env->GetObjectField(jAttribution, fAdidID);
 
     if (NULL != jTrackerToken) {
-        attribution->tracker_token = (char*)env->GetStringUTFChars(jTrackerToken, NULL);
+        const char* trackerTokenCStr = env->GetStringUTFChars(jTrackerToken, NULL);
+        attribution->tracker_token = (char*)adjust_CopyString(trackerTokenCStr);
+
+        env->ReleaseStringUTFChars(jTrackerToken, trackerTokenCStr);
         env->DeleteLocalRef(jTrackerToken);
     } else {
         attribution->tracker_token = NULL;
     }
 
     if (NULL != jTrackerName) {
-        attribution->tracker_name = (char*)env->GetStringUTFChars(jTrackerName, NULL);
+        const char* trackerNameCStr = env->GetStringUTFChars(jTrackerName, NULL);
+        attribution->tracker_name = (char*)adjust_CopyString(trackerNameCStr);
+
+        env->ReleaseStringUTFChars(jTrackerName, trackerNameCStr);
         env->DeleteLocalRef(jTrackerName);
     } else {
         attribution->tracker_name = NULL;
     }
 
     if (NULL != jNetwork) {
-        attribution->network = (char*)env->GetStringUTFChars(jNetwork, NULL);
+        const char* networkCStr = env->GetStringUTFChars(jNetwork, NULL);
+        attribution->network = (char*)adjust_CopyString(networkCStr);
+
+        env->ReleaseStringUTFChars(jNetwork, networkCStr);
         env->DeleteLocalRef(jNetwork);
     } else {
         attribution->network = NULL;
     }
 
     if (NULL != jCampaign) {
-        attribution->campaign = (char*)env->GetStringUTFChars(jCampaign, NULL);
+        const char* campaignCStr = env->GetStringUTFChars(jCampaign, NULL);
+        attribution->campaign = (char*)adjust_CopyString(campaignCStr);
+
+        env->ReleaseStringUTFChars(jCampaign, campaignCStr);
         env->DeleteLocalRef(jCampaign);
     } else {
         attribution->campaign = NULL;
     }
 
     if (NULL != jAdgroup) {
-        attribution->ad_group = (char*)env->GetStringUTFChars(jAdgroup, NULL);
+        const char* adgroupCStr = env->GetStringUTFChars(jAdgroup, NULL);
+        attribution->ad_group = (char*)adjust_CopyString(adgroupCStr);
+
+        env->ReleaseStringUTFChars(jAdgroup, adgroupCStr);
         env->DeleteLocalRef(jAdgroup);
     } else {
         attribution->ad_group = NULL;
     }
 
     if (NULL != jCreative) {
-        attribution->creative = (char*)env->GetStringUTFChars(jCreative, NULL);
+        const char* creativeCStr = env->GetStringUTFChars(jCreative, NULL);
+        attribution->creative = (char*)adjust_CopyString(creativeCStr);
+
+        env->ReleaseStringUTFChars(jCreative, creativeCStr);
         env->DeleteLocalRef(jCreative);
     } else {
         attribution->creative = NULL;
     }
 
     if (NULL != jClickLabel) {
-        attribution->click_label = (char*)env->GetStringUTFChars(jClickLabel, NULL);
+        const char* clickLabelCStr = env->GetStringUTFChars(jClickLabel, NULL);
+        attribution->click_label = (char*)adjust_CopyString(clickLabelCStr);
+
+        env->ReleaseStringUTFChars(jClickLabel, clickLabelCStr);
         env->DeleteLocalRef(jClickLabel);
     } else {
         attribution->click_label = NULL;
     }
 
     if (NULL != jAdid) {
-        attribution->adid = (char*)env->GetStringUTFChars(jAdid, NULL);
+        const char* adidCStr = env->GetStringUTFChars(jAdid, NULL);
+        attribution->adid = (char*)adjust_CopyString(adidCStr);
+
+        env->ReleaseStringUTFChars(jAdid, adidCStr);
         env->DeleteLocalRef(jAdid);
     } else {
         attribution->adid = NULL;

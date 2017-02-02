@@ -672,8 +672,6 @@ s3eResult adjust_GetAdid_platform(char** adid) {
 s3eResult adjust_GetAttribution_platform(adjust_attribution_data* attribution) {
     ADJAttribution *adjAttribution = [Adjust attribution];
 
-    // attribution = new adjust_attribution_data();
-
     if (adjAttribution.trackerToken == nil) {
         attribution->tracker_token = NULL;
     } else {
