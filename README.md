@@ -986,9 +986,11 @@ The adjust SDK supports this feature out of the box and no additional setup is n
 [custom-receiver]:        https://github.com/adjust/android_sdk/blob/master/doc/referrer.md
 [special-partners]:       https://docs.adjust.com/en/special-partners
 [attribution-data]:       https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
+[broadcast-receiver]:     https://github.com/adjust/android_sdk#sdk-broadcast-receiver
 
 [google_play_services]:         http://developer.android.com/google/play-services/setup.html
 [universal-links-guide]:        https://github.com/adjust/ios_sdk/#deeplinking-setup-new
+[broadcast-receiver-custom]:    https://github.com/adjust/android_sdk/blob/master/doc/english/referrer.md
 [reattribution-with-deeplinks]: https://docs.adjust.com/en/deeplinking/#manually-appending-attribution-data-to-a-deep-link
 
 ## <a id="license">License
