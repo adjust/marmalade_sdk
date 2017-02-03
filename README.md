@@ -1,6 +1,6 @@
 ## Summary
 
-This is the Marmalade SDK of adjust™. You can read more about adjust™ at [adjust.com].
+This is the Marmalade SDK of Adjust™. You can read more about Adjust™ at [adjust.com].
 
 ## Table of contents
 
@@ -50,11 +50,11 @@ This is the Marmalade SDK of adjust™. You can read more about adjust™ at [ad
 
 ## <a id="example-app"></a>Example app
 
-There is an example app inside the [`example` directory][example-app]. You can use the example app to see how the adjust SDK can be integrated.
+There is an example app inside the [`example` directory][example-app]. You can use the example app to see how the Adjust SDK can be integrated.
 
 ## <a id="basic-integration">Basic integration
 
-These are the minimal steps required to integrate the adjust SDK into your Marmalade project.
+These are the minimal steps required to integrate the Adjust SDK into your Marmalade project.
 
 **Note**: SDK 4.11.0 for Marmalade is built with **Marmalade 8.6.0** and we advise you to use this Marmalade version or higher. Especially if you want to rebuild our Marmalade extension on your own.
 
@@ -124,7 +124,7 @@ Once the Adjust SDK has been added to your app, certain tweeks are being perform
 
 ### <a id="android-permissions">Android permissions
 
-The Adjust SDK adds two permissions to your Android manifest file: `INTERNET` and `ACCESS_WIFI_STATE`. You can see in the `AdjustMarmalade.mkf` file of the Adjust SDK that `android-extra-manifest` property is being set with content of the `adjust_permissions.xml` file which is part of the Adjust SDK:
+The Adjust SDK adds two permissions to your Android manifest file: `INTERNET` and `ACCESS_WIFI_STATE`. You can see in the `AdjustMarmalade.mkf` file of the Adjust SDK that the `android-extra-manifest` property is being set with content from the `adjust_permissions.xml` file, which is part of the Adjust SDK:
 
 ```xml
 <uses-permission android:name="android.permission.INTERNET"/>
@@ -132,11 +132,11 @@ The Adjust SDK adds two permissions to your Android manifest file: `INTERNET` an
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 ```
 
-`INTERNET` permission is the permission that our SDK might need at any point in time. `ACCESS_WIFI_STATE` is the permission which the Adjust SDK needs in case your app is not targetting the Google Play Store and doesn't use Google Play Services. If you are targetting the Google Play Store and you are using Google Play Services, the Adjust SDK doesn't need this permission and, if you don't need it anywhere else in your app, you can remove it.
+The `INTERNET` permission might be needed by our SDK at any point in time. The `ACCESS_WIFI_STATE` permission is needed by the Adjust SDK if your app is not targeting the Google Play Store and doesn't use Google Play Services. If you are targeting the Google Play Store and you are using Google Play Services, the Adjust SDK doesn't need this permission and, if you don't need it anywhere else in your app, you can remove it.
 
 ### <a id="android-gps">Google Play Services
 
-Since 1 August 2014, all apps in the Google Play Store must use the [Google Advertising ID][google_ad_id] to uniquely identify devices. To allow the adjust SDK to use the Google Advertising ID, you must integrate the [Google Play Services][google_play_services].
+Since 1 August 2014, all apps in the Google Play Store must use the [Google Advertising ID][google_ad_id] to uniquely identify devices. To allow the Adjust SDK to use the Google Advertising ID, you must integrate the [Google Play Services][google_play_services].
 
 In order to add Google Play Services to your Marmalade app, you should edit your app's `.mkb` file and add  `s3eGooglePlayServices` in the `subprojects` list. In addition to this, you should add the following line to `deployment` list of your `.mkb` file:
 
@@ -180,7 +180,7 @@ If you are using Proguard, add these lines to your Proguard file:
 
 ### <a id="android-broadcast-receiver">Android install referrer
 
-The Adjust install referrer broadcast receiver is added to your app by default. For more information, you can check our native [Android SDK README][broadcast-receiver]. You can see in `AdjustMarmalade.mkf` file that `android-extra-application-manifest` property is being set with content of the `adjust_broadcast_receiver.xml` file:
+The Adjust install referrer broadcast receiver is added to your app by default. For more information, you can check our native [Android SDK README][broadcast-receiver]. You can see in the `AdjustMarmalade.mkf` file that the `android-extra-application-manifest` property is being set with content from the `adjust_broadcast_receiver.xml` file:
 
 ```xml
 <receiver android:name="com.adjust.sdk.AdjustReferrerReceiver" 
@@ -191,11 +191,11 @@ The Adjust install referrer broadcast receiver is added to your app by default. 
 </receiver>
 ```
 
-Please bear in mind that, if you are using your own broadcast receiver which handles the INSTALL_REFERRER intent, you don't need the Adjust broadcast receiver to be added to your manifest file. You can remove it, but inside your own receiver add the call to the Adjust broadcast receiver as described in our [Android guide][broadcast-receiver-custom].
+Please bear in mind that, if you are using your own broadcast receiver which handles the INSTALL_REFERRER intent, you don't need to add the Adjust broadcast receiver to your manifest file. You can remove it, but inside your own receiver add the call to the Adjust broadcast receiver as described in our [Android guide][broadcast-receiver-custom].
 
 ### <a id="ios-frameworks">iOS frameworks
 
-Adjust SDK plugin adds three iOS frameworks to your generated Xcode project:
+The Adjust SDK plugin adds three iOS frameworks to your generated Xcode project:
 
 * `iAd.framework` - in case you are running iAd campaigns.
 * `AdSupport.framework` - for reading iOS Advertising Id (IDFA).
@@ -212,11 +212,11 @@ If you are not running any iAd campaigns, you can feel free to remove the `iAd.f
 
 ## <a id="additional-features">Additional features
 
-You can take advantage of the following features once the adjust SDK is integrated into your project.
+You can take advantage of the following features once the Adjust SDK is integrated into your project.
 
 ### <a id="event-tracking">Event tracking
 
-With adjust, you can track every event that you want. Suppose you want to track every tap on a button. Simply create a new event token in your [dashboard]. Let's say that event token is `abc123`. You can add the following line in your button’s click handler method to track the click:
+With Adjust, you can track every event that you want. Suppose you want to track every tap on a button. Simply create a new event token in your [dashboard]. Let's say that event token is `abc123`. You can add the following line in your button’s click handler method to track the click:
 
 ```cpp
 adjust_event* event = new adjust_event("abc123");
@@ -236,9 +236,9 @@ adjust_TrackEvent(event);
 
 ### <a id="revenue-deduplication"></a>Revenue deduplication
 
-You can also add an optional transaction ID to avoid tracking duplicate revenues. The last ten transaction IDs are remembered, and revenue events with duplicate transaction IDs are skipped. This is especially useful for In-App Purchase tracking. You can see an example below.
+You can also add an optional transaction ID to avoid tracking duplicate revenues. The last ten transaction IDs are remembered, and revenue events with duplicate transaction IDs are skipped. This is especially useful for in-app purchase tracking. You can see an example below.
 
-If you want to track In-App Purchases, please make sure to call the `adjust_TrackEvent` only if the transaction is finished
+If you want to track in-app purchases, please make sure to call the `adjust_TrackEvent` only if the transaction is finished
 and item is purchased. That way you can avoid tracking revenue that is not actually being generated.
 
 ```cpp
@@ -283,7 +283,7 @@ You can read more about using URL callbacks, including a full list of available 
 
 ### <a id="partner-parameters">Partner parameters
 
-Similarly to the callback parameters mentioned above, you can also add parameters that adjust will transmit to the network partners of your choice. You can activate these networks in your adjust dashboard.
+Similarly to the callback parameters mentioned above, you can also add parameters that Adjust will transmit to the network partners of your choice. You can activate these networks in your Adjust dashboard.
 
 For partner parameters to be added, you would need to call the `add_partner_parameter` method on your `adjust_event` instance.
 
@@ -300,13 +300,13 @@ You can read more about special partners and networks in our [guide to special p
 
 ### <a id="session-parameters">Session parameters
 
-Some parameters are saved to be sent in every event and session of the adjust SDK. Once you have added any of these parameters, you don't need to add them every time, since they will be saved locally. If you add the same parameter twice, there will be no effect.
+Some parameters are saved to be sent in every event and session of the Adjust SDK. Once you have added any of these parameters, you don't need to add them every time, since they will be saved locally. If you add the same parameter twice, there will be no effect.
 
-These session parameters can be called before the adjust SDK is launched to make sure they are sent even on install. If you need to send them with an install, but can only obtain the needed values after launch, it's possible to [delay](#delay-start) the first launch of the adjust SDK to allow this behaviour.
+These session parameters can be called before the Adjust SDK is launched to make sure they are sent even on install. If you need to send them with an install, but can only obtain the needed values after launch, it's possible to [delay](#delay-start) the first launch of the Adjust SDK to allow this behaviour.
 
 ### <a id="session-callback-parameters"> Session callback parameters
 
-The same callback parameters that are registered for [events](#callback-parameters) can be also saved to be sent in every event or session of the adjust SDK.
+The same callback parameters that are registered for [events](#callback-parameters) can be also saved to be sent in every event or session of the Adjust SDK.
 
 The session callback parameters have a similar interface of the event callback parameters. Instead of adding the key and it's value to an event, it's added through a call to method `adjust_AddSessionCallbackParameter`:
 
@@ -330,9 +330,9 @@ adjust_ResetSessionCallbackParameters();
 
 ### <a id="session-partner-parameters">Session partner parameters
 
-In the same way that there is [session callback parameters](#session-callback-parameters) that are sent for every event or session of the adjust SDK, there is also session partner parameters.
+In the same way that there is [session callback parameters](#session-callback-parameters) that are sent for every event or session of the Adjust SDK, there is also session partner parameters.
 
-These will be transmitted to network partners, for the integrations that have been activated in your adjust [dashboard].
+These will be transmitted to network partners, for the integrations that have been activated in your Adjust [dashboard].
 
 The session partner parameters have a similar interface to the event partner parameters. Instead of adding the key and its value to an event, it's added through a call to method `adjust_AddSessionPartnerParameter`:
 
@@ -356,7 +356,7 @@ adjust_ResetSessionPartnerParameters();
 
 ### <a id="delay-start">Delay start
 
-Delaying the start of the adjust SDK allows your app some time to obtain session parameters, such as unique identifiers, to be sent on install.
+Delaying the start of the Adjust SDK allows your app some time to obtain session parameters, such as unique identifiers, to be sent on install.
 
 Set the initial delay time in seconds with the `set_delay_start` field of the `adjust_config` instance:
 
@@ -364,13 +364,13 @@ Set the initial delay time in seconds with the `set_delay_start` field of the `a
 config->set_delay_start(5.5);
 ```
 
-In this case this will make the adjust SDK not send the initial install session and any event created for 5.5 seconds. After this time is expired or if you call `adjust_SendFirstPackages()` in the meanwhile, every session parameter will be added to the delayed install session and events and the adjust SDK will resume as usual.
+In this case this will make the Adjust SDK not send the initial install session and any event created for 5.5 seconds. After this time is expired or if you call `adjust_SendFirstPackages()` in the meanwhile, every session parameter will be added to the delayed install session and events and the Adjust SDK will resume as usual.
 
-**The maximum delay start time of the adjust SDK is 10 seconds**.
+**The maximum delay start time of the Adjust SDK is 10 seconds**.
 
 ### <a id="attribution-callback">Attribution callback
 
-adjust can also send you a callback upon change of attribution. Due to the different sources considered for attribution, this information cannot be provided synchronously. Follow these steps to implement the optional callback in your application:
+Adjust can also send you a callback upon change of attribution. Due to the different sources considered for attribution, this information cannot be provided synchronously. Follow these steps to implement the optional callback in your application:
 
 1. Create void method which receives parameter of type `adjust_attribution_data*`.
 
@@ -566,7 +566,7 @@ The callback functions will be called after the SDK tries to send a package to t
 
 - `const char* message` the message from the server or the error logged by the SDK.
 - `const char* timestamp` timestamp from the server.
-- `const char* adid` a unique device identifier provided by adjust.
+- `const char* adid` a unique device identifier provided by Adjust.
 - `const char* jsonResponse` the JSON object with the response from the server.
 
 Both event response data objects contain:
@@ -579,17 +579,17 @@ And both event and session failed objects also contain:
 
 ### <a id="disable-tracking">Disable tracking
 
-You can disable the adjust SDK from tracking by invoking the method `adjust_SetEnabled` with the enabled parameter as `false`. This setting is **remembered between sessions**, but it can only be activated after the first session.
+You can disable the Adjust SDK from tracking by invoking the method `adjust_SetEnabled` with the enabled parameter as `false`. This setting is **remembered between sessions**, but it can only be activated after the first session.
 
 ```cpp
 adjust_SetEnabled(false);
 ```
 
-You can verify if the adjust SDK is currently active with the method `adjust_IsEnabled`. It is always possible to activate the adjust SDK by invoking `adjust_SetEnabled` with the parameter set to `true`.
+You can verify if the Adjust SDK is currently active with the method `adjust_IsEnabled`. It is always possible to activate the Adjust SDK by invoking `adjust_SetEnabled` with the parameter set to `true`.
 
 ### <a id="offline-mode">Offline mode
 
-You can put the adjust SDK in offline mode to suspend transmission to our servers while retaining tracked data to be sent later. When in offline mode, all information is saved in a file, so be careful not to trigger too many events while in offline mode.
+You can put the Adjust SDK in offline mode to suspend transmission to our servers while retaining tracked data to be sent later. When in offline mode, all information is saved in a file, so be careful not to trigger too many events while in offline mode.
 
 You can activate offline mode by calling `adjust_SetOfflineMode` with the parameter `true`.
 
@@ -597,7 +597,7 @@ You can activate offline mode by calling `adjust_SetOfflineMode` with the parame
 adjust_SetOfflineMode(true);
 ```
 
-Conversely, you can deactivate offline mode by calling `adjust_SetOfflineMode` with `false`. When the adjust SDK is put back in online mode, all saved information is send to our servers with the correct time information.
+Conversely, you can deactivate offline mode by calling `adjust_SetOfflineMode` with `false`. When the Adjust SDK is put back in online mode, all saved information is send to our servers with the correct time information.
 
 Unlike disabling tracking, **this setting is not remembered** between sessions. This means that the SDK is in online mode whenever it is started, even if the app was terminated in offline mode.
 
@@ -627,7 +627,7 @@ If nothing set, event buffering is **disabled by default**.
 
 ### <a id="background-tracking">Background tracking
 
-The default behaviour of the adjust SDK is to **pause sending HTTP requests while the app is in the background**. You can change this in your `adjust_config` instance by calling `set_is_sending_in_background_enabled` method:
+The default behaviour of the Adjust SDK is to **pause sending HTTP requests while the app is in the background**. You can change this in your `adjust_config` instance by calling `set_is_sending_in_background_enabled` method:
 
 ```cpp
 // ...
@@ -653,9 +653,9 @@ If nothing is set, sending in background is **disabled by default**.
 
 Certain services (such as Google Analytics) require you to coordinate Device and Client IDs in order to prevent duplicate reporting.
 
-### <a id="di-idfa">iOS Advertising Identifier
+### <a id="di-idfa">iOS advertising identifier
 
-You can access to IDFA value on iOS device by setting the appropriate callback method on `adjust_config` object and by invoking the `adjust_GetIdfa` method:
+You can access the IDFA value of an iOS device by setting the appropriate callback method on the `adjust_config` object and invoking the `adjust_GetIdfa` method:
 
 ```cpp
 #include "AdjustMarmalade.h"
@@ -690,10 +690,7 @@ int main() {
 
 ### <a id="di-gps-adid">Google Play Services advertising identifier
 
-The adjust SDK provides you with the possibility to read Google Advertising Identifier of the Android device on which
-your app is running. In order to do that, you can set the callback method on the `adjust_config` object which receives the 
-`const char*` parameter. After setting this, if you invoke the method `adjust_GetGoogleAdId`, you will get the Google 
-Advertising Identifier value in your callback method:
+The Adjust SDK provides you with the possibility to read the Google advertising identifier of the Android device on which your app is running. In order to do this, set the callback method on the `adjust_config` object which receives the `const char*` parameter. After setting this, if you invoke the `adjust_GetGoogleAdId` method, you will receive the Google advertising identifier value in your callback method:
 
 ```cpp
 #include "AdjustMarmalade.h"
@@ -771,7 +768,7 @@ adjust_SetDeviceToken("YourPushNotificationToken");
 
 ### <a id="pre-installed-trackers">Pre-installed trackers
 
-If you want to use the adjust SDK to recognize users that found your app pre-installed on their device, follow these steps.
+If you want to use the Adjust SDK to recognize users that found your app pre-installed on their device, follow these steps.
 
 1. Create a new tracker in your [dashboard].
 2. Open your app delegate and add set the default tracker of your `adjust_config` instance:
@@ -796,7 +793,7 @@ If you want to use the adjust SDK to recognize users that found your app pre-ins
 
 ### <a id="deeplinking">Deep linking
 
-If you are using the adjust tracker URL with an option to deep link into your app from the URL, there is the possibility to 
+If you are using the Adjust tracker URL with an option to deep link into your app from the URL, there is the possibility to 
 get info about the deep link URL and its content. Hitting the URL can happen when the user has your app already installed 
 (standard deep linking scenario) or if they don't have the app on their device (deferred deep linking scenario).
 
@@ -840,7 +837,7 @@ int main()
 
 ### <a id="deeplinking-deferred">Deferred deep linking scenario
 
-While deferred deep linking is not supported out of the box on Android and iOS, our adjust SDK makes it possible.
+While deferred deep linking is not supported out of the box on Android and iOS, our Adjust SDK makes it possible.
  
 In order to get info about the URL content in a deferred deep linking scenario, you should set a callback method on the 
 `adjust_config` object which will receive one `const char*` parameter where the content of the URL will be delivered. You 
@@ -876,7 +873,7 @@ int main()
 ```
 
 In deferred deep linking scenario, there is one additional setting which can be set on the `adjust_config` object. Once the 
-adjust SDK gets the deferred deep link info, we are offering you the possibility to choose whether our SDK should open this 
+Adjust SDK gets the deferred deep link info, we are offering you the possibility to choose whether our SDK should open this 
 URL or not. You can choose to set this option by calling the `set_should_deferred_deeplink_be_opened` method on the config 
 object:
 
@@ -910,7 +907,7 @@ int main()
 }
 ```
 
-If nothing is set, **the adjust SDK will always try to launch the URL by default**.
+If nothing is set, **the Adjust SDK will always try to launch the URL by default**.
 
 To enable your apps to support deep linking, you should set up schemes for each supported platform.
 
@@ -974,7 +971,7 @@ finding out how to do that on the native side, please consult our [native iOS un
 Adjust enables you to run re-engagement campaigns by using deep links. For more information on this, please 
 check our [official docs][reattribution-with-deeplinks]. 
 
-The adjust SDK supports this feature out of the box and no additional setup is needed in your app's code.
+The Adjust SDK supports this feature out of the box and no additional setup is needed in your app's code.
 
 [dashboard]:   http://adjust.com
 [adjust.com]:  http://adjust.com
@@ -995,20 +992,13 @@ The adjust SDK supports this feature out of the box and no additional setup is n
 
 ## <a id="license">License
 
-The adjust SDK is licensed under the MIT License.
+The Adjust SDK is licensed under the MIT License.
 
-Copyright (c) 2012-2016 adjust GmbH,
+Copyright (c) 2012-2017 Adjust GmbH,
 http://www.adjust.com
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation
-files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy,
-modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-Software.
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
