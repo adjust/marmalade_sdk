@@ -88,25 +88,40 @@ void initializeSDK()
     const char* app_token = "2fm9gkqubvpc";
     const char* environment = "sandbox";
     const char* log_level = "verbose";
-    const char* user_agent = "dummy_agent";
 
     adjust_config* config = new adjust_config(app_token, environment);
     
+    // Set SDK log level.
     config->set_log_level(log_level);
-    config->set_is_sending_in_background_enabled(true);
-    config->set_should_deferred_deeplink_be_opened(true);
-    config->set_delay_start(3.6);
-    config->set_user_agent(user_agent);
 
+    // Enable/disable background tracking.
+    config->set_is_sending_in_background_enabled(true);
+
+    // Decide whether deferred deep link should be opened or not.
+    config->set_should_deferred_deeplink_be_opened(true);
+
+    // If you want to delay SDK initialisation for some reason (up to 10 seconds).
+    // Usually used if you don't have session callback/partner parameters right away
+    // to pass them to initial session (install).
+    config->set_delay_start(3.6);
+
+    // Set attribution callback.
     config->set_attribution_callback(trace_attribution_data);
+
+    // Set session/event success/failure callbacks.
     config->set_session_success_callback(trace_session_success_data);
     config->set_session_failure_callback(trace_session_failure_data);
     config->set_event_success_callback(trace_event_success_data);
     config->set_event_failure_callback(trace_event_failure_data);
+
+    // Set deep link and deferred deep link callbacks.
     config->set_deeplink_callback(trace_deeplink_data);
     config->set_deferred_deeplink_callback(trace_deferred_deeplink_data);
     
+    // Set Google Ad Id callback.
     config->set_google_ad_id_callback(trace_google_ad_id_data);
+
+    // Set IDFA callback.
     config->set_idfa_callback(trace_idfa_data);
 
     // Add session callback parameters.
@@ -126,17 +141,49 @@ void initializeSDK()
     adjust_ResetSessionCallbackParameters();
     adjust_ResetSessionPartnerParameters();
 
+    // Start the adjust SDK.
     adjust_Start(config);
 
-    adjust_SetDeviceToken("mega_giga_dummy_token");
+    // Set your device's push notification token.
+    // adjust_SetDeviceToken("YourPushNotificationsToken");
 
+    // In case you delayed SDK start upon installation and you have obtained
+    // information you were waiting for, initialise it's start before timer ends.
     // adjust_SendFirstPackages();
+ 
+    // Get Google Advertising Identifier.
+    // adjust_GetGoogleAdId();
+ 
+    // Get IDFA value.
+    // adjust_GetIdfa();
+
+    // After SDK has obtained attribution information, you can access this info.
+    // Please use the code below to access attribution information of your user.
+
+    // adjust_attribution_data* attribution = new adjust_attribution_data();
+    // adjust_GetAttribution(attribution);
+
+    // IwTrace(ADJUSTMARMALADE, (attribution->tracker_token));
+    // IwTrace(ADJUSTMARMALADE, (attribution->tracker_name));
+    // IwTrace(ADJUSTMARMALADE, (attribution->network));
+    // IwTrace(ADJUSTMARMALADE, (attribution->campaign));
+    // IwTrace(ADJUSTMARMALADE, (attribution->ad_group));
+    // IwTrace(ADJUSTMARMALADE, (attribution->creative));
+    // IwTrace(ADJUSTMARMALADE, (attribution->click_label));
+    // IwTrace(ADJUSTMARMALADE, (attribution->adid));
+
+    // After SDK has obtained adid information, you can access this info.
+    // Please use the code below to access adid information of your user.
+
+    // char* adid;
+
+    // adjust_GetAdid(&adid);
+
+    // IwTrace(ADJUSTMARMALADE, (adid));
 }
 
 bool OnTrackSimpleEventClick(void* data, CButton* button)
 {
-    adjust_GetGoogleAdId();
-
     adjust_event* event = new adjust_event("g3mfiw");
 
     adjust_TrackEvent(event);
@@ -146,8 +193,6 @@ bool OnTrackSimpleEventClick(void* data, CButton* button)
 
 bool onTrackRevenueEventClick(void* data, CButton* button)
 {
-    adjust_GetIdfa();
-
     adjust_event* event = new adjust_event("a4fd35");
     event->set_revenue(0.01, "EUR");
     event->set_transaction_id("transaction_id");
@@ -159,18 +204,6 @@ bool onTrackRevenueEventClick(void* data, CButton* button)
 
 bool OnTrackCallbackEventClick(void* data, CButton* button)
 {
-    adjust_attribution_data* attribution = new adjust_attribution_data();
-    adjust_GetAttribution(attribution);
-
-    IwTrace(ADJUSTMARMALADE, (attribution->tracker_token));
-    IwTrace(ADJUSTMARMALADE, (attribution->tracker_name));
-    IwTrace(ADJUSTMARMALADE, (attribution->network));
-    IwTrace(ADJUSTMARMALADE, (attribution->campaign));
-    IwTrace(ADJUSTMARMALADE, (attribution->ad_group));
-    IwTrace(ADJUSTMARMALADE, (attribution->creative));
-    IwTrace(ADJUSTMARMALADE, (attribution->click_label));
-    IwTrace(ADJUSTMARMALADE, (attribution->adid));
-
     adjust_event* event = new adjust_event("34vgg9");
     event->add_callback_parameter("a", "b");
     event->add_callback_parameter("foo", "bar");
@@ -183,12 +216,6 @@ bool OnTrackCallbackEventClick(void* data, CButton* button)
 
 bool OnTrackPartnerEventClick(void* data, CButton* button)
 {
-    char* adid;
-
-    adjust_GetAdid(&adid);
-
-    IwTrace(ADJUSTMARMALADE, (adid));
-
     adjust_event* event = new adjust_event("w788qs");
     event->add_partner_parameter("x", "y");
     event->add_partner_parameter("key", "value");
