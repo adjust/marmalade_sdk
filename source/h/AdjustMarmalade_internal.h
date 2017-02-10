@@ -77,6 +77,8 @@ s3eResult adjust_ResetSessionCallbackParameters_platform();
 s3eResult adjust_ResetSessionPartnerParameters_platform();
 s3eResult adjust_GetGoogleAdId_platform();
 s3eResult adjust_GetIdfa_platform();
+s3eResult adjust_GetAdid_platform(char** adid);
+s3eResult adjust_GetAttribution_platform(adjust_attribution_data* attribution);
 
 char* adjust_CopyString(const char* source);
 

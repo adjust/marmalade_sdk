@@ -39,6 +39,7 @@ static BOOL isIdfaCallbackSet = NO;
 
     const char* source = [string UTF8String];
     char* target = adjust_CopyString(source);
+
     return target;
 }
 
@@ -52,6 +53,7 @@ static BOOL isIdfaCallbackSet = NO;
     attribution->ad_group        = [self convertString:adjustAttributionData.adgroup];
     attribution->creative        = [self convertString:adjustAttributionData.creative];
     attribution->click_label     = [self convertString:adjustAttributionData.clickLabel];
+    attribution->adid            = [self convertString:adjustAttributionData.adid];
 
     return attribution;
 }
@@ -656,5 +658,91 @@ s3eResult adjust_GetIdfa_platform() {
                                (csIdfa != NULL ? (int)strlen(csIdfa) + 1 : 0));
     }
     
+    return S3E_RESULT_SUCCESS;
+}
+
+s3eResult adjust_GetAdid_platform(char** adid) {
+    NSString *adidString = [Adjust adid];
+    const char* cStrAdid = [adidString UTF8String];
+    *adid = (char*)cStrAdid;
+
+    return S3E_RESULT_SUCCESS;
+}
+
+s3eResult adjust_GetAttribution_platform(adjust_attribution_data* attribution) {
+    ADJAttribution *adjAttribution = [Adjust attribution];
+
+    if (adjAttribution.trackerToken == nil) {
+        attribution->tracker_token = NULL;
+    } else {
+        const char* source = [adjAttribution.trackerToken UTF8String];
+        char* target = adjust_CopyString(source);
+
+        attribution->tracker_token = target;
+    }
+
+    if (adjAttribution.trackerName == nil) {
+        attribution->tracker_name = NULL;
+    } else {
+        const char* source = [adjAttribution.trackerName UTF8String];
+        char* target = adjust_CopyString(source);
+
+        attribution->tracker_name = target;
+    }
+
+    if (adjAttribution.network == nil) {
+        attribution->network = NULL;
+    } else {
+        const char* source = [adjAttribution.network UTF8String];
+        char* target = adjust_CopyString(source);
+
+        attribution->network = target;
+    }
+
+    if (adjAttribution.campaign == nil) {
+        attribution->campaign = NULL;
+    } else {
+        const char* source = [adjAttribution.campaign UTF8String];
+        char* target = adjust_CopyString(source);
+
+        attribution->campaign = target;
+    }
+
+    if (adjAttribution.adgroup == nil) {
+        attribution->ad_group = NULL;
+    } else {
+        const char* source = [adjAttribution.adgroup UTF8String];
+        char* target = adjust_CopyString(source);
+
+        attribution->ad_group = target;
+    }
+
+    if (adjAttribution.creative == nil) {
+        attribution->creative = NULL;
+    } else {
+        const char* source = [adjAttribution.creative UTF8String];
+        char* target = adjust_CopyString(source);
+
+        attribution->creative = target;
+    }
+
+    if (adjAttribution.clickLabel == nil) {
+        attribution->click_label = NULL;
+    } else {
+        const char* source = [adjAttribution.clickLabel UTF8String];
+        char* target = adjust_CopyString(source);
+
+        attribution->click_label = target;
+    }
+
+    if (adjAttribution.adid == nil) {
+        attribution->adid = NULL;
+    } else {
+        const char* source = [adjAttribution.adid UTF8String];
+        char* target = adjust_CopyString(source);
+
+        attribution->adid = target;
+    }
+
     return S3E_RESULT_SUCCESS;
 }

@@ -245,3 +245,43 @@ s3eResult adjust_GetIdfa()
 
     return ret;
 }
+
+s3eResult adjust_GetAdid()
+{
+    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[9] func: adjust_GetAdid"));
+
+    if (!_extLoad())
+        return S3E_RESULT_ERROR;
+
+#ifdef LOADER_CALL_LOCK
+    s3eDeviceLoaderCallStart(S3E_TRUE, (void*)g_Ext.m_adjust_GetAdid);
+#endif
+
+    s3eResult ret = g_Ext.m_adjust_GetAdid();
+
+#ifdef LOADER_CALL_LOCK
+    s3eDeviceLoaderCallDone(S3E_TRUE, (void*)g_Ext.m_adjust_GetAdid);
+#endif
+
+    return ret;
+}
+
+s3eResult adjust_GetAttribution()
+{
+    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[10] func: adjust_GetAttribution"));
+
+    if (!_extLoad())
+        return S3E_RESULT_ERROR;
+
+#ifdef LOADER_CALL_LOCK
+    s3eDeviceLoaderCallStart(S3E_TRUE, (void*)g_Ext.m_adjust_GetAttribution);
+#endif
+
+    s3eResult ret = g_Ext.m_adjust_GetAttribution();
+
+#ifdef LOADER_CALL_LOCK
+    s3eDeviceLoaderCallDone(S3E_TRUE, (void*)g_Ext.m_adjust_GetAttribution);
+#endif
+
+    return ret;
+}

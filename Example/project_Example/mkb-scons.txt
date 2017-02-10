@@ -1,5 +1,0 @@
-SCONS;build_example_scons_x86;
-SCONS;build_example_scons_mips;
-SCONS;build_example_scons_naclx86_64;
-SCONS;build_example_scons_aarch64;
-SCONS;build_example_scons_arm;

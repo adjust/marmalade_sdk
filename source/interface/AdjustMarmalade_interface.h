@@ -12,8 +12,17 @@ typedef  s3eResult(*adjust_IsEnabled_t)(bool& is_enabled_out);
 typedef  s3eResult(*adjust_SetOfflineMode_t)(bool is_offline_mode_enabled);
 typedef  s3eResult(*adjust_SetReferrer_t)(const char* referrer);
 typedef  s3eResult(*adjust_SetDeviceToken_t)(const char* device_token);
+typedef  s3eResult(*adjust_SendFirstPackages_t)();
+typedef  s3eResult(*adjust_AddSessionCallbackParameter_t)(const char* key, const char* value);
+typedef  s3eResult(*adjust_AddSessionPartnerParameter_t)(const char* key, const char* value);
+typedef  s3eResult(*adjust_RemoveSessionCallbackParameter_t)(const char* key);
+typedef  s3eResult(*adjust_RemoveSessionPartnerParameter_t)(const char* key);
+typedef  s3eResult(*adjust_ResetSessionCallbackParameters_t)();
+typedef  s3eResult(*adjust_ResetSessionPartnerParameters_t)();
 typedef  s3eResult(*adjust_GetGoogleAdId_t)();
 typedef  s3eResult(*adjust_GetIdfa_t)();
+typedef  s3eResult(*adjust_GetAdid_t)(char** adid);
+typedef  s3eResult(*adjust_GetAttribution_t)(adjust_attribution_data* attribution);
 
 /**
  * struct that gets filled in by AdjustMarmaladeRegister
@@ -27,6 +36,15 @@ typedef struct AdjustMarmaladeFuncs
     adjust_SetOfflineMode_t m_adjust_SetOfflineMode;
     adjust_SetReferrer_t m_adjust_SetReferrer;
     adjust_SetDeviceToken_t m_adjust_SetDeviceToken;
+    adjust_SendFirstPackages_t m_adjust_SendFirstPackages;
+    adjust_AddSessionCallbackParameter_t m_adjust_AddSessionCallbackParameter;
+    adjust_AddSessionPartnerParameter_t m_adjust_AddSessionPartnerParameter;
+    adjust_RemoveSessionCallbackParameter_t m_adjust_RemoveSessionCallbackParameter;
+    adjust_RemoveSessionPartnerParameter_t m_adjust_RemoveSessionPartnerParameter;
+    adjust_ResetSessionCallbackParameters_t m_adjust_ResetSessionCallbackParameters;
+    adjust_ResetSessionPartnerParameters_t m_adjust_ResetSessionPartnerParameters;
     adjust_GetGoogleAdId_t m_adjust_GetGoogleAdId;
     adjust_GetIdfa_t m_adjust_GetIdfa;
+    adjust_GetAdid_t m_adjust_GetAdid;
+    adjust_GetAttribution_t m_adjust_GetAttribution;
 } AdjustMarmaladeFuncs;
