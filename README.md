@@ -66,7 +66,7 @@ Download the latest version from our [releases page][releases]. Extract the zip 
 
 Add `AdjustMarmalade` as a subproject of your own.  Edit the `.mkb` file of your project and add the following line:
 
-````
+```
 subproject path_to_folder/adjust/AdjustMarmalade
 ```
 
