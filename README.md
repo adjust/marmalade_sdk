@@ -977,7 +977,7 @@ The Adjust SDK supports this feature out of the box and no additional setup is n
 [adjust.com]:  http://adjust.com
 
 [releases]:               https://github.com/adjust/marmalade_sdk/releases
-[example-app]:            https://github.com/adjust/marmalade_sdk/tree/master/Example
+[example-app]:            https://github.com/adjust/marmalade_sdk/tree/master/example
 [google_ad_id]:           https://developer.android.com/google/play-services/id.html
 [callbacks-guide]:        https://docs.adjust.com/en/callbacks
 [custom-receiver]:        https://github.com/adjust/android_sdk/blob/master/doc/referrer.md
