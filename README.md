@@ -381,13 +381,13 @@ The callback function will get called when the SDK receives final attribution da
 Within the callback function you have access to the `attribution` parameter. 
 Here is a quick summary of its properties:
 
-- `char* tracker_token` the tracker token of the current install.
-- `char* tracker_name` the tracker name of the current install.
-- `char* network` the network grouping level of the current install.
-- `char* campaign` the campaign grouping level of the current install.
-- `char* ad_group` the ad group grouping level of the current install.
-- `char* creative` the creative grouping level of the current install.
-- `char* click_label` the click label of the current install.
+- `char* tracker_token` the tracker token of the current attribution.
+- `char* tracker_name` the tracker name of the current attribution.
+- `char* network` the network grouping level of the current attribution.
+- `char* campaign` the campaign grouping level of the current attribution.
+- `char* ad_group` the ad group grouping level of the current attribution.
+- `char* creative` the creative grouping level of the current attribution.
+- `char* click_label` the click label of the current attribution.
 - `char* adid` the Adjust device identifier.
 
 ```cpp
