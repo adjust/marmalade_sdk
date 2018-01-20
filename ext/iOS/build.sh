@@ -6,7 +6,7 @@ SRCDIR=./sdk
 LIBOUTDIR=../../source/sdk/iOS/
 SCRIPTDIR=../../scripts/
 
-(cd $SRCDIR/Scripts; sh adjust_build.sh)
+(cd $SRCDIR/Scripts; sh build.sh)
 
 rm -v -rf $LIBOUTDIR/AdjustSdk.framework
 cp -v -R $SRCDIR/Frameworks/Static/AdjustSdk.framework $LIBOUTDIR
