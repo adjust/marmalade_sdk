@@ -76,6 +76,11 @@ public class AdjustMarmalade extends LoaderActivitySlave implements OnAttributio
         String logLevel,
         String sdkPrefix,
         double delayStart,
+        double secretId,
+        double info1,
+        double info2,
+        double info3,
+        double info4,
         boolean isEventBufferingEnabled,
         boolean isSendingInBackgroundEnabled,
         boolean shouldDeferredDeeplinkBeOpened,
@@ -138,6 +143,10 @@ public class AdjustMarmalade extends LoaderActivitySlave implements OnAttributio
 
             if (delayStart != -1) {
                 adjustConfig.setDelayStart(delayStart);
+            }
+
+            if (secretId != -1 && info1 != -1 && info2 != -1 && info3 != -1 && info4 != -1) {
+                adjustConfig.setAppSecret(secretId, info1, info2, info3, info4);
             }
 
             if (isAttributionCallbackSet) {
@@ -251,8 +260,13 @@ public class AdjustMarmalade extends LoaderActivitySlave implements OnAttributio
     public void adjust_ResetSessionCallbackParameters() {
         Adjust.resetSessionCallbackParameters();
     }
+
     public void adjust_ResetSessionPartnerParameters() {
         Adjust.resetSessionPartnerParameters();
+    }
+
+    public void adjust_GdprForgetMe() {
+        Adjust.gdprForgetMe();
     }
 
     public void adjust_GetGoogleAdId() {

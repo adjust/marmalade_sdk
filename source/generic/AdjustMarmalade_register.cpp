@@ -23,7 +23,7 @@ extern void AdjustMarmaladeTerminate();
 void AdjustMarmaladeRegisterExt()
 {
     /* fill in the function pointer struct for this extension */
-    void* funcPtrs[18];
+    void* funcPtrs[19];
     funcPtrs[0] = (void*)adjust_Start;
     funcPtrs[1] = (void*)adjust_TrackEvent;
     funcPtrs[2] = (void*)adjust_SetEnabled;
@@ -38,15 +38,16 @@ void AdjustMarmaladeRegisterExt()
     funcPtrs[11] = (void*)adjust_RemoveSessionPartnerParameter;
     funcPtrs[12] = (void*)adjust_ResetSessionCallbackParameters;
     funcPtrs[13] = (void*)adjust_ResetSessionPartnerParameters;
-    funcPtrs[14] = (void*)adjust_GetGoogleAdId;
-    funcPtrs[15] = (void*)adjust_GetIdfa;
-    funcPtrs[16] = (void*)adjust_GetAdid;
-    funcPtrs[17] = (void*)adjust_GetAttribution;
+    funcPtrs[14] = (void*)adjust_GdprForgetMe;
+    funcPtrs[15] = (void*)adjust_GetGoogleAdId;
+    funcPtrs[16] = (void*)adjust_GetIdfa;
+    funcPtrs[17] = (void*)adjust_GetAdid;
+    funcPtrs[18] = (void*)adjust_GetAttribution;
 
     /*
      * Flags that specify the extension's use of locking and stackswitching
      */
-    int flags[18] = { 0 };
+    int flags[19] = { 0 };
 
     /*
      * Register the extension

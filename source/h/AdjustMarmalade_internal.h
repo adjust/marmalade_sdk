@@ -75,6 +75,7 @@ s3eResult adjust_RemoveSessionCallbackParameter_platform(const char* key);
 s3eResult adjust_RemoveSessionPartnerParameter_platform(const char* key);
 s3eResult adjust_ResetSessionCallbackParameters_platform();
 s3eResult adjust_ResetSessionPartnerParameters_platform();
+s3eResult adjust_GdprForgetMe_platform();
 s3eResult adjust_GetGoogleAdId_platform();
 s3eResult adjust_GetIdfa_platform();
 s3eResult adjust_GetAdid_platform(char** adid);

@@ -28,6 +28,7 @@ static jmethodID g_adjust_RemoveSessionCallbackParameter;
 static jmethodID g_adjust_RemoveSessionPartnerParameter;
 static jmethodID g_adjust_ResetSessionCallbackParameters;
 static jmethodID g_adjust_ResetSessionPartnerParameters;
+static jmethodID g_adjust_GdprForgetMe;
 static jmethodID g_adjust_OnPause;
 static jmethodID g_adjust_OnResume;
 static jmethodID g_adjust_SetReferrer;
@@ -427,6 +428,12 @@ s3eResult AdjustMarmaladeInit_platform() {
         goto fail;
     }
 
+    g_adjust_GdprForgetMe = env->GetMethodID(cls, "adjust_GdprForgetMe", "()V");
+
+    if (!g_adjust_GdprForgetMe) {
+        goto fail;
+    }
+
     g_adjust_GetGoogleAdId = env->GetMethodID(cls, "adjust_GetGoogleAdId", "()V");
     
     if (!g_adjust_GetGoogleAdId) {
@@ -510,6 +517,11 @@ s3eResult adjust_Start_platform(adjust_config* config) {
     jboolean jIsGoogleAdIdCallbackSet = JNI_FALSE;
     jboolean jIsIdfaCallbackSet = JNI_FALSE;
     jdouble jDelayStart = config->delay_start != NULL ? *(config->delay_start) : -1;
+    jdouble jSecretId = config->secret_id != NULL ? *(config->secret_id) : -1;
+    jdouble jInfo1 = config->info1 != NULL ? *(config->info1) : -1;
+    jdouble jInfo2 = config->info2 != NULL ? *(config->info2) : -1;
+    jdouble jInfo3 = config->info3 != NULL ? *(config->info3) : -1;
+    jdouble jInfo4 = config->info4 != NULL ? *(config->info4) : -1;
 
     if (config->is_event_buffering_enabled != NULL) {
         jIsEventBufferingEnabled = (jboolean)(*(config->is_event_buffering_enabled));
@@ -602,6 +614,11 @@ s3eResult adjust_Start_platform(adjust_config* config) {
         jLogLevel,
         jSdkPrefix, 
         jDelayStart,
+        jSecretId,
+        jInfo1,
+        jInfo2,
+        jInfo3,
+        jInfo4,
         jIsEventBufferingEnabled,
         jIsSendingInBackgroundEnabled,
         jShouldDeferredDeeplinkBeOpened,
@@ -774,10 +791,19 @@ s3eResult adjust_ResetSessionCallbackParameters_platform() {
 
     return (s3eResult)0;
 }
+
 s3eResult adjust_ResetSessionPartnerParameters_platform() {
     JNIEnv* env = s3eEdkJNIGetEnv();
 
     env->CallVoidMethod(g_Obj, g_adjust_ResetSessionPartnerParameters);
+
+    return (s3eResult)0;
+}
+
+s3eResult adjust_GdprForgetMe_platform() {
+    JNIEnv* env = s3eEdkJNIGetEnv();
+
+    env->CallVoidMethod(g_Obj, g_adjust_GdprForgetMe);
 
     return (s3eResult)0;
 }

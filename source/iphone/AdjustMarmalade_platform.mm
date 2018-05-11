@@ -416,6 +416,14 @@ s3eResult adjust_Start_platform(adjust_config* config) {
             [adjustConfig setDelayStart:(*(config->delay_start))];
         }
 
+        if (config->secret_id != NULL && config->info1 != NULL && config->info2 != NULL && config->info3 != NULL && config->info4 != NULL) {
+            [adjustConfig setAppSecret:(NSInteger)(*(config->secret_id))
+                                 info1:(NSInteger)(*(config->info1))
+                                 info2:(NSInteger)(*(config->info2))
+                                 info3:(NSInteger)(*(config->info3))
+                                 info4:(NSInteger)(*(config->info4))];
+        }
+
         if (config->is_event_buffering_enabled != NULL) {
             [adjustConfig setEventBufferingEnabled:*(config->is_event_buffering_enabled)];
         }
@@ -629,6 +637,12 @@ s3eResult adjust_ResetSessionCallbackParameters_platform() {
 
 s3eResult adjust_ResetSessionPartnerParameters_platform() {
     [Adjust resetSessionPartnerParameters];
+
+    return S3E_RESULT_SUCCESS;
+}
+
+s3eResult adjust_GdprForgetMe_platform() {
+    [Adjust gdprForgetMe];
 
     return S3E_RESULT_SUCCESS;
 }
