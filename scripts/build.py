@@ -250,7 +250,7 @@ def edit_mkf(platform):
         for line in f:
             mkf_file_lines.append(line)
             if platform == "iphone" and iphone_links_opts.search(line):
-                mkf_file_lines.append("    iphone-link-opts=\"-weak_framework iAd\" -weak_framework AdSupport\"\n")
+                mkf_file_lines.append("    iphone-link-opts=\"-weak_framework iAd\" -weak_framework AdSupport\" -weak_framework CoreTelephony\"\n")
                 Log("append iphone weak frameworks to mkf")
             if platform == "android" and external_jar_re.search(line):
                 mkf_file_lines.append("    android-external-jars=\"incoming/adjust.jar\"\n")
@@ -288,13 +288,17 @@ def edit_xcode_project(xcode_project_path):
     # Load iOS pbxproj project file.
     ios_XcodeProject = XcodeProject.Load(xcode_project_path)
     
-    # Add adSupport framework.
+    # Add AdSupport framework.
     ios_XcodeProject.add_file_if_doesnt_exist(framework_path + "AdSupport.framework", tree="SDKROOT", create_build_files=True, weak=True)
     Log("Added adSupport framework")
 
     # Add iAd framework.
     ios_XcodeProject.add_file_if_doesnt_exist(framework_path + "iAd.framework", tree="SDKROOT", create_build_files=True, weak=True)
     Log("Added iAd framework")
+
+    # Add CoreTelephony framework.
+    ios_XcodeProject.add_file_if_doesnt_exist(framework_path + "CoreTelephony.framework", tree="SDKROOT", create_build_files=True, weak=True)
+    Log("Added CoreTelephony framework")
 
     # Add Adjust framework.
     adjust_framework_path = os.path.dirname(os.path.abspath(__file__)) + "../adjust/sdk/ios/"
