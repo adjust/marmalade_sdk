@@ -68,8 +68,6 @@ s3eBool AdjustMarmaladeAvailable()
 
 s3eResult adjust_Start(adjust_config* config)
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[0] func: adjust_Start"));
-
     if (!_extLoad())
         return S3E_RESULT_ERROR;
 
@@ -88,8 +86,6 @@ s3eResult adjust_Start(adjust_config* config)
 
 s3eResult adjust_TrackEvent(adjust_event* event)
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[1] func: adjust_TrackEvent"));
-
     if (!_extLoad())
         return S3E_RESULT_ERROR;
 
@@ -108,8 +104,6 @@ s3eResult adjust_TrackEvent(adjust_event* event)
 
 s3eResult adjust_SetEnabled(bool is_enabled)
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[2] func: adjust_SetEnabled"));
-
     if (!_extLoad())
         return S3E_RESULT_ERROR;
 
@@ -128,8 +122,6 @@ s3eResult adjust_SetEnabled(bool is_enabled)
 
 s3eResult adjust_IsEnabled(bool& is_enabled_out)
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[3] func: adjust_IsEnabled"));
-
     if (!_extLoad())
         return S3E_RESULT_ERROR;
 
@@ -148,8 +140,6 @@ s3eResult adjust_IsEnabled(bool& is_enabled_out)
 
 s3eResult adjust_SetOfflineMode(bool is_offline_mode_enabled)
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[4] func: adjust_SetOfflineMode"));
-
     if (!_extLoad())
         return S3E_RESULT_ERROR;
 
@@ -168,8 +158,6 @@ s3eResult adjust_SetOfflineMode(bool is_offline_mode_enabled)
 
 s3eResult adjust_SetReferrer(const char* referrer)
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[5] func: adjust_SetReferrer"));
-
     if (!_extLoad())
         return S3E_RESULT_ERROR;
 
@@ -188,8 +176,6 @@ s3eResult adjust_SetReferrer(const char* referrer)
 
 s3eResult adjust_SetDeviceToken(const char* device_token)
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[6] func: adjust_SetDeviceToken"));
-
     if (!_extLoad())
         return S3E_RESULT_ERROR;
 
@@ -208,8 +194,6 @@ s3eResult adjust_SetDeviceToken(const char* device_token)
 
 s3eResult adjust_SendFirstPackages()
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[7] func: adjust_SendFirstPackages"));
-
     if (!_extLoad())
         return S3E_RESULT_ERROR;
 
@@ -228,8 +212,6 @@ s3eResult adjust_SendFirstPackages()
 
 s3eResult adjust_AddSessionCallbackParameter(const char* key, const char* value)
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[8] func: adjust_AddSessionCallbackParameter"));
-
     if (!_extLoad())
         return S3E_RESULT_ERROR;
 
@@ -248,8 +230,6 @@ s3eResult adjust_AddSessionCallbackParameter(const char* key, const char* value)
 
 s3eResult adjust_AddSessionPartnerParameter(const char* key, const char* value)
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[9] func: adjust_AddSessionPartnerParameter"));
-
     if (!_extLoad())
         return S3E_RESULT_ERROR;
 
@@ -268,8 +248,6 @@ s3eResult adjust_AddSessionPartnerParameter(const char* key, const char* value)
 
 s3eResult adjust_RemoveSessionCallbackParameter(const char* key)
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[10] func: adjust_RemoveSessionCallbackParameter"));
-
     if (!_extLoad())
         return S3E_RESULT_ERROR;
 
@@ -288,8 +266,6 @@ s3eResult adjust_RemoveSessionCallbackParameter(const char* key)
 
 s3eResult adjust_RemoveSessionPartnerParameter(const char* key)
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[11] func: adjust_RemoveSessionPartnerParameter"));
-
     if (!_extLoad())
         return S3E_RESULT_ERROR;
 
@@ -308,8 +284,6 @@ s3eResult adjust_RemoveSessionPartnerParameter(const char* key)
 
 s3eResult adjust_ResetSessionCallbackParameters()
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[12] func: adjust_ResetSessionCallbackParameters"));
-
     if (!_extLoad())
         return S3E_RESULT_ERROR;
 
@@ -328,8 +302,6 @@ s3eResult adjust_ResetSessionCallbackParameters()
 
 s3eResult adjust_ResetSessionPartnerParameters()
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[13] func: adjust_ResetSessionPartnerParameters"));
-
     if (!_extLoad())
         return S3E_RESULT_ERROR;
 
@@ -348,8 +320,6 @@ s3eResult adjust_ResetSessionPartnerParameters()
 
 s3eResult adjust_GdprForgetMe()
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[14] func: adjust_GdprForgetMe"));
-
     if (!_extLoad())
         return S3E_RESULT_ERROR;
 
@@ -368,8 +338,6 @@ s3eResult adjust_GdprForgetMe()
 
 s3eResult adjust_GetGoogleAdId()
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[15] func: adjust_GetGoogleAdId"));
-
     if (!_extLoad())
         return S3E_RESULT_ERROR;
 
@@ -388,8 +356,6 @@ s3eResult adjust_GetGoogleAdId()
 
 s3eResult adjust_GetIdfa()
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[16] func: adjust_GetIdfa"));
-
     if (!_extLoad())
         return S3E_RESULT_ERROR;
 
@@ -408,8 +374,6 @@ s3eResult adjust_GetIdfa()
 
 s3eResult adjust_GetAdid(char** adid)
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[17] func: adjust_GetAdid"));
-
     if (!_extLoad())
         return S3E_RESULT_ERROR;
 
@@ -428,8 +392,6 @@ s3eResult adjust_GetAdid(char** adid)
 
 s3eResult adjust_GetAttribution(adjust_attribution_data* attribution)
 {
-    IwTrace(ADJUSTMARMALADE_VERBOSE, ("calling AdjustMarmalade[18] func: adjust_GetAttribution"));
-
     if (!_extLoad())
         return S3E_RESULT_ERROR;
 
