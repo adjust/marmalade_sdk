@@ -20,6 +20,7 @@ static jmethodID g_adjust_TrackEvent;
 static jmethodID g_adjust_SetEnabled;
 static jmethodID g_adjust_IsEnabled;
 static jmethodID g_adjust_SetOfflineMode;
+static jmethodID g_adjust_SetReferrer;
 static jmethodID g_adjust_SetDeviceToken;
 static jmethodID g_adjust_SendFirstPackages;
 static jmethodID g_adjust_AddSessionCallbackParameter;
@@ -29,13 +30,12 @@ static jmethodID g_adjust_RemoveSessionPartnerParameter;
 static jmethodID g_adjust_ResetSessionCallbackParameters;
 static jmethodID g_adjust_ResetSessionPartnerParameters;
 static jmethodID g_adjust_GdprForgetMe;
-static jmethodID g_adjust_OnPause;
-static jmethodID g_adjust_OnResume;
-static jmethodID g_adjust_SetReferrer;
 static jmethodID g_adjust_GetGoogleAdId;
 static jmethodID g_adjust_GetIdfa;
 static jmethodID g_adjust_GetAdid;
 static jmethodID g_adjust_GetAttribution;
+static jmethodID g_adjust_OnPause;
+static jmethodID g_adjust_OnResume;
 
 char* get_json_string(rapidjson::Document &jsonDoc, const char* member_name) {
     if (!jsonDoc.HasMember(member_name)) {
@@ -344,7 +344,7 @@ s3eResult AdjustMarmaladeInit_platform() {
     }
 
     // Get all the extension methods.
-    g_adjust_Start = env->GetMethodID(cls, "adjust_Start", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;DZZZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZZZZZZZZ)V");
+    g_adjust_Start = env->GetMethodID(cls, "adjust_Start", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;DDDDDDZZZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZZZZZZZZ)V");
     
     if (!g_adjust_Start) {
         goto fail;
@@ -518,10 +518,10 @@ s3eResult adjust_Start_platform(adjust_config* config) {
     jboolean jIsIdfaCallbackSet = JNI_FALSE;
     jdouble jDelayStart = config->delay_start != NULL ? *(config->delay_start) : -1;
     jdouble jSecretId = config->secret_id != NULL ? *(config->secret_id) : -1;
-    jdouble jInfo1 = config->info1 != NULL ? *(config->info1) : -1;
-    jdouble jInfo2 = config->info2 != NULL ? *(config->info2) : -1;
-    jdouble jInfo3 = config->info3 != NULL ? *(config->info3) : -1;
-    jdouble jInfo4 = config->info4 != NULL ? *(config->info4) : -1;
+    jdouble jInfo1 = config->info_1 != NULL ? *(config->info_1) : -1;
+    jdouble jInfo2 = config->info_2 != NULL ? *(config->info_2) : -1;
+    jdouble jInfo3 = config->info_3 != NULL ? *(config->info_3) : -1;
+    jdouble jInfo4 = config->info_4 != NULL ? *(config->info_4) : -1;
 
     if (config->is_event_buffering_enabled != NULL) {
         jIsEventBufferingEnabled = (jboolean)(*(config->is_event_buffering_enabled));

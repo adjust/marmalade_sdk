@@ -146,7 +146,7 @@ public class AdjustMarmalade extends LoaderActivitySlave implements OnAttributio
             }
 
             if (secretId != -1 && info1 != -1 && info2 != -1 && info3 != -1 && info4 != -1) {
-                adjustConfig.setAppSecret(secretId, info1, info2, info3, info4);
+                adjustConfig.setAppSecret((long)secretId, (long)info1, (long)info2, (long)info3, (long)info4);
             }
 
             if (isAttributionCallbackSet) {
@@ -230,11 +230,11 @@ public class AdjustMarmalade extends LoaderActivitySlave implements OnAttributio
     }
 
     public void adjust_SetReferrer(String referrer) {
-        Adjust.setReferrer(referrer);
+        Adjust.setReferrer(referrer, LoaderAPI.getActivity());
     }
 
     public void adjust_SetDeviceToken(String deviceToken) {
-        Adjust.setPushToken(deviceToken);
+        Adjust.setPushToken(deviceToken, LoaderAPI.getActivity());
     }
 
     public void adjust_SendFirstPackages() {
@@ -266,7 +266,7 @@ public class AdjustMarmalade extends LoaderActivitySlave implements OnAttributio
     }
 
     public void adjust_GdprForgetMe() {
-        Adjust.gdprForgetMe();
+        Adjust.gdprForgetMe(LoaderAPI.getActivity());
     }
 
     public void adjust_GetGoogleAdId() {

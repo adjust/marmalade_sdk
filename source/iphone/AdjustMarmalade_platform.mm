@@ -390,14 +390,12 @@ s3eResult adjust_Start_platform(adjust_config* config) {
             }
         }
 
-        ADJConfig *adjustConfig = [ADJConfig configWithAppToken:appToken environment:environment allowSuppressLogLevel:isSuppress];
+        ADJConfig *adjustConfig = [ADJConfig configWithAppToken:appToken
+                                                    environment:environment
+                                          allowSuppressLogLevel:isSuppress];
 
         if (is_string_valid(logLevel)) {
-            if (isSuppress) {
-                [adjustConfig setLogLevel:ADJLogLevelSuppress];
-            } else {
-              [adjustConfig setLogLevel:[ADJLogger LogLevelFromString:logLevel]];
-            }
+            [adjustConfig setLogLevel:[ADJLogger logLevelFromString:logLevel]];
         }
 
         if (is_string_valid(defaultTracker)) {
@@ -416,12 +414,16 @@ s3eResult adjust_Start_platform(adjust_config* config) {
             [adjustConfig setDelayStart:(*(config->delay_start))];
         }
 
-        if (config->secret_id != NULL && config->info1 != NULL && config->info2 != NULL && config->info3 != NULL && config->info4 != NULL) {
+        if (config->secret_id != NULL
+            && config->info_1 != NULL
+            && config->info_2 != NULL
+            && config->info_3 != NULL
+            && config->info_4 != NULL) {
             [adjustConfig setAppSecret:(NSInteger)(*(config->secret_id))
-                                 info1:(NSInteger)(*(config->info1))
-                                 info2:(NSInteger)(*(config->info2))
-                                 info3:(NSInteger)(*(config->info3))
-                                 info4:(NSInteger)(*(config->info4))];
+                                 info1:(NSInteger)(*(config->info_1))
+                                 info2:(NSInteger)(*(config->info_2))
+                                 info3:(NSInteger)(*(config->info_3))
+                                 info4:(NSInteger)(*(config->info_4))];
         }
 
         if (config->is_event_buffering_enabled != NULL) {

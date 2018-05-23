@@ -215,12 +215,17 @@ struct adjust_config {
         *delay_start = p_delay_start;
     }
 
-    void set_app_secret(double p_secret_id, p_info_1, p_info_2, p_info_3, p_info_4) {
-        secret_id = p_secret_id;
-        info_1 = p_info_1;
-        info_2 = p_info_2;
-        info_3 = p_info_3;
-        info_4 = p_info_4;
+    void set_app_secret(double p_secret_id, double p_info_1, double p_info_2, double p_info_3, double p_info_4) {
+        secret_id = new double();
+        *secret_id = p_secret_id;
+        info_1 = new double();
+        *info_1 = p_info_1;
+        info_2 = new double();
+        *info_2 = p_info_2;
+        info_3 = new double();
+        *info_3 = p_info_3;
+        info_4 = new double();
+        *info_4 = p_info_4;
     }
 
     void set_log_level(const char* p_log_level) {
