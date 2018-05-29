@@ -44,7 +44,7 @@ deployments
     #iphone-link-opts="-framework X" #Use this to bring in any additional link options needed
     iphone-link-lib="AdjustMarmalade"
     iphone-link-libdir="lib/iphone"
-    iphone-link-opts="-weak_framework AdSupport -weak_framework iAd"
+    iphone-link-opts="-weak_framework AdSupport -weak_framework iAd -weak_framework CoreTelephony"
     iphone-link-opts="-F$CWD/sdk/iOS -framework AdjustSdk -ObjC"
 }
 

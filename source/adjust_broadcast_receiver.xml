@@ -1,4 +1,5 @@
-<receiver android:name="com.adjust.sdk.AdjustReferrerReceiver" 
+<receiver android:name="com.adjust.sdk.AdjustReferrerReceiver"
+	      android:permission="android.permission.INSTALL_PACKAGES"
           android:exported="true" >
     <intent-filter>
         <action android:name="com.android.vending.INSTALL_REFERRER" />

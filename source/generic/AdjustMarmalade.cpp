@@ -121,7 +121,7 @@ char* adjust_CopyString(const char* source) {
 }
 
 s3eResult adjust_Start(adjust_config* config) {
-    config->set_sdk_prefix("marmalade4.11.0");
+    config->set_sdk_prefix("marmalade4.13.0");
     return adjust_Start_platform(config);
 }
 
@@ -172,8 +172,13 @@ s3eResult adjust_RemoveSessionPartnerParameter(const char* key) {
 s3eResult adjust_ResetSessionCallbackParameters() {
     return adjust_ResetSessionCallbackParameters_platform();
 }
+
 s3eResult adjust_ResetSessionPartnerParameters() {
     return adjust_ResetSessionPartnerParameters_platform();
+}
+
+s3eResult adjust_GdprForgetMe() {
+    return adjust_GdprForgetMe_platform();
 }
 
 s3eResult adjust_GetGoogleAdId() {

@@ -49,7 +49,7 @@ def main():
                     build_android()
                 if not parsed_args.build_android:
                     compile_android()
-                    post_compile()
+                    # post_compile()
     
 def LogInput(writeObject):
     def Log(message, *args):
@@ -100,21 +100,25 @@ def build_iphone():
     #edit_build_iphone_mkf()
 
 def compile_android():
-    mkb_android_java = Popen(["mkb", "../adjust/AdjustMarmalade_android_java.mkb"], stdout=PIPE, stderr=PIPE)
+    mkb_android_java = Popen(["mkb", "../adjust/AdjustMarmalade_android_java.mkb", "--verbose=10"], stdout=PIPE, stderr=PIPE)
     out, err = mkb_android_java.communicate()
 
+    Log("----------")
     Log("mkb android java out: {0}".format(out))
     if (mkb_android_java.returncode not in [0]):
         print("mkb android java code: {0}, err: {1}".format(
             mkb_android_java.returncode, err))
+    Log("----------")
 
-    mkb_android = Popen(["mkb", "../adjust/AdjustMarmalade_android.mkb"], stdout=PIPE, stderr=PIPE)
+    mkb_android = Popen(["mkb", "../adjust/AdjustMarmalade_android.mkb", "--verbose=10"], stdout=PIPE, stderr=PIPE)
     out, err = mkb_android.communicate()
 
+    Log("----------")
     Log("mkb android out: {0}".format(out))
     if (mkb_android.returncode not in [0]):
         print("mkb android code: {0}, err: {1}".format(
             mkb_android.returncode, err))
+    Log("----------")
 
 def compile_iphone():
     #mkb_iphone = Popen(["mkb", "adjust/AdjustMarmalade_iphone.mkb", "--buildenv=scons"],
@@ -218,6 +222,7 @@ def move_iphone_source():
     Log("Copied iPhone source files!")
 
 def post_compile():
+    Log("Doing post_compile()!")
     shutil.copy("../source/interface/AdjustMarmalade_interface.cpp", "../adjust/interface/AdjustMarmalade_interface.cpp")
 
 def edit_android_mkb():
@@ -225,6 +230,7 @@ def edit_android_mkb():
 
     with open(mkb_filename, "a") as f:
         f.write("subproject rapidjson")
+    Log("Added rapidjson subproject to android mkb")
 
 def edit_android_java_mkb():
     mkb_file_lines = []
@@ -236,7 +242,7 @@ def edit_android_java_mkb():
             mkb_file_lines.append(line)
             if librarypath_re.search(line):
                 mkb_file_lines.append("librarypath \"sdk/Android/adjust-android.jar\"\n")
-                Log("Pppend native SDK jar to android java mkb")
+                Log("Append native SDK jar to android java mkb")
     with open(mkb_filename, "w+") as f:
         f.writelines(mkb_file_lines)
 
@@ -250,7 +256,7 @@ def edit_mkf(platform):
         for line in f:
             mkf_file_lines.append(line)
             if platform == "iphone" and iphone_links_opts.search(line):
-                mkf_file_lines.append("    iphone-link-opts=\"-weak_framework iAd\" -weak_framework AdSupport\"\n")
+                mkf_file_lines.append("    iphone-link-opts=\"-weak_framework iAd\" -weak_framework AdSupport\" -weak_framework CoreTelephony\"\n")
                 Log("append iphone weak frameworks to mkf")
             if platform == "android" and external_jar_re.search(line):
                 mkf_file_lines.append("    android-external-jars=\"incoming/adjust.jar\"\n")
@@ -288,13 +294,17 @@ def edit_xcode_project(xcode_project_path):
     # Load iOS pbxproj project file.
     ios_XcodeProject = XcodeProject.Load(xcode_project_path)
     
-    # Add adSupport framework.
+    # Add AdSupport framework.
     ios_XcodeProject.add_file_if_doesnt_exist(framework_path + "AdSupport.framework", tree="SDKROOT", create_build_files=True, weak=True)
     Log("Added adSupport framework")
 
     # Add iAd framework.
     ios_XcodeProject.add_file_if_doesnt_exist(framework_path + "iAd.framework", tree="SDKROOT", create_build_files=True, weak=True)
     Log("Added iAd framework")
+
+    # Add CoreTelephony framework.
+    ios_XcodeProject.add_file_if_doesnt_exist(framework_path + "CoreTelephony.framework", tree="SDKROOT", create_build_files=True, weak=True)
+    Log("Added CoreTelephony framework")
 
     # Add Adjust framework.
     adjust_framework_path = os.path.dirname(os.path.abspath(__file__)) + "../adjust/sdk/ios/"

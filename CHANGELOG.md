@@ -1,3 +1,17 @@
+### Version 4.13.0 (29th May 2018)
+#### Added
+- Added `set_app_secret` method to `adjust_config` structure.
+- Added `adjust_GdprForgetMe()` method to enable possibility for user to be forgotten in accordance with GDPR law.
+
+#### Fixed
+- Fixed issue of creating and destroying lots of threads on certain Android API levels (https://github.com/adjust/android_sdk/issues/265).
+
+#### Changed
+- Updated native iOS SDK to version **4.13.0**.
+- Updated native Android SDK to version **4.13.0**.
+
+---
+
 ### Version 4.11.0 (10th February 2017)
 #### Added
 - Added `adid` property to the attribution callback response.
