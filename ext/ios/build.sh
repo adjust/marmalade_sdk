@@ -3,7 +3,7 @@
 set -e
 
 SRCDIR=./sdk
-LIBOUTDIR=../../source/sdk/iOS/
+LIBOUTDIR=../../source/sdk/ios/
 SCRIPTDIR=../../scripts/
 
 (cd $SRCDIR/Scripts; sh build.sh)
