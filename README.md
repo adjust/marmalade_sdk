@@ -58,7 +58,7 @@ There is an example app inside the [`example` directory][example-app]. You can u
 
 These are the minimal steps required to integrate the Adjust SDK into your Marmalade project.
 
-**Note**: SDK 4.13.0 for Marmalade is built with **Marmalade 8.8.1** and we advise you to use this Marmalade version or higher. Especially if you want to rebuild our Marmalade extension on your own.
+**Note**: SDK 4.14.0 for Marmalade is built with **Marmalade 8.8.1** and we advise you to use this Marmalade version or higher. Especially if you want to rebuild our Marmalade extension on your own.
 
 ### <a id="sdk-get"></a>Get the SDK
 
