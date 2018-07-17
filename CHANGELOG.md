@@ -1,3 +1,16 @@
+### Version 4.14.0 (17th July 2018)
+#### Added
+- Added deep link caching in case `appWillOpenUrl` method is called internally before SDK is initialised.
+
+#### Changed
+- Updated the way how iOS native bridge handles push tokens from C++ interface - they are now being passed directly as strings to native iOS SDK.
+
+#### Changed
+- Updated native iOS SDK to version **4.14.1**.
+- Updated native Android SDK to version **4.14.0**.
+
+---
+
 ### Version 4.13.0 (29th May 2018)
 #### Added
 - Added `set_app_secret` method to `adjust_config` structure.
