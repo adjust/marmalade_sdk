@@ -50,7 +50,7 @@ public class AdjustMarmalade extends LoaderActivitySlave implements OnAttributio
             return;
         }
 
-        Adjust.appWillOpenUrl(uriData);
+        Adjust.appWillOpenUrl(uriData, LoaderAPI.getActivity());
 
         if (isDeeplinkCallbackSet == false) {
             return;

@@ -585,8 +585,7 @@ s3eResult adjust_SetReferrer_platform(const char* referrer) {
 }
 
 s3eResult adjust_SetDeviceToken_platform(const char* device_token) {
-    NSData *deviceToken = [[NSString stringWithUTF8String:device_token] dataUsingEncoding:NSUTF8StringEncoding];
-    [Adjust setDeviceToken:deviceToken];
+    [Adjust setPushToken:[NSString stringWithUTF8String:device_token]];
 
     return S3E_RESULT_SUCCESS;
 }
